@@ -21,4 +21,4 @@ pnpm i
 pnpm dev
 ````
 
-The front run at `http://localhost:1234
+The front run at `http://localhost:1234`
