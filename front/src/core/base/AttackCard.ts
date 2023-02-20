@@ -1,14 +1,16 @@
 import {BaseCard} from "@/core/base/BaseCard";
+import {Wizard} from "@/core/wizard/Wizard";
 
 export class AttackCard extends BaseCard {
-    private damage: number;
+    private readonly damage: number;
 
     constructor(key:string, title:string, damage:number) {
         super(key, title);
         this.damage = damage;
     }
 
-    async action(): Promise<boolean>{
-        throw new Error("Action not implemented")
+    async action({defender} : {defender: Wizard}): Promise<boolean> {
+        defender.takeDamage(this.damage);
+        return true;
     }
 }

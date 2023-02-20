@@ -1,3 +1,4 @@
 export {BaseCard} from './BaseCard'
-export type {Card} from './type'
+export type {AbstractCard, Order, AsyncAction} from './type'
 export {AttackCard} from "./AttackCard"
+export {PrioCard} from "./PrioCard"

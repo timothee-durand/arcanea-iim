@@ -1,9 +1,10 @@
-import type {Card, Order} from "./type";
+import type {AbstractCard, Order} from "./type";
+import {Wizard} from "@/core/wizard/Wizard";
 
-export class BaseCard implements Card {
+export class BaseCard implements AbstractCard {
     key: string;
     title: string;
-    order: Order = 2;
+    order: Order = 0;
     description?: string;
     image?: string;
     sound?: string;
@@ -14,7 +15,7 @@ export class BaseCard implements Card {
         this.title = title;
     }
 
-    async action(): Promise<boolean> {
+    async action(object : {attacker: Wizard, defender: Wizard}): Promise<boolean> {
         throw new Error("Action not implemented")
     }
 
