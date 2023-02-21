@@ -16,20 +16,20 @@ import { MTLLoader } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm
       });
       renderer.setClearColor(0x131313);
       renderer.setPixelRatio(window.devicePixelRatio);
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(window.innerWidth/2, window.innerHeight/2);
 
       //CAMERA
       const camera = new THREE.PerspectiveCamera(
         55,
-        window.innerWidth / window.innerHeight,
+        (window.innerWidth/2) / (window.innerHeight/2),
         0.1,
-        3000
+        500
       );
       camera.position.z = 150;
 
       // CONTROLS
       const controls = new OrbitControls(camera, renderer.domElement);
-      controls.autoRotate = true;
+      controls.autoRotate = false;
       controls.autoRotateSpeed = 7;
 
       //LIGHTS
@@ -69,24 +69,11 @@ import { MTLLoader } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm
 
       // LOAD MANAGER
       // Load Manager
-      const manager = new THREE.LoadingManager();
-      manager.onStart = (url, itemsLoaded, itemsTotal) => {
-        document.getElementById("loader").style.display = "flex";
-      };
+      
 
-      manager.onProgress = (url, itemsLoaded, itemsTotal) => {
-        document.getElementById(
-          "progressLoading"
-        ).innerText = `Loading Files ... ${itemsLoaded}/${itemsTotal}`;
-      };
+     
 
-      manager.onLoad = () => {
-        document.getElementById("loader").style.display = "none";
-      };
-
-      manager.onError = function (url) {
-        alert("There was an error loading " + url);
-      };
+      
 
       function selectCardColor(e) {
         card.children[0].material = new THREE.MeshPhongMaterial({
@@ -282,9 +269,9 @@ import { MTLLoader } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm
 </script>
 
 <template>
-  <img src="./loader.svg" id="loader" alt="Loader icon" />
+  
     <canvas id="canvas"></canvas>
-    <div class="cardInfoContainer">
+    <!-- <div class="cardInfoContainer">
       <div class="content">
         <h2 class="title">Card Settings</h2>
         <div class="inputDiv">
@@ -359,8 +346,8 @@ import { MTLLoader } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm
         </div>
         <button id="confirm" class="confirmBtn">Close</button>
       </div>
-    </div>
-    <button class="openModalBtn">Edit Card</button>
+    </div> -->
+    <!-- <button class="openModalBtn">Edit Card</button> -->
 </template>
 
 <style scoped>
