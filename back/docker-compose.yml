@@ -1,0 +1,17 @@
+# Use postgres/example user/password credentials
+version: '3.3'
+
+services:
+  db:
+    image: 'mariadb:10.3'
+    container_name: database
+    restart: always
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: arcanea
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./docker/db/:/var/lib/mysql/

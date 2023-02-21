@@ -1,6 +1,7 @@
 import * as express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import {router} from "./api";
 
 const app = express();
 const httpServer = createServer(app);
@@ -10,17 +11,15 @@ const io = new Server(httpServer, {
         }
     }
 );
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 3000
 
-app.get('/', (req, res) => {
-  res.send('<h1>Hello world</h1>');
-});
+app.use(router)
 
 io.on('connection', (socket) => {
     console.log('user connected', socket.id);
 
     socket.on("joinRoom", rooms => {
-        io.emit('roomName', rooms) 
+        io.emit('roomName', rooms)
         socket.join(rooms.room)
     })
 
