@@ -1,4 +1,4 @@
-import {AbstractCard, AsyncAction} from "@/core/base";
+import {AbstractCard, AbstractAsyncAction} from "@/core/base";
 
 export interface AbstractWizard {
     name: string
@@ -6,6 +6,6 @@ export interface AbstractWizard {
     draft: AbstractCard[]
     hand: AbstractCard[]
     currentCard: AbstractCard | null
-    asyncCard: AsyncAction[]
+    asyncCard: AbstractAsyncAction[]
     health: number
 }

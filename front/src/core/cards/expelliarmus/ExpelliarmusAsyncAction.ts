@@ -1,8 +1,9 @@
-import {AsyncAction} from "@/core/base";
+import {AbstractAsyncAction, AsyncActionBase} from "@/core/base";
 
-export class ExpelliarmusAsyncAction implements AsyncAction {
-    turns = 1;
-    remainingTurns: number = 0;
+export class ExpelliarmusAsyncAction extends AsyncActionBase implements AbstractAsyncAction {
+    constructor() {
+        super(1);
+    }
 
     async action(): Promise<boolean> {
         return false;
