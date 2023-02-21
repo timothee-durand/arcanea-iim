@@ -1,8 +1,9 @@
-import * as express from "express";
+import express from "express";
 import {createServer} from "http";
 import {Server} from "socket.io";
 import {router} from "./api";
 import helmet from "helmet";
+// @ts-ignore
 import cors = require("cors");
 import {Duel} from "@/core/duel/Duel";
 
