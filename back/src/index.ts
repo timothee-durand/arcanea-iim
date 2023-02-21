@@ -16,17 +16,31 @@ app.get('/', (req, res) => {
   res.send('<h1>Hello world</h1>');
 });
 
-io.on('connection', (socket) => {
-    console.log('user connected', socket.id);
+let rooms = [];
 
-    socket.on("joinRoom", rooms => {
-        io.emit('roomName', rooms) 
-        socket.join(rooms.room)
+io.on('connection', (socket) => {
+    
+    socket.on("joinRoom", (idRooms, userName) => {
+        io.in(idRooms).emit('roomName', idRooms, userName) 
+        rooms.push(
+            {
+                roomsId: idRooms,
+                roomUsername: userName
+            }
+        )
+        rooms.map(rooms => {
+            if (idRooms === rooms.roomsId) {
+                    io.in(rooms.roomsId).fetchSockets()
+                } else {
+                    socket.to(rooms.roomsId).emit("some event")
+                }
+            }
+        )
     })
 
-    socket.on("message", ({room, message}) => {
-        io.emit('chatMessage', message);
-        socket.to(room).emit("message", {
+    socket.on("message", ({idRoom, message}) => {
+        io.in(idRoom).emit('chatMessage', message);
+        socket.to(idRoom).emit("message", {
             message
         })
     })
