@@ -8,6 +8,7 @@
 cd back
 pnpm i
 pnpm dev
+docker compose up
 ````
 
 The back run at `http://localhost:3000`
