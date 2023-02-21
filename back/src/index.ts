@@ -14,26 +14,45 @@ app.use("/api", router)
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-        cors: {
-            origin: true,
-        }
+    cors: {
+        origin: true,
     }
+}
 );
 const port = process.env.PORT || 3000
 
 
 
-io.on('connection', (socket) => {
-    console.log('user connected', socket.id);
+interface Room {
+    roomId: string
+    users: string[]
+}
 
-    socket.on("joinRoom", rooms => {
-        io.emit('roomName', rooms)
-        socket.join(rooms.room)
+let rooms: Room[] = [];
+
+
+io.on('connection', (socket) => {
+    socket.on("joinRoom", (idRooms: string, userName: string) => {
+        const room = rooms.find(r => {
+            return r.roomId === idRooms
+        })
+        if (!room) {
+            rooms.push(
+                {
+                    roomId: idRooms,
+                    users: [userName]
+                }
+            )
+        } else {
+            room.users.push(userName)
+        }
+        socket.join(idRooms)
+        io.in(idRooms).emit('roomName', idRooms, userName)
     })
 
-    socket.on("message", ({room, message}) => {
-        io.emit('chatMessage', message);
-        socket.to(room).emit("message", {
+    socket.on("message", ({ idRoom, message }) => {
+        io.in(idRoom).emit('chatMessage', message);
+        socket.to(idRoom).emit("message", {
             message
         })
     })
@@ -43,7 +62,7 @@ io.on('connection', (socket) => {
     })
 })
 
-httpServer.listen(port, function() {
-  console.log(`Listening on port ${port}`);
+httpServer.listen(port, function () {
+    console.log(`Listening on port ${port}`);
 });
 
