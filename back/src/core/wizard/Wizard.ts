@@ -1,5 +1,7 @@
 import {AbstractWizard} from "@/core/wizard/type";
 import {AbstractAsyncAction, AbstractCard} from "@/core/base";
+import {ApiCard} from "@/core/duel/Duel";
+import {getCardByName} from "@/core/cards/hydrater";
 
 export class Wizard implements AbstractWizard {
     name: string
@@ -10,8 +12,11 @@ export class Wizard implements AbstractWizard {
     currentCard: AbstractCard | null = null;
     health: number = 100;
 
-    constructor(name: string) {
+    constructor(name: string, apiCards: ApiCard[]) {
         this.name = name
+        this.cards = apiCards.map(apiCard => {
+            return getCardByName(apiCard.key)
+        }).filter(card => card !== undefined) as AbstractCard[];
     }
 
     takeDamage(damage: number) {

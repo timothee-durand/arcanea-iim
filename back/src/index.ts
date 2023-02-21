@@ -1,9 +1,10 @@
 import * as express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
+import {createServer} from "http";
+import {Server} from "socket.io";
 import {router} from "./api";
 import helmet from "helmet";
 import cors = require("cors");
+import {Duel} from "@/core/duel/Duel";
 
 const app = express();
 app.use(helmet());
@@ -22,6 +23,14 @@ const io = new Server(httpServer, {
 const port = process.env.PORT || 3000
 
 
+const cards = [
+    {
+        key: "expelliarmus",
+        title: "Expelliarmus",
+        description: "Expelliarmus is a spell that disarms the target.",
+        image: "https://vignette.wikia.nocookie.net/harrypotter/images/3/3e/Expelliarmus.jpg/revision/latest?cb=20170701182529",
+    }
+]
 
 interface Room {
     roomId: string
