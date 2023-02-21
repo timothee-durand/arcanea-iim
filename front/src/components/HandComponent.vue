@@ -1,5 +1,28 @@
 <template>
-    <section ref="hand"></section>
+    <section class="container">
+        <div ref="canvas"></div>
+        <section class="draft">
+            <div class="draft-box">
+                <h2>Draft</h2>
+            </div>
+        </section>
+        <section class="hand">
+            <div class="hand-box">
+                <h2>Card 1</h2>
+            </div>
+            <div class="hand-box">
+                <h2>Card 2</h2>
+            </div>
+            <div class="hand-box">
+                <h2>Card 3</h2>
+            </div>
+        </section>
+        <section class="draw">
+            <div class="draw-box">
+                <h2>Draw</h2>
+            </div>
+        </section>
+    </section>
 </template>
 <script>
     import * as THREE from 'three';
@@ -26,7 +49,7 @@
         mixins: [threeMixin],
         mounted() {
             // initialize container, target and viewport
-            this.container = this.$refs.hand;
+            this.container = this.$refs.canvas;
             this.viewport = this.setViewportSize(this.container);
             this.loader = new GLTFLoader();
 
@@ -97,12 +120,67 @@
     };
 </script>
 <style scoped>
-    section {
+    section.container {
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
         border: 1px solid red;
         height: 30vh;
+        display: flex;
+        width: 100%;
+
+    }
+    section.container > div {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 30vh;
+    }
+    .draw, .hand, .draft {
+        padding: 25px;
+        position: relative;
+    }
+    .draw-box {
+        border: 1px dashed rgba(188, 117, 36, 0.5);
+        border-radius: 10px;
+        width: 150px;
+        height: 100%;
+        text-align: center;
+        vertical-align: center;
+    }
+    .hand {
+        display: flex;
+        gap: 10px;
+        margin-left: auto;
+    }
+    .draw {
+        margin-left: auto;
+    }
+    .hand-box {
+        border: 1px dashed rgba(188, 117, 36, 0.5);
+        border-radius: 10px;
+        width: 150px;
+        height: 100%;
+        text-align: center;
+        vertical-align: center;
+    }
+    .draft-box {
+        border: 1px dashed rgba(188, 117, 36, 0.5);
+        border-radius: 10px;
+        width: 150px;
+        height: 100%;
+        text-align: center;
+        vertical-align: center;
+    }
+    .draw-box > h2 {
+        color: rgba(188, 117, 36, 0.5);
+    }
+    .hand-box > h2 {
+        color : rgba(188, 117, 36, 0.5)
+    }
+    .draft-box > h2 {
+        color: rgba(188, 117, 36, 0.5)
     }
 </style>
