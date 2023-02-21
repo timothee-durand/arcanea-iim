@@ -21,7 +21,7 @@ import { MTLLoader } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm
       //CAMERA
       const camera = new THREE.PerspectiveCamera(
         55,
-        (window.innerWidth/2) / (window.innerHeight/2),
+        (window.innerWidth) / (window.innerHeight),
         0.1,
         500
       );
@@ -62,6 +62,7 @@ import { MTLLoader } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm
         loader.load("/src/components/card.obj", (object) => {
           card = object;
           card.rotateX(Math.PI / 2);
+          card.rotateY(-Math.PI / 2);
           card.scale.set(13, 13, 13);
           scene.add(card);
         });
@@ -132,7 +133,7 @@ import { MTLLoader } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm
           scene.add(current);
         });
       }
-      createName();
+      //createName();
 
       let prevNum;
       function createNumber(number = "") {
