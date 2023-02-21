@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import HelloWorld from './components/HelloWorld.vue';
+import {getCards, getDeck, getDecks} from "@/services/arcaneaApi";
+
+// API USE EXAMPLE
+console.log(await getCards())
+console.log(await getDeck(1))
+console.log(await getDecks())
 </script>
 
 <template>
