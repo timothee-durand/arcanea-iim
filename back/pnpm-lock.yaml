@@ -2,8 +2,11 @@ lockfileVersion: 5.4
 
 specifiers:
   '@prisma/client': ^4.10.1
+  '@types/cors': ^2.8.13
   '@types/node': ^18.14.0
+  cors: ^2.8.5
   express: ^4.18.2
+  helmet: ^6.0.1
   nodemon: ^2.0.20
   prisma: ^4.10.1
   socket.io: ^4.6.0
@@ -12,7 +15,10 @@ specifiers:
 
 dependencies:
   '@prisma/client': 4.10.1_prisma@4.10.1
+  '@types/cors': 2.8.13
+  cors: 2.8.5
   express: 4.18.2
+  helmet: 6.0.1
   nodemon: 2.0.20
   socket.io: 4.6.0
   ts-node: 10.9.1_tncu2ai53lzgmizdedur7lbibe
@@ -464,6 +470,11 @@ packages:
     engines: {node: '>= 0.4.0'}
     dependencies:
       function-bind: 1.1.1
+    dev: false
+
+  /helmet/6.0.1:
+    resolution: {integrity: sha512-8wo+VdQhTMVBMCITYZaGTbE4lvlthelPYSvoyNvk4RECTmrVjMerp9RfUOQXZWLvCcAn1pKj7ZRxK4lI9Alrcw==}
+    engines: {node: '>=14.0.0'}
     dev: false
 
   /http-errors/2.0.0:
