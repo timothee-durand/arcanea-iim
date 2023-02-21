@@ -1,0 +1,1 @@
+export {AvadaKedavra} from './AvadaKedavra'
