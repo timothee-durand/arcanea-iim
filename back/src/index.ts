@@ -4,13 +4,39 @@ import { Server } from "socket.io";
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, { /* options */ });
+const io = new Server(httpServer, {
+        cors: {
+            origin: true,
+        }
+    }
+);
+const port = process.env.PORT || 8080
 
-io.on("connection", (socket) => {
-    console.log("a user connected");
-    console.log("socket", socket)
+app.get('/', (req, res) => {
+  res.send('<h1>Hello world</h1>');
 });
 
-httpServer.listen(3000);
+io.on('connection', (socket) => {
+    console.log('user connected', socket.id);
 
-console.log('App Ready')
+    socket.on("joinRoom", rooms => {
+        io.emit('roomName', rooms) 
+        socket.join(rooms.room)
+    })
+
+    socket.on("message", ({room, message}) => {
+        io.emit('chatMessage', message);
+        socket.to(room).emit("message", {
+            message
+        })
+    })
+
+    socket.on('disconnect', () => {
+        console.log("user disco")
+    })
+})
+
+httpServer.listen(port, function() {
+  console.log(`Listening on port ${port}`);
+});
+
