@@ -1,34 +1,366 @@
-<script setup lang="ts">
-import { ref } from 'vue'
+<script>
+import { ref } from 'vue';
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js";
+import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js";
+import { OBJLoader } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/OBJLoader.js";
+import { MTLLoader } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/MTLLoader.js";
 
-defineProps<{ msg: string }>()
+  
+  export default{
+    mounted(){
+      //SCENE
+      const scene = new THREE.Scene();
+      const renderer = new THREE.WebGLRenderer({
+        canvas: document.getElementById("canvas"),
+        antialias: true,
+      });
+      renderer.setClearColor(0x131313);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
 
-const count = ref(0)
+      //CAMERA
+      const camera = new THREE.PerspectiveCamera(
+        55,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        3000
+      );
+      camera.position.z = 150;
+
+      // CONTROLS
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 7;
+
+      //LIGHTS
+      const spotLight = new THREE.SpotLight(0xffffff);
+      spotLight.position.set(0, 40, 25);
+      spotLight.castShadow = true;
+      spotLight.shadow.mapSize.width = 1024;
+      spotLight.shadow.mapSize.height = 1024;
+      spotLight.shadow.camera.near = 500;
+      spotLight.shadow.camera.far = 4000;
+      spotLight.shadow.camera.fov = 70;
+      scene.add(spotLight);
+      const spotLight2 = new THREE.SpotLight(0xffffff);
+      spotLight2.position.set(0, -40, -25);
+      spotLight2.castShadow = true;
+      spotLight2.shadow.mapSize.width = 1024;
+      spotLight2.shadow.mapSize.height = 1024;
+      spotLight2.shadow.camera.near = 500;
+      spotLight2.shadow.camera.far = 4000;
+      spotLight2.shadow.camera.fov = 70;
+      scene.add(spotLight2);
+
+      // OBJECT
+      const loader = new OBJLoader();
+      const mtlLoader = new MTLLoader();
+      let card;
+      mtlLoader.load("/src/components/card.mtl", (materials) => {
+        materials.preload();
+        loader.setMaterials(materials);
+        loader.load("/src/components/card.obj", (object) => {
+          card = object;
+          card.rotateX(Math.PI / 2);
+          card.scale.set(13, 13, 13);
+          scene.add(card);
+        });
+      });
+
+      // LOAD MANAGER
+      // Load Manager
+      const manager = new THREE.LoadingManager();
+      manager.onStart = (url, itemsLoaded, itemsTotal) => {
+        document.getElementById("loader").style.display = "flex";
+      };
+
+      manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+        document.getElementById(
+          "progressLoading"
+        ).innerText = `Loading Files ... ${itemsLoaded}/${itemsTotal}`;
+      };
+
+      manager.onLoad = () => {
+        document.getElementById("loader").style.display = "none";
+      };
+
+      manager.onError = function (url) {
+        alert("There was an error loading " + url);
+      };
+
+      function selectCardColor(e) {
+        card.children[0].material = new THREE.MeshPhongMaterial({
+          color: e.target.value,
+        });
+        document.getElementById("colorPicker").value = e.target.value;
+      }
+
+      function selectTextColor(e) {
+        current.material = new THREE.MeshBasicMaterial({ color: e.target.value });
+        prevNum.material = new THREE.MeshBasicMaterial({ color: e.target.value });
+        prevExp.material = new THREE.MeshBasicMaterial({ color: e.target.value });
+        prevCvv.material = new THREE.MeshBasicMaterial({ color: e.target.value });
+        document.getElementById("textColorPicker").value = e.target.value;
+      }
+
+      function setRotation() {
+        controls.autoRotate = !controls.autoRotate;
+      }
+
+      function toggleModal() {
+        let cardInfoContainerRef =
+          document.getElementsByClassName("cardInfoContainer")[0];
+        let openModalBtnRef = document.getElementsByClassName("openModalBtn")[0];
+        if (openModalBtnRef.style.display === "none") {
+          cardInfoContainerRef.style.display = "none";
+          openModalBtnRef.style.display = "flex";
+        } else {
+          cardInfoContainerRef.style.display = "flex";
+          openModalBtnRef.style.display = "none";
+        }
+      }
+
+      const floader = new THREE.FontLoader();
+      let current;
+      function createName(name = "CARDHOLDER NAME") {
+        if (current) {
+          scene.remove(current);
+        }
+        floader.load("src/components/font.json", function (font) {
+          const geometry2 = new THREE.TextGeometry(name, {
+            font: font,
+            size: 3,
+            height: 0.5,
+            curveSegments: 21,
+            bevelEnabled: false,
+            bevelThickness: 1,
+            bevelSize: 1,
+            bevelOffset: 0,
+            bevelSegments: 10,
+          });
+          const materials2 = new THREE.MeshBasicMaterial({ color: 0xfafafa });
+          const mesh = new THREE.Mesh(geometry2, materials2);
+          mesh.position.set(-30, -15, 1);
+          current = mesh;
+          scene.add(current);
+        });
+      }
+      createName();
+
+      let prevNum;
+      function createNumber(number = "") {
+        if (prevNum) {
+          scene.remove(prevNum);
+        }
+        floader.load("./font.json", function (font) {
+          const geometry2 = new THREE.TextGeometry(number, {
+            font: font,
+            size: 3,
+            height: 0.5,
+            curveSegments: 21,
+            bevelEnabled: false,
+            bevelThickness: 1,
+            bevelSize: 1,
+            bevelOffset: 0,
+            bevelSegments: 10,
+          });
+          const materials2 = new THREE.MeshBasicMaterial({ color: 0xfafafa });
+          const mesh = new THREE.Mesh(geometry2, materials2);
+          mesh.position.set(-30, -5, 1);
+          prevNum = mesh;
+          scene.add(prevNum);
+        });
+      }
+
+      let prevExp;
+      function createDate(date = "12/12") {
+        if (prevExp) {
+          scene.remove(prevExp);
+        }
+        floader.load("./font.json", function (font) {
+          const geometry2 = new THREE.TextGeometry(date, {
+            font: font,
+            size: 3,
+            height: 0.5,
+            curveSegments: 21,
+            bevelEnabled: false,
+            bevelThickness: 1,
+            bevelSize: 1,
+            bevelOffset: 0,
+            bevelSegments: 10,
+          });
+          const materials2 = new THREE.MeshBasicMaterial({ color: 0xfafafa });
+          const mesh = new THREE.Mesh(geometry2, materials2);
+          mesh.position.set(15, -15, 1);
+          prevExp = mesh;
+          scene.add(prevExp);
+        });
+      }
+
+      let prevCvv;
+      function createCvv(date = "736") {
+        if (prevCvv) {
+          scene.remove(prevCvv);
+        }
+        floader.load("./font.json", function (font) {
+          const geometry2 = new THREE.TextGeometry(date, {
+            font: font,
+            size: 3,
+            height: 0.5,
+            curveSegments: 21,
+            bevelEnabled: false,
+            bevelThickness: 1,
+            bevelSize: 1,
+            bevelOffset: 0,
+            bevelSegments: 10,
+          });
+          const materials2 = new THREE.MeshBasicMaterial({ color: 0xfafafa });
+          const mesh = new THREE.Mesh(geometry2, materials2);
+          mesh.position.set(-15, -15, -1);
+          mesh.rotateY(Math.PI);
+          prevCvv = mesh;
+          scene.add(prevCvv);
+        });
+      }
+
+      //RENDER LOOP
+      requestAnimationFrame(render);
+      function render() {
+        controls.update();
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
+      }
+
+      window.addEventListener(
+        "resize",
+        function () {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        },
+        false
+      );
+
+      // Event Listeners
+      document.getElementById("name").addEventListener("change", (e) => {
+        // Change Card Name Model
+        createName(e.target.value);
+      });
+
+      document.getElementById("number").addEventListener("change", (e) => {
+        // Change Card number Model
+        createNumber(e.target.value);
+      });
+
+      document.getElementById("expiration").addEventListener("change", (e) => {
+        // Change Card Expiration Model
+        createDate(e.target.value);
+      });
+
+      document.getElementById("cvv").addEventListener("change", (e) => {
+        // Change Card Expiration Model
+        createCvv(e.target.value);
+      });
+
+      document
+        .getElementById("colorPicker")
+        .addEventListener("change", selectCardColor);
+
+      document
+        .getElementById("textColorPicker")
+        .addEventListener("change", selectTextColor);
+
+      document.getElementById("rotateCard").addEventListener("change", setRotation);
+
+      document.getElementById("confirm").addEventListener("click", toggleModal);
+
+      document
+        .getElementsByClassName("openModalBtn")[0]
+        .addEventListener("click", toggleModal);
+    }
+  }
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
-
-  <div class="card">
-    <button type="button" @click="count++">count is {{ count }}</button>
-    <p>
-      Edit
-      <code>components/HelloWorld.vue</code> to test HMR
-    </p>
-  </div>
-
-  <p>
-    Check out
-    <a href="https://vuejs.org/guide/quick-start.html#local" target="_blank"
-      >create-vue</a
-    >, the official Vue + Vite starter
-  </p>
-  <p>
-    Install
-    <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
-    in your IDE for a better DX
-  </p>
-  <p class="read-the-docs">Click on the Vite and Vue logos to learn more</p>
+  <img src="./loader.svg" id="loader" alt="Loader icon" />
+    <canvas id="canvas"></canvas>
+    <div class="cardInfoContainer">
+      <div class="content">
+        <h2 class="title">Card Settings</h2>
+        <div class="inputDiv">
+          <label class="label" for="Name">Name:</label>
+          <input
+            class="inputField"
+            type="text"
+            name="Name"
+            id="name"
+            placeholder="Your Full Name"
+          />
+        </div>
+        <div class="inputDiv">
+          <label class="label" for="number">Card Number:</label>
+          <input
+            class="inputField"
+            type="text"
+            name="number"
+            id="number"
+            placeholder="0000 0000 0000 0000"
+          />
+        </div>
+        <div class="inputDiv">
+          <label class="label" for="expiration">Expiration Date:</label>
+          <input
+            class="inputField"
+            type="text"
+            name="expiration"
+            id="expiration"
+            placeholder="12/12"
+          />
+        </div>
+        <div class="inputDiv">
+          <label class="label" for="expiration">CVV:</label>
+          <input
+            class="inputField"
+            type="text"
+            name="cvv"
+            id="cvv"
+            placeholder="736"
+          />
+        </div>
+        <div class="inputDiv colorDiv">
+          <label class="label name" for="colorPicker">Card color:</label>
+          <input
+            class="colorPicker"
+            type="color"
+            name="color"
+            id="colorPicker"
+            value="#791d10"
+          />
+        </div>
+        <div class="inputDiv colorDiv">
+          <label class="label name" for="textColorPicker">Text color:</label>
+          <input
+            class="colorPicker"
+            type="color"
+            name="textColorPicker"
+            id="textColorPicker"
+            value="#ffffff"
+          />
+        </div>
+        <div class="inputDiv colorDiv">
+          <label class="label name" for="textColorPicker">Rotate Card:</label>
+          <input
+            class="rotateCard"
+            type="checkbox"
+            name="rotateCard"
+            id="rotateCard"
+            checked
+          />
+        </div>
+        <button id="confirm" class="confirmBtn">Close</button>
+      </div>
+    </div>
+    <button class="openModalBtn">Edit Card</button>
 </template>
 
 <style scoped>
