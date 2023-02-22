@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import type { Socket } from "socket.io-client";
 import { inject, ref } from "vue";
+import '../styles/connexion.css'
+import Vue from 'vue';
+import cardsCascades from '../assets/cardsCascades.png'
+import arcaneaLogo from '../assets/arcaneaLogo.png'
 
 const idRoom = ref<String>("");
 const userName = ref<String>("");
@@ -21,108 +24,111 @@ const joinRoom = () => {
 
 </script>
 <template>
-    <div class="limiter">
-        <div class="container-login">
-            <div class="wrap-login100 p-t-50 p-b-90">
-                <form class="login100-form" @submit.prevent="joinRoom">
-                    <span class="login100-form-title p-b-51">CONNECT TO ROOM</span>
-                    <div class="validate-input m-b-16">
-                        <p v-if="isLogged">tu es connecté</p>
-                        <label>Room</label>
-                        <input
-                            type="text"
-                            placeholder="text"
-                            class="input-100"
-                            v-model="idRoom"
-                        />
-                        <label>User</label>
-                        <input
-                            type="text"
-                            placeholder="text"
-                            class="input-100"
-                            v-model="userName"
-                        />
-                        <button
-                            class="custom-button"
-                            type="submit" 
-                        >
-                            Create Room
-                        </button>
-                    </div>
-                </form>
+    <div  class="container">
+        <form @submit="joinRoom" class="formContainer">
+            <h1>Connexion</h1>
+            <div  class="spaceBetweenTerms"/>
+            <span class="spaceBetweenTerms">
+                <p>Connectez-vous à votre compte pour jouer</p>
+            </span>
+            <div class="formConnexion">
+                <input class="inputCustom" placeholder="PSEUDO"/>
+                <input class="inputCustom" placeholder="MOT DE PASSE"/>
+                <input type="submit"  value="CONNEXION" class="connexionButton" />
             </div>
+        </form>
+        <img class="imgCustom" :src="cardsCascades"/>
+        <div class="logoRow">
+            <img class="imgLogo" :src="arcaneaLogo"/>
         </div>
     </div>
 </template>
 <style scoped>
-    .custom-button {
-        border-radius: 10px;
+    .formContainer {
+        display: flex;
+        position: fixed;
+        left: 7%;
+        bottom: 30%;
+        display: inline;
         color: #fff;
-        background-color: #403866;
     }
-    .input-100 {
-        font-family: Ubuntu-Bold;
-        color: #403866;
-        line-height: 1.2;
+
+    .spaceBetweenTerms {
+        margin: 20px;
+    }
+
+    h1 {
+        font-family: 'BluuNext-Bold';
+        font-size: 34px;
+    }
+    
+    span {
         font-size: 18px;
-        display: block;
-        width: 100%;
-        background: 0 0;
-        height: 62px;
-        padding: 0 20px 0 38px;
+        font-family: "Poppins-ExtraLight";
     }
-    .m-b-16 {
-        margin-bottom: 16px;
-    }
-    .validate-input {
+    
+    .container {
         position: relative;
+        max-height: 100vh;
     }
-    .p-b-51 {
-        padding-bottom: 51px;
-    }
-    .login100-form-title {
-        font-family: Ubuntu-Bold;
-        font-size: 30px;
-        color: #403866;
-        line-height: 1.2;
-        text-transform: uppercase;
-        text-align: center;
+    .container::after {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: 0;
+        z-index: 1;
         width: 100%;
-        display: block;
+        height: 100%;
+        background: linear-gradient(180deg, rgba(0,0,0,0.5718662464985995) 0%, rgba(19,35,59,1) 100%);
     }
-    .login100-form {
-        width: 100%;
-    }   
-    .p-b-90 {
-        padding-bottom: 90px;  
-    }
-    .p-t-50 {
-        padding-top: 50px;
-    }
-    .wrap-login100 {
-        width: 600px;
-        background: #fff;
-        border-radius: 10px;
-        position: relative;
-    }
-    .limiter {
-        width: 100%;
+    .logoRow {
+        width : 250px;
         margin: 0 auto;
     }
-    .container-login {
+
+    .imgLogo {
+        position  : fixed;
+        display   : flex;
+        width     : 150px;
+        top       : 3%;
+        text-align: center;
+    }
+
+    .imgCustom {
+        top: -10%;
+        left: 35%;
+        position: fixed;
+        width   : 85%;
+    }
+
+    .formConnexion {
+        color: #fff;
+        width: 290px;
+    }   
+
+    .connexionButton {
+        background-color: #514A92;
+        border-radius: 50px;
+        color: #fff;
+        height: 50px;
         width: 100%;
-        min-height: 100vh;
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: -moz-box;
-        display: -ms-flexbox;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        padding: 15px;
-        background-position: center;
-        background-size: cover;
-        background-repeat: no-repeat;
+        border: none;
+        font-size: 20px;
+    }
+    .inputCustom {
+        width: 100%;
+        padding: 10px 0;
+        font-size: 16px;
+        font-family: "Poppins-Regular";
+        margin-bottom: 30px;
+        border: none;
+        border-bottom: 1px solid #fff;
+        outline: none;
+        background: transparent;
+    }
+
+    .inputCustom::-webkit-input-placeholder {
+        color: #fff;
+        font-family: "Poppins-ExtraLight";
     }
 </style>

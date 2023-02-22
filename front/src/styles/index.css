@@ -1,0 +1,28 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: "BluuNext-Bold";
+    src: url("../../public/fonts/BluuNext-Bold.otf");
+}
+
+@font-face {
+    font-family: "Poppins-ExtraLight";
+    src: url("../../public/fonts/Poppins-ExtraLight.ttf");
+}
+
+@font-face {
+    font-family: "Poppins-Regular";
+    src: url("../../public/fonts/Poppins-Regular.ttf");
+}
+
+body {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background-image: url('../assets/poudlardsGradient.png');
+}
+
