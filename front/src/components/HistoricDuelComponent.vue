@@ -64,6 +64,20 @@ export default {
     padding: 30px;
     box-sizing: border-box;
     overflow-y: scroll;
+    &::-webkit-scrollbar-thumb {
+      width: 15px;
+      background-image: linear-gradient(180deg, #e8bf58 0%, #d99922 99%);
+      box-shadow: inset 2px 2px 5px 0 rgba(#fff, 0.5);
+      border-radius: 100px;
+
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #070707;
+      border-radius: 100px;
+    }
+    &::-webkit-scrollbar {
+      width: 20px;
+    }
   }
   &__logo {
     width: 75px;
