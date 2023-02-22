@@ -3,6 +3,7 @@ import type {Socket} from "socket.io-client";
 import {inject, ref, computed, onBeforeUnmount} from "vue";
 import {useAuthStore} from "@/store/auth";
 import { useToast } from "vue-toastification";
+import {CardName} from "../../../@types/cardsName";
 
 const idRoom = ref<String>("");
 const userName = ref<String>("");
@@ -49,9 +50,9 @@ socket.on("updateRoom", (payload) => {
   console.log("updateRoom", payload)
 })
 
-function playCard(card: string) {
-  console.log("playCard", card)
-  socket.emit("playCard", store.roomId, store.user?.id, card)
+function playCard(cardName: CardName) {
+  console.log("playCard", cardName)
+  socket.emit("playCard", store.roomId, store.user?.id, cardName)
 }
 
 onBeforeUnmount(() => {

@@ -13,17 +13,17 @@ export class AttackCard extends BaseCard implements AbstractCard {
         this.damage = damage;
     }
 
-    async action({defender} : {defender: Wizard}) {
+    async action({defender, attacker} : {defender: Wizard, attacker: Wizard}) {
         defender.takeDamage(this.damage);
-        return  { action: this.getHistoryAction(defender), block : false }
+        return  { action: this.getHistoryAction(defender, attacker), block : false }
 
     }
 
 
-    getHistoryAction(defender: Wizard): HistoryAction {
+    getHistoryAction(defender: Wizard, attacker: Wizard): HistoryAction {
         return {
             player: {
-                name: defender.name,
+                name: attacker.name,
             },
             card: {
                 name: this.title,
