@@ -7,12 +7,13 @@ export const iimApi = axios.create({
     baseURL: 'https://hp-api-iim.azurewebsites.net'
 })
 
-const makeRequest = async (method: 'post', url: string, data?: any) => {
+const makeRequest = async (method: 'post', url: string, data?: any, headers?: any) => {
     try {
         const response = await iimApi.request({
             method,
             url,
-            data
+            data, 
+            headers
         })
         return response.data;
     } catch (e) {
@@ -22,9 +23,22 @@ const makeRequest = async (method: 'post', url: string, data?: any) => {
 }
 
 export const postLogin = async (data: any) => {
-        return await makeRequest('post', '/auth/log-in', {
+        return await makeRequest('post', '/auth/log-in',{
             "password": data?.password,
             "name": data?.userName
         }
+    )
+}
+
+export const postStart = async (game: string, userIds: string[], type: string, token: string) => {
+        return await makeRequest('post', 'matches/start',
+        {
+            "game": game,
+            "userIds": userIds,
+            "type": type
+        },
+        {
+            'Authorization': `Bearer ${token}`
+        } 
     )
 }
