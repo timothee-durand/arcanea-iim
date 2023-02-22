@@ -4,7 +4,8 @@ export interface HistoryAction {
     },
     card: {
         name: string,
-            type: "Attack" | "Defense" | "Utility" | "Block"
+        type: "Attack" | "Defense" | "Utility" | "Unforgivable" | "Block"
+
     },
     info: string
 }
