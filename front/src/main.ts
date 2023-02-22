@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import '../src/styles/index.css'
+import './styles/index.css'
 import App from './App.vue'
 import { Socket } from './plugins/socket'
 import { createPinia } from 'pinia'

@@ -4,7 +4,6 @@
     <HistoricDuelComponent/>
   </div>
   <HandComponent/>
-
 </template>
 
 <script setup>
@@ -19,6 +18,5 @@ import HandComponent from "@/components/HandComponent.vue";
   flex-direction: row;
   align-items: center;
   justify-content: center;
-
 }
 </style>
