@@ -1,24 +1,24 @@
 <template>
     <section class="container">
-        <div ref="canvas"></div>
+        <div class="canvas" ref="canvas"></div>
         <section class="draft">
-            <div class="draft-box">
-                <h2>Draft</h2>
+            <div class="box">
+                <img src="src/assets/img/draft.png" alt="draft">
             </div>
         </section>
         <section class="hand">
-            <div class="hand-box">
+            <div class="box">
                 <h2>Card 1</h2>
             </div>
-            <div class="hand-box">
+            <div class="box">
                 <h2>Card 2</h2>
             </div>
-            <div class="hand-box">
+            <div class="box">
                 <h2>Card 3</h2>
             </div>
         </section>
         <section class="draw">
-            <div class="draw-box">
+            <div class="box">
                 <h2>Draw</h2>
             </div>
         </section>
@@ -51,7 +51,6 @@
             // initialize container, target and viewport
             this.container = this.$refs.canvas;
             this.viewport = this.setViewportSize(this.container);
-            this.loader = new GLTFLoader();
 
             this.createScene();
         },
@@ -59,13 +58,14 @@
             createScene() {
                 window.addEventListener('resize', this.onWindowResize.bind(this));
                 this.scene = new THREE.Scene();
-                this.loadModels();
+
                 this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
                 this.renderer.setSize(this.viewport.width, this.viewport.height);
                 this.renderer.setPixelRatio(window.devicePixelRatio);
                 this.setUpCamera();
                 this.createControls();
                 this.createLight();
+                this.loadModels();
                 this.container.appendChild(this.renderer.domElement);
                 this.renderer.outputEncoding = THREE.sRGBEncoding;
                 this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -112,14 +112,18 @@
                 this.camera.position.set(0, 0, 600);
             },
             loadModels() {
-                this.loader.load('src/assets/models/card.glb', (model) => {
-                    this.scene.add(model.scene)
-                });
+                // this.loader.load('src/assets/models/card.glb', (model) => {
+                //     this.scene.add(model.scene)
+                // });
+                const geometry = new THREE.PlaneGeometry(10, 10);
+                const material = new THREE.MeshBasicMaterial({color: 0xff00ff, side: THREE.DoubleSide});
+                const plane = new THREE.Mesh(geometry, material);
+                this.scene.add(plane);
             }
         },
     };
 </script>
-<style scoped>
+<style scoped lang="scss">
     section.container {
         position: absolute;
         bottom: 0;
@@ -129,58 +133,38 @@
         height: 30vh;
         display: flex;
         width: 100%;
-
-    }
-    section.container > div {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 30vh;
-    }
-    .draw, .hand, .draft {
-        padding: 25px;
-        position: relative;
-    }
-    .draw-box {
-        border: 1px dashed rgba(188, 117, 36, 0.5);
-        border-radius: 10px;
-        width: 150px;
-        height: 100%;
-        text-align: center;
-        vertical-align: center;
-    }
-    .hand {
-        display: flex;
-        gap: 10px;
-        margin-left: auto;
-    }
-    .draw {
-        margin-left: auto;
-    }
-    .hand-box {
-        border: 1px dashed rgba(188, 117, 36, 0.5);
-        border-radius: 10px;
-        width: 150px;
-        height: 100%;
-        text-align: center;
-        vertical-align: center;
-    }
-    .draft-box {
-        border: 1px dashed rgba(188, 117, 36, 0.5);
-        border-radius: 10px;
-        width: 150px;
-        height: 100%;
-        text-align: center;
-        vertical-align: center;
-    }
-    .draw-box > h2 {
-        color: rgba(188, 117, 36, 0.5);
-    }
-    .hand-box > h2 {
-        color : rgba(188, 117, 36, 0.5)
-    }
-    .draft-box > h2 {
-        color: rgba(188, 117, 36, 0.5)
+        .canvas {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100vh;
+        }
+        .draw, .hand, .draft {
+            padding: 25px;
+            position: relative;
+        }
+        .hand {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+        .draw {
+            margin-left: auto;
+        }
+        .box {
+            border: 1px dashed rgba(188, 117, 36, 0.5);
+            border-radius: 10px;
+            width: 150px;
+            height: 100%;
+            text-align: center;
+            vertical-align: center;
+            img {
+                max-width: 100%;
+            }
+        }
+        h2 {
+            color: rgba(188, 117, 36, 0.5)
+        }
     }
 </style>
