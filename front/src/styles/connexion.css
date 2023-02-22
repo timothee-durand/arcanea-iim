@@ -1,0 +1,7 @@
+.connexionContainer {
+     position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background-image: url('../../public/assets/Poudlards.png');
+}

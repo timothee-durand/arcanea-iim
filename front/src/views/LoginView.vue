@@ -5,9 +5,12 @@ import {useToast} from "vue-toastification";
 import {useAuthStore} from "@/store/auth";
 import {useRouter} from "vue-router";
 import {GAME_ROUTE_NAME} from "@/router";
+import cardsCascades from '../assets/cardsCascades.png'
+import arcaneaLogo from '../assets/arcaneaLogo.png'
 
 const idRoom = ref<String>("");
 const userName = ref<String>("");
+const password = ref<String>("");
 const store = useAuthStore();
 const toast = useToast()
 const router = useRouter()
@@ -42,140 +45,116 @@ const joinRoom = () => {
 
 </script>
 <template>
-    <div class="container">
-        <div class="card">
-            <div class="card-image"></div>
-            <form class="card-form" @submit.prevent="joinRoom">
-                <h2>Prépares-toi au combat</h2>
-                <div class="input">
-                    <input type="text" class="input-field" v-model="userName" required/>
-                    <label class="input-label">Utilisateur</label>
-                </div>
-                <div class="input">
-                    <input type="text" class="input-field" v-model="idRoom" required/>
-                    <label class="input-label">Room</label>
-                </div>
-                <div class="action">
-                    <button class="action-button">Jouer</button>
-                </div>
-            </form>
-            <div class="card-info">
-                <p>Si tu rencontres des difficultés pour te connecter, consulte <a href="https://www.youtube.com/watch?v=BBJa32lCaaY&ab_channel=LegacyPNDA">ce lien ci-dessous.</a></p>
+     <div  class="container">
+        <form @submit="joinRoom" class="formContainer">
+            <h1>Connexion</h1>
+            <div  class="spaceBetweenTerms"/>
+            <span class="spaceBetweenTerms">
+                <p>Connectez-vous à votre compte pour jouer</p>
+            </span>
+            <div class="formConnexion">
+                <input 
+                    class="inputCustom" 
+                    placeholder="PSEUDO"
+                    v-model="userName"
+                />
+                <input 
+                    class="inputCustom" 
+                    placeholder="MOT DE PASSE"
+                    v-model="password"
+                />
+                <input 
+                    class="inputCustom" 
+                    placeholder="ROOM"
+                    v-model="idRoom"
+                />
+                <input type="submit"  value="CONNEXION" class="connexionButton" />
             </div>
+        </form>
+        <img class="imgCustom" :src="cardsCascades"/>
+        <div class="logoRow">
+            <img class="imgLogo" :src="arcaneaLogo"/>
         </div>
     </div>
 </template>
 <style scoped lang="scss">
-    img {
-        max-width: 100%;
-        display: block;
-    }
-    input {
-        appearance: none;
-        border-radius: 0;
-    }
-    h2 {
-        margin-bottom: 1rem;
-    }
-    .card {
-        margin: 2rem auto;
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        max-width: 425px;
-        background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 10px 20px 0 rgba(#999, .25);
-        padding: .75rem;
-    }
-    .card-image {
-        border-radius: 8px;
-        overflow: hidden;
-        padding-bottom: 65%;
-        background: url('../assets/img/Arcanea-logo-white.png');
-        background-repeat: no-repeat;
-        background-color: rgba(19, 35, 59, 1);
-        background-size: 25%;
-        background-position: 50% 50%;
+     .container {
         position: relative;
-    }
-    .card-heading {
-        position: absolute;
-        left: 5%;
-        top: 10%;
-        right: 10%;
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #735400;
-        line-height: 1.222;
-        small {
-            display: block;
-            font-size: .75em;
-            font-weight: 400;
-            margin-top: .25em;
-        }
-    }
-    .card-form {
-        padding: 2rem 1rem 0;
-    }
-    .input {
-        display: flex;
-        flex-direction: column-reverse;
-        position: relative;
-        padding-top: 1.5rem;
-        & + .input {
-            margin-top: 1.5rem;
-        }
-    }
-    .input-label {
-        color: #8597a3;
-        position: absolute;
-        top: 1.5rem;
-        transition: .25s ease;
-    }
-    .input-field {
-        border: 0;
-        z-index: 1;
-        background-color: transparent;
-        border-bottom: 2px solid #eeeeee;
-        font: inherit;
-        font-size: 1.125rem;
-        padding: .25rem 0;
-        &:focus, &:valid {
-            outline: 0;
-            border-bottom-color: #13233BFF;
-            & + .input-label {
-                color: #13233BFF;
-                transform: translateY(-1.5rem);
+        max-height: 100vh;
+
+        .formContainer {
+            display: flex;
+            position: fixed;
+            left: 7%;
+            bottom: 30%;
+            display: inline;
+            color: #fff;
+
+            .spaceBetweenTerms {
+                margin: 20px;
             }
+
+            h1 {
+                font-family: 'BluuNext-Bold';
+                font-size: 34px;
+            }
+            
+            span {
+                font-size: 18px;
+                font-family: "Poppins-ExtraLight";
+            }
+
+            .formConnexion {
+                color: #fff;
+                width: 290px;
+
+                  .connexionButton {
+                    background-color: #514A92;
+                    border-radius: 50px;
+                    color: #fff;
+                    height: 50px;
+                    width: 100%;
+                    border: none;
+                    font-size: 20px;
+                }
+                .inputCustom {
+                    width: 100%;
+                    padding: 10px 0;
+                    font-size: 16px;
+                    font-family: "Poppins-Regular";
+                    margin-bottom: 30px;
+                    border: none;
+                    border-bottom: 1px solid #fff;
+                    outline: none;
+                    background: transparent;
+                    color: #fff;
+                }
+
+                .inputCustom::-webkit-input-placeholder {
+                    color: #fff;
+                    font-family: "Poppins-ExtraLight";
+                }
+            }   
         }
-    }
-    .action {
-        margin-top: 2rem;
-    }
-    .action-button {
-        font: inherit;
-        font-size: 1.25rem;
-        padding: 1em;
-        width: 100%;
-        font-weight: 500;
-        background-color: #13233BFF;
-        border-radius: 6px;
-        color: #ffffff;
-        border: 0;
-        &:focus {
-            outline: 0;
+
+        .logoRow {
+            width : 250px;
+            margin: 0 auto;
         }
-    }
-    .card-info {
-        padding: 1rem 1rem;
-        text-align: center;
-        font-size: .875rem;
-        color: #8597a3;
-        a {
-            display: block;
-            color: #13233BFF;
-            text-decoration: none;
+
+        .imgLogo {
+            position  : fixed;
+            display   : flex;
+            width     : 150px;
+            top       : 3%;
+            text-align: center;
+        }
+
+        .imgCustom {
+            top: -10%;
+            left: 35%;
+            position: fixed;
+            width   : 85%;
         }
     }
 </style>
