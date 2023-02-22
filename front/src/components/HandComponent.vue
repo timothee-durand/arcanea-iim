@@ -21,8 +21,9 @@
             </div>
         </section>
         <section class="draw">
-            <div class="box">
+            <div class="draw-box box">
                 <h2>Draw</h2>
+                <img v-on:click="drawCard(1)" v-if="deck && deck.length > 0" :class="canDraw ? 'draw-box__card canDraw' : 'draw-box__card'" src="@/assets/img/card-back.png">
             </div>
           <img class="draw-box --card" src="@/assets/img/card-back.png">
         </section>
@@ -33,7 +34,6 @@
     import threeMixin from '../mixins/threeMixin';
     import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
     import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-    import {lerp} from '../utils/lerp';
 
     export default {
         name: 'HandComponent',
@@ -47,10 +47,10 @@
                 scene: null,
                 sphere: null,
                 viewport: null,
-                loader: null,
                 cardsApi: null,
                 deck: null,
                 hand: [],
+                canDraw: true,
             };
         },
         mixins: [threeMixin],
@@ -58,7 +58,6 @@
             // initialize container, target and viewport
             this.container = this.$refs.canvas;
             this.viewport = this.setViewportSize(this.container);
-            this.loader = new GLTFLoader();
             this.launchDuel();
 
             this.createScene();
@@ -92,16 +91,21 @@
 
             async launchDuel() {
                 await this.constructDeck();
-                this.drawCard(3);
+                this.drawCard(2);
+                this.canDraw = true;
                 console.log(this.hand);
                 console.log(this.deck);
             },
 
             drawCard(nbCards) {
                 //draw nbCards from deck
-                for(let i = 0; i < nbCards; i++) {
-                    this.hand.push(this.deck.pop());
+              if (this.canDraw && this.deck.length > 0 && this.hand.length < 3) {
+                for (let i = 0; i < nbCards; i++) {
+                  this.hand.push(this.deck.pop());
                 }
+                this.canDraw = false;
+              }
+
                 //emit event to update hand and deck with socket.io
 
 
@@ -110,14 +114,12 @@
             createScene() {
                 window.addEventListener('resize', this.onWindowResize.bind(this));
                 this.scene = new THREE.Scene();
-
                 this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
                 this.renderer.setSize(this.viewport.width, this.viewport.height);
                 this.renderer.setPixelRatio(window.devicePixelRatio);
                 this.setUpCamera();
                 this.createControls();
                 this.createLight();
-                this.loadModels();
                 this.container.appendChild(this.renderer.domElement);
                 this.renderer.outputEncoding = THREE.sRGBEncoding;
                 this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -163,15 +165,6 @@
                 this.camera = new THREE.PerspectiveCamera(50, this.viewport.width / this.viewport.height, 1, 1000);
                 this.camera.position.set(0, 0, 600);
             },
-            loadModels() {
-                // this.loader.load('src/assets/models/card.glb', (model) => {
-                //     this.scene.add(model.scene)
-                // });
-                const geometry = new THREE.PlaneGeometry(10, 10);
-                const material = new THREE.MeshBasicMaterial({color: 0xff00ff, side: THREE.DoubleSide});
-                const plane = new THREE.Mesh(geometry, material);
-                this.scene.add(plane);
-            }
         },
     };
 </script>
@@ -219,6 +212,18 @@
             5px 5px 15px 5px rgba(0, 0, 0, 0);
             img {
                 max-width: 100%;
+            }
+        }
+        .draw-box {
+            & .canDraw {
+                -webkit-box-shadow: #ffffff 0 -1px 4px, #ffff00 0 -2px 10px, #ff8000 0 -10px 20px, red 0 -18px 40px, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+                box-shadow: #ffffff 0 -1px 4px, #ffff00 0 -2px 10px, #ff8000 0 -10px 20px, red 0 -18px 40px, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+            }
+            &__card {
+                position: absolute;
+                top: -5px;
+                left: 0;
+                width: 100%;
             }
         }
         h2 {
