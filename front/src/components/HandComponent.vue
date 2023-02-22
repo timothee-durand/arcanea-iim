@@ -2,20 +2,21 @@
     <section class="container">
         <div class="canvas" ref="canvas"></div>
         <section class="draft">
-            <div class="box">
+            <div class="draft-box box">
+                <h2>Draft</h2>
                 <img src="src/assets/img/draft.png" alt="draft">
             </div>
         </section>
         <section class="hand">
-            <div class="box">
+            <div class="hand-box box">
                 <h2>Card 1</h2>
                 <img v-if="hand[0]" class="hand-box__card" :src="hand[0].image">
             </div>
-            <div class="box">
+            <div class="hand-box box">
                 <h2>Card 2</h2>
               <img v-if="hand[1]" class="hand-box__card" :src="hand[1].image">
             </div>
-            <div class="box">
+            <div class="hand-box box">
                 <h2>Card 3</h2>
                 <img v-if="hand[2]" class="hand-box__card" :src="hand[2].image">
             </div>
@@ -25,7 +26,6 @@
                 <h2>Draw</h2>
                 <img v-on:click="drawCard(1)" v-if="deck && deck.length > 0" :class="canDraw ? 'draw-box__card canDraw' : 'draw-box__card'" src="@/assets/img/card-back.png">
             </div>
-          <img class="draw-box --card" src="@/assets/img/card-back.png">
         </section>
     </section>
 </template>
@@ -33,7 +33,6 @@
     import * as THREE from 'three';
     import threeMixin from '../mixins/threeMixin';
     import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-    import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
     export default {
         name: 'HandComponent',
@@ -186,7 +185,6 @@
         }
         .draw, .hand, .draft {
             padding: 25px;
-            position: relative;
         }
         .hand {
             display: flex;
@@ -195,39 +193,81 @@
         }
         .draw {
             margin-left: auto;
+            position: relative;
         }
         .box {
-            border: 1px dashed rgba(188, 117, 36, 0.5);
             border-radius: 10px;
             width: 150px;
             height: calc(150px * 1.4);
-            text-align: center;
             vertical-align: center;
-            -webkit-box-shadow: 5px 5px 0px 0px #289fed, 10px 10px 0px 0px #5fb8ff, 15px 15px 0px 0px #a1d8ff, 20px 20px 0px 0px #cae6ff, 25px 25px 0px 0px #e1eeff, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+            position: relative;
+            h2 {
+                color: rgba(188, 117, 36, 0.5);
+            }
+        }
+        .draft-box {
+            border: none;
+            h2 {
+                position: absolute;
+                top: 50px;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+            img {
+                height: 100%;
+                transform: translate(-50%, -50%);
+                position: absolute;
+                top: 50%;
+                left: 50%;
+            }
+        }
+        .hand-box {
+            border: 1px dashed rgba(188, 117, 36, 0.5);
+            h2 {
+                position: absolute;
+                top: 50px;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+            &__card {
+                transform: translate(-50%, -50%);
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                height: 100%;
+            }
+        }
+        .draw-box {
             box-shadow: 2px 2px 0px 0px #494949,
             4px 4px 0px 0px #626262,
             6px 6px 0px 0px #797979,
             8px 8px 0px 0px #7a7a7a,
             10px 10px 0px 0px #a9a9a9,
             5px 5px 15px 5px rgba(0, 0, 0, 0);
-            img {
-                max-width: 100%;
-            }
-        }
-        .draw-box {
             & .canDraw {
-                -webkit-box-shadow: #ffffff 0 -1px 4px, #ffff00 0 -2px 10px, #ff8000 0 -10px 20px, red 0 -18px 40px, 5px 5px 15px 5px rgba(0, 0, 0, 0);
-                box-shadow: #ffffff 0 -1px 4px, #ffff00 0 -2px 10px, #ff8000 0 -10px 20px, red 0 -18px 40px, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+                animation: canDrawAnimation 1s ease-in-out;
+                animation-fill-mode: both;
+                @keyframes canDrawAnimation {
+                    100% {
+                        -webkit-box-shadow: #ffffff 0 -1px 4px, #ffff00 0 -2px 10px, #ff8000 0 -10px 20px, red 0 -18px 40px, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+                        box-shadow: #ffffff 0 -1px 4px, #ffff00 0 -2px 10px, #ff8000 0 -10px 20px, red 0 -18px 40px, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+                    }
+                }
+            }
+            h2 {
+                position: absolute;
+                top: 50px;
+                left: 50%;
+                transform: translate(-50%, -50%);
             }
             &__card {
+                height: 100%;
+                transform: translate(-50%, -50%);
                 position: absolute;
-                top: -5px;
-                left: 0;
-                width: 100%;
+                top: 50%;
+                left: 50%;
             }
         }
-        h2 {
-            color: rgba(188, 117, 36, 0.5)
-        }
     }
+
 </style>
