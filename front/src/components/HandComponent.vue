@@ -5,7 +5,7 @@
         <section class="draft">
             <div class="draft-box box">
                 <h2>Draft</h2>
-                <img src="src/assets/img/draft.png" alt="draft">
+                <img src="@/assets/img/draft.png" alt="draft">
             </div>
         </section>
         <section class="hand">

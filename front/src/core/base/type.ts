@@ -20,4 +20,5 @@ export interface AbstractCard extends Action {
 export interface AbstractAsyncAction extends Action {
     turns: number
     remainingTurns: number
+    passTurn: () => void
 }
