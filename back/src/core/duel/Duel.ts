@@ -33,10 +33,10 @@ export class Duel {
         this.turn = 0;
     }
 
-    addPlayer(username) {
+    addPlayer(username, userIim) {
         if(this.players.length >= 2)
             throw new Error("Room is full")
-        const newPlayer = new Wizard(username, this.cards);
+        const newPlayer = new Wizard(username, this.cards, userIim);
         this.players.push(newPlayer);
         return newPlayer
     }

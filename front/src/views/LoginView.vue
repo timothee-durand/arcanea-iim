@@ -7,6 +7,7 @@ import {useRouter} from "vue-router";
 import {GAME_ROUTE_NAME} from "@/router";
 import cardsCascades from '../assets/cardsCascades.png'
 import arcaneaLogo from '../assets/arcaneaLogo.png'
+import { postLogin } from "@/services/iimApi";
 
 const idRoom = ref<String>("");
 const userName = ref<String>("");
@@ -31,17 +32,14 @@ socket.on("joinRoom", (rooms: String, user: String) => {
     console.log("join", rooms, user)
 })
 
-
-
 socket.on("roomFull", () => {
   console.log("roomFull")
   toast.error("Room is full")
 })
 
-
 const joinRoom = () => {
     if(0 !== userName.value.length) {
-        socket.emit("joinRoom", idRoom.value, userName.value)
+        socket.emit("joinRoom", idRoom.value, userName.value, password.value)
     }
 }
 
@@ -56,12 +54,14 @@ const joinRoom = () => {
             </span>
             <div class="formConnexion">
                 <input
-                    class="inputCustom"
+                    type="text"
+                    class="inputCustom" 
                     placeholder="PSEUDO"
                     v-model="userName"
                 />
                 <input
-                    class="inputCustom"
+                    type="password"
+                    class="inputCustom" 
                     placeholder="MOT DE PASSE"
                     v-model="password"
                 />
