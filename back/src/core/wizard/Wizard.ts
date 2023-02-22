@@ -1,9 +1,10 @@
 import {getCardByName} from "../cards/hydrater";
 import {ApiCard} from "../duel/Duel";
-import {AbstractAsyncAction, AbstractCard, HistoryAction} from "../base";
+import {AbstractAsyncAction, AbstractCard} from "../base";
 import {AbstractWizard} from "./type";
 import {v4} from "uuid";
 import {UserDto} from "../../../../@types/dto";
+import {HistoryAction} from "../../../../@types/dto/HistoryAction";
 
 
 export class Wizard implements AbstractWizard {

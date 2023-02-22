@@ -1,4 +1,5 @@
-import {AbstractAsyncAction, AsyncActionBase, HistoryAction} from "../../base";
+import {AbstractAsyncAction, AsyncActionBase} from "../../base";
+import {HistoryAction} from "../../../../../@types/dto/HistoryAction";
 
 export class ExpelliarmusAsyncAction extends AsyncActionBase implements AbstractAsyncAction {
     constructor() {

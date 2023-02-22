@@ -1,7 +1,8 @@
-import {AbstractCard, BaseCard, HistoryAction} from "../../base";
+import {AbstractCard, BaseCard} from "../../base";
 import {EndolorisAsyncAction} from "./EndolorisAsyncAction";
 import {ENDOLORIS} from "../../../../../@types/cardsName";
 import {Wizard} from "../../wizard";
+import {HistoryAction} from "../../../../../@types/dto/HistoryAction";
 
 
 export class Endoloris extends BaseCard implements AbstractCard {

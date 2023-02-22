@@ -1,6 +1,7 @@
 import {AVADA_KEDAVRA, PROTEGO} from "../../../../../@types/cardsName";
-import {AbstractCard, BaseCard, HistoryAction, Order} from "../../base";
+import {AbstractCard, BaseCard, Order} from "../../base";
 import {Wizard} from "../../wizard";
+import {HistoryAction} from "../../../../../@types/dto/HistoryAction";
 
 export class Protego extends BaseCard implements AbstractCard {
     order :Order = 1;

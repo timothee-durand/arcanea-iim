@@ -1,21 +1,42 @@
 <script setup lang="ts">
 import type { Socket } from "socket.io-client";
 import { inject, ref } from "vue";
+import {useToast} from "vue-toastification";
+import {useAuthStore} from "@/store/auth";
+import {useRouter} from "vue-router";
+import {GAME_ROUTE_NAME} from "@/router";
 
 const idRoom = ref<String>("");
 const userName = ref<String>("");
-const isLogged = ref<Boolean>(false);
+const store = useAuthStore();
+const toast = useToast()
+const router = useRouter()
 
 const socket: Socket = inject("socket") as Socket;
+
+socket.on("userJoined", (payload) => {
+  console.log(payload, payload.duel.roomId, payload.userId, payload.duel)
+  store.roomId = payload.duel.roomId
+  store.user = payload.user
+  store.room = payload.duel
+  toast.success("You joined the room")
+  router.push({name: GAME_ROUTE_NAME})
+})
 
 socket.on("joinRoom", (rooms: String, user: String) => {
     console.log("join", rooms, user)
 })
 
+
+socket.on("roomFull", () => {
+  console.log("roomFull")
+  toast.error("Room is full")
+})
+
+
 const joinRoom = () => {
     if(0 !== userName.value.length) {
         socket.emit("joinRoom", idRoom.value, userName.value)
-        isLogged.value = true;
     }
 }
 
@@ -26,7 +47,6 @@ const joinRoom = () => {
             <div class="card-image"></div>
             <form class="card-form" @submit.prevent="joinRoom">
                 <h2>Prépares-toi au combat</h2>
-                <small v-if="isLogged">Cet utilisateur est déjà connecté.</small>
                 <div class="input">
                     <input type="text" class="input-field" v-model="userName" required/>
                     <label class="input-label">Utilisateur</label>

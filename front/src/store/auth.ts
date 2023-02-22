@@ -9,4 +9,9 @@ interface Store {
 
 export const useAuthStore = defineStore('auth', {
     state: () : Store => ({ user: null, roomId:null, room: null}),
+    getters: {
+        isUserLogged(state): boolean {
+            return !!state.user;
+        }
+    }
 })

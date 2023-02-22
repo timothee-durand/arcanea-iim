@@ -1,7 +1,9 @@
 import {Wizard} from "../wizard";
-import {AbstractCard, HistoryAction} from "../base";
+import {AbstractCard} from "../base";
 import {ac} from "vitest/dist/types-0373403c";
 import {RoomDto} from "../../../../@types/dto";
+import {HistoryAction} from "../../../../@types/dto/HistoryAction";
+import {CardName} from "../../../../@types/cardsName";
 
 
 
@@ -32,8 +34,8 @@ export class Duel {
     }
 
     addPlayer(username) {
-        if(this.players.length > 2)
-            throw new Error("Too many players");
+        if(this.players.length >= 2)
+            throw new Error("Room is full")
         const newPlayer = new Wizard(username, this.cards);
         this.players.push(newPlayer);
         return newPlayer
@@ -104,5 +106,19 @@ export class Duel {
             players: this.players.map(player => player.toObject()),
             turn: this.turn,
         }
+    }
+
+    get boardObject() : CardName[] {
+        return this.board.map(boardCard => boardCard.card.key)
+    }
+
+    removePlayer(userId: string) : Wizard {
+        const playerIndex = this.players.findIndex(player => player.id === userId);
+        const player = this.players.find(player => player.id === userId);
+        if(playerIndex === -1) {
+            throw new Error("Player not found")
+        }
+        this.players.splice(playerIndex, 1);
+        return player
     }
 }
