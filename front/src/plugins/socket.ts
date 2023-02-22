@@ -3,7 +3,7 @@ import type { Plugin } from "vue";
 
 export const Socket: Plugin = {
   install(app) {
-    const socket = io("http://localhost:8080");
+    const socket = io("http://localhost:3000");
 
     socket.on("connect", () => {
       console.log("Connected to socket");

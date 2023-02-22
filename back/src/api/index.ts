@@ -9,7 +9,7 @@ router.get('/cards', async (req, res) => {
         await getCards(res);
     } catch (e) {
         console.log(e)
-        res.send(500, {error: e})
+        res.send({error: e})
     }
 
 })
@@ -19,7 +19,7 @@ router.get('/decks', async (req, res) => {
         await getDecks(res);
     } catch (e) {
         console.log(e)
-        res.send(500, {error: e})
+        res.send({error: e})
     }
 })
 
@@ -28,6 +28,6 @@ router.get('/decks/:id', async (req, res) => {
         await getDeck(res, req.params.id);
     } catch (e) {
         console.log(e)
-        res.send(500, {error: e})
+        res.send({error: e})
     }
 })
