@@ -18,6 +18,11 @@
     src: url("/fonts/Poppins-Regular.ttf");
 }
 
+:root {
+    --font-body: "Poppins-Regular", sans-serif;
+    --font-title: "BluuNext-Bold", serif;
+}
+
 body {
     position: absolute;
     left: 0;
@@ -25,5 +30,10 @@ body {
     width: 100%;
     min-height: 100vh;
     background-image: url('../assets/poudlardsGradient.png');
+    font-family: var(--font-body);
+}
+
+h1, h2, h3 {
+    font-family: var(--font-title);
 }
 

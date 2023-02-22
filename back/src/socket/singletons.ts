@@ -9,3 +9,8 @@ export function findRoom(roomId:string) : Duel | undefined {
         return r.roomId === roomId
     })
 }
+
+export function deleteRoom(roomId: string) {
+    rooms = rooms.filter(r => r.roomId !== roomId)
+    console.log("delete room : ", roomId)
+}
