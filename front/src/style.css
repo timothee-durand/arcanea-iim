@@ -1,0 +1,16 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+#app {
+    background: rgb(19, 35, 59);
+    background: linear-gradient(0deg, rgba(19, 35, 59, 1) 0%, rgba(0, 0, 0, 1) 100%);
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+}
+h2 {
+    font-family: 'Bluu Next', sans-serif;
+}
