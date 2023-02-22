@@ -24,8 +24,9 @@
         <section class="draw">
             <div class="draw-box">
                 <h2>Draw</h2>
+                <img v-on:click="drawCard(1)" v-if="deck && deck.length > 0" :class="canDraw ? 'draw-box__card canDraw' : 'draw-box__card'" src="@/assets/img/card-back.png">
             </div>
-          <img class="draw-box --card" src="@/assets/img/card-back.png">
+
         </section>
     </section>
 </template>
@@ -52,6 +53,7 @@
                 cardsApi: null,
                 deck: null,
                 hand: [],
+                canDraw: true,
             };
         },
         mixins: [threeMixin],
@@ -93,16 +95,21 @@
 
             async launchDuel() {
                 await this.constructDeck();
-                this.drawCard(3);
+                this.drawCard(2);
+                this.canDraw = true;
                 console.log(this.hand);
                 console.log(this.deck);
             },
 
             drawCard(nbCards) {
                 //draw nbCards from deck
-                for(let i = 0; i < nbCards; i++) {
-                    this.hand.push(this.deck.pop());
+              if (this.canDraw && this.deck.length > 0 && this.hand.length < 3) {
+                for (let i = 0; i < nbCards; i++) {
+                  this.hand.push(this.deck.pop());
                 }
+                this.canDraw = false;
+              }
+
                 //emit event to update hand and deck with socket.io
 
 
@@ -191,24 +198,38 @@
     }
     .draw, .hand, .draft {
         padding: 25px;
-        position: relative;
+
     }
     .draw-box {
       border: 1px dashed rgba(188, 117, 36, 0.5);
       border-radius: 10px;
       width: 150px;
       height: calc(150px * 1.4);
-      bottom: 35px;
-      right: 25px;
+
       vertical-align: center;
-      position: absolute;
-      -webkit-box-shadow: 5px 5px 0px 0px #289FED, 10px 10px 0px 0px #5FB8FF, 15px 15px 0px 0px #A1D8FF, 20px 20px 0px 0px #CAE6FF, 25px 25px 0px 0px #E1EEFF, 5px 5px 15px 5px rgba(0,0,0,0);
+      position: relative;
       box-shadow: 2px 2px 0px 0px #494949,
       4px 4px 0px 0px #626262,
       6px 6px 0px 0px #797979,
       8px 8px 0px 0px #7a7a7a,
       10px 10px 0px 0px #a9a9a9,
       5px 5px 15px 5px rgba(0,0,0,0);
+      & .canDraw {
+        -webkit-box-shadow: #FFF 0 -1px 4px, #ff0 0 -2px 10px, #ff8000 0 -10px 20px, red 0 -18px 40px, 5px 5px 15px 5px rgba(0,0,0,0);
+        box-shadow: #FFF 0 -1px 4px, #ff0 0 -2px 10px, #ff8000 0 -10px 20px, red 0 -18px 40px, 5px 5px 15px 5px rgba(0,0,0,0);
+      }
+      h2 {
+        position: absolute;
+        top: 50px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      &__card{
+        position: absolute;
+        top: -5px;
+        left: 0;
+        width: 100%;
+      }
 
 
 
