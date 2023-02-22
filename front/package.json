@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "deploy-build": "pnpm i && pnpm build"
+    "deploy-build": "pnpm i && pnpm vite build"
   },
   "dependencies": {
     "@types/node": "^18.14.0",
