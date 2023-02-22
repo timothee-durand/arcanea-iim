@@ -2,7 +2,7 @@ import {Duel} from "../core/duel";
 import {findRoom, rooms, wizardsRoom} from "./singletons";
 import {Server, Socket} from "socket.io";
 import {cards} from "../cards";
-import {Wizard} from "../core/wizard";
+import {UserIim, Wizard} from "../core/wizard";
 import { postLogin } from "../services/iimApi";
 
 export async function joinRoom (io: Server, socket: Socket, idRooms: string, userName: string, password: string) {
@@ -15,7 +15,7 @@ export async function joinRoom (io: Server, socket: Socket, idRooms: string, use
     try {
         console.log("Try get user " + userName)
         const response =  await postLogin(data);
-        const userIim = {
+        const userIim : UserIim = {
             "iimId": response.user.id,
             "iimToken": response.token
         }
@@ -38,6 +38,7 @@ export async function joinRoom (io: Server, socket: Socket, idRooms: string, use
 
         }
     } catch(e) {
+        console.log(e)
         console.log('error on iim login', e?.response?.data?.message)
         socket.emit("errorLogin", e?.response?.data?.message);
     }
@@ -54,7 +55,7 @@ function emitRoomJoined(io: Server, socket: Socket, room: Duel, user: Wizard) {
 
 }
 
-function createRoom(roomId:string, username:string, userIim) : { newRoom: Duel, newPlayer: Wizard } {
+function createRoom(roomId:string, username:string, userIim : UserIim) : { newRoom: Duel, newPlayer: Wizard } {
     const newRoom = new Duel(roomId, cards)
     const newPlayer = newRoom.addPlayer(username, userIim)
     rooms.push(newRoom)

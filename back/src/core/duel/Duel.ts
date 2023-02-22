@@ -1,4 +1,4 @@
-import {Wizard} from "../wizard";
+import {UserIim, Wizard} from "../wizard";
 import {AbstractCard} from "../base";
 import {RoomDto} from "../../../../@types/dto";
 import {HistoryAction} from "../../../../@types/dto/HistoryAction";
@@ -33,7 +33,7 @@ export class Duel {
         this.turn = 0;
     }
 
-    addPlayer(username, userIim) {
+    addPlayer(username, userIim: UserIim) {
         if(this.players.length >= 2)
             throw new Error("Room is full")
         const newPlayer = new Wizard(username, this.cards, userIim);

@@ -9,3 +9,8 @@ export interface AbstractWizard {
     asyncCard: AbstractAsyncAction[]
     health: number
 }
+
+export interface UserIim {
+    iimId: string
+    iimToken: string
+}
