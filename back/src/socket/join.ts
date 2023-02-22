@@ -4,6 +4,7 @@ import {Server, Socket} from "socket.io";
 import {cards} from "../cards";
 import {Wizard} from "../core/wizard";
 import { postLogin } from "../services/iimApi";
+import { postStart } from "../services/iimApi";
 
 export async function joinRoom (io: Server, socket: Socket, idRooms: string, userName: string, password: string) {
     const room = findRoom(idRooms)
@@ -29,6 +30,7 @@ export async function joinRoom (io: Server, socket: Socket, idRooms: string, use
             try {
                 const newPlayer = room.addPlayer(userName, userIim)
                 wizardsRoom[newPlayer.id] = idRooms
+                postStart("arcaneaIim", room.userPlayerIimId, "1v1", response.token)
                 socket.join(idRooms)
                 emitRoomJoined(io,socket, room, newPlayer)
             } catch (e) {

@@ -151,4 +151,9 @@ export class Duel {
         this.players.splice(playerIndex, 1);
         return player
     }
+
+    get userPlayerIimId():string[] {
+        //@ts-ignore
+        return this.players.map(players => players.userIim.iimId)
+    }
 }
