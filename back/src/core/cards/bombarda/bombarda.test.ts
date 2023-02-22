@@ -1,21 +1,21 @@
 import {describe,beforeEach, expect, it} from 'vitest';
-import {Incendio} from "./Incendio";
+import {Bombarda} from "./bombarda";
 import {Wizard} from "../../wizard";
 import {INCENDIO} from "../../../../../@types/cardsName";
 import {cards} from "../../../cards";
 
-describe('incendio', function () {
-    let incendio: Incendio;
+describe('bombarda', function () {
+    let incendio: Bombarda;
     let defender: Wizard
     let attacker: Wizard
     beforeEach(() => {
-        incendio = new Incendio(INCENDIO);
+        incendio = new Bombarda(INCENDIO);
         defender = new Wizard('defender', cards, {iimId :'', iimToken : ''});
         attacker = new Wizard('attacker', cards, {iimId :'', iimToken : ''});
     })
 
-    it('should inflict 15 damage', async () => {
+    it('should inflict 20 damage', async () => {
         await incendio.action({defender, attacker});
-        expect(defender.health).toBe(85);
+        expect(defender.health).toBe(75);
     })
 });

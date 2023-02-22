@@ -1,7 +1,7 @@
 import {getCardByName} from "../cards/hydrater";
 import {ApiCard} from "../duel/Duel";
 import {AbstractAsyncAction, AbstractCard} from "../base";
-import {AbstractWizard} from "./type";
+import {AbstractWizard, UserIim} from "./type";
 import {v4} from "uuid";
 import {UserDto} from "../../../../@types/dto";
 import {HistoryAction} from "../../../../@types/dto/HistoryAction";
@@ -18,9 +18,9 @@ export class Wizard implements AbstractWizard {
     currentCard: AbstractCard | null = null;
     health: number = 100;
     isBlockedNextTurn = false;
-    userIim: object  = {};
+    userIim: UserIim;
 
-    constructor(name: string, apiCards: ApiCard[], userIim: object) {
+    constructor(name: string, apiCards: ApiCard[], userIim: UserIim) {
         this.id = v4()
         this.name = name
         this.userIim = userIim
