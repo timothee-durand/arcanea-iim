@@ -42,10 +42,14 @@ let player2 = computed(() => {
 </template>
 
 <style scoped lang="scss">
+body {
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+}
 .duel-container {
   color: white;
   width: 100%;
   height: 70vh;
+  box-sizing: border-box;
   background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),url(@/assets/img/plate.png)
 }
 

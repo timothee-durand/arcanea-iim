@@ -214,10 +214,7 @@
 <style scoped lang="scss">
 
     section.container {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
+
         height: 30vh;
         display: flex;
         width: 100%;
