@@ -21,6 +21,7 @@ let player2 = computed(() => {
 </script>
 
 <template>
+  <b class="roomName">{{ store.roomId }}</b>
   <div class="duel-container">
     <div class="duel-player">
       <p class="duel-player__name">{{player1.name}}</p>
@@ -42,8 +43,17 @@ let player2 = computed(() => {
 </template>
 
 <style scoped lang="scss">
-body {
-  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+.roomName {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  z-index: 10;
+  position: absolute;
+  top: 20px;
+  left: 20px;
 }
 .duel-container {
   color: white;

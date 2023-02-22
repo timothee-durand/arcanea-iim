@@ -89,7 +89,7 @@
 
             playCard(playedCard) {
                 this.hand = this.hand.filter(card => card !== playedCard);
-                this.canDraw = true;
+                this.canDraw = false;
 
                 this.socket.emit("playCard",
                     this.authStore.room.roomId,
@@ -101,6 +101,7 @@
             updateDuel(payload) {
               console.log(payload)
               this.authStore.room.players = payload.players;
+              this.canDraw = true;
 
             },
             showCard(event) {
