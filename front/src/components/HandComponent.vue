@@ -21,6 +21,7 @@
             <div class="draw-box">
                 <h2>Draw</h2>
             </div>
+          <img class="draw-box --card" src="@/assets/img/card-back.png">
         </section>
     </section>
 </template>
@@ -119,13 +120,12 @@
         },
     };
 </script>
-<style scoped>
+<style scoped lang="scss">
     section.container {
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
-        border: 1px solid red;
         height: 30vh;
         display: flex;
         width: 100%;
@@ -143,12 +143,24 @@
         position: relative;
     }
     .draw-box {
-        border: 1px dashed rgba(188, 117, 36, 0.5);
-        border-radius: 10px;
-        width: 150px;
-        height: 100%;
-        text-align: center;
-        vertical-align: center;
+      border: 1px dashed rgba(188, 117, 36, 0.5);
+      border-radius: 10px;
+      width: 150px;
+      height: calc(150px * 1.4);
+      bottom: 35px;
+      right: 25px;
+      vertical-align: center;
+      position: absolute;
+      -webkit-box-shadow: 5px 5px 0px 0px #289FED, 10px 10px 0px 0px #5FB8FF, 15px 15px 0px 0px #A1D8FF, 20px 20px 0px 0px #CAE6FF, 25px 25px 0px 0px #E1EEFF, 5px 5px 15px 5px rgba(0,0,0,0);
+      box-shadow: 2px 2px 0px 0px #494949,
+      4px 4px 0px 0px #626262,
+      6px 6px 0px 0px #797979,
+      8px 8px 0px 0px #7a7a7a,
+      10px 10px 0px 0px #a9a9a9,
+      5px 5px 15px 5px rgba(0,0,0,0);
+
+
+
     }
     .hand {
         display: flex;
@@ -157,12 +169,13 @@
     }
     .draw {
         margin-left: auto;
+        position: relative;
     }
     .hand-box {
         border: 1px dashed rgba(188, 117, 36, 0.5);
         border-radius: 10px;
         width: 150px;
-        height: 100%;
+        height: calc(150px * 1.4);
         text-align: center;
         vertical-align: center;
     }
@@ -170,7 +183,7 @@
         border: 1px dashed rgba(188, 117, 36, 0.5);
         border-radius: 10px;
         width: 150px;
-        height: 100%;
+        height: calc(150px * 1.4);
         text-align: center;
         vertical-align: center;
     }
@@ -183,4 +196,6 @@
     .draft-box > h2 {
         color: rgba(188, 117, 36, 0.5)
     }
+
+
 </style>
