@@ -1,0 +1,1 @@
+export {VulneraSanentur} from './VulneraSanentur'

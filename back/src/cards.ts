@@ -6,7 +6,7 @@ import {
     EXPELLIARMUS,
     INCENDIO, PETRIFICUS_TOTALUS,
     PROTEGO,
-    SECTUM_SEMPRA, STUPEFIX
+    SECTUM_SEMPRA, STUPEFIX, VULNERA_SANENTUR
 } from "../../@types/cardsName";
 import {Diffindo} from "./core/cards/diffindo";
 
@@ -50,25 +50,21 @@ export const cards = [
     {
         key: BOMBARDA,
         title:"Bombarda",
-        description: "Expelliarmus is a spell that disarms the target.",
-        image: "https://vignette.wikia.nocookie.net/harrypotter/images/3/3e/Expelliarmus.jpg/revision/latest?cb=20170701182529",
     },
     {
         key: SECTUM_SEMPRA,
         title:"Sectum Sempra",
-        description: "Expelliarmus is a spell that disarms the target.",
-        image: "https://vignette.wikia.nocookie.net/harrypotter/images/3/3e/Expelliarmus.jpg/revision/latest?cb=20170701182529",
     },
     {
         key: STUPEFIX,
         title:"Stupefix",
-        description: "Expelliarmus is a spell that disarms the target.",
-        image: "https://vignette.wikia.nocookie.net/harrypotter/images/3/3e/Expelliarmus.jpg/revision/latest?cb=20170701182529",
     },
     {
         key: PETRIFICUS_TOTALUS,
         title:"Petrificus Totalus",
-        description: "Expelliarmus is a spell that disarms the target.",
-        image: "https://vignette.wikia.nocookie.net/harrypotter/images/3/3e/Expelliarmus.jpg/revision/latest?cb=20170701182529",
+    },
+    {
+        key: VULNERA_SANENTUR,
+        title:"Vulnera Sanentur",
     }
 ]
