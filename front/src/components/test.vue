@@ -13,12 +13,17 @@ const store = useAuthStore();
 
 const socket: Socket = inject("socket") as Socket;
 
-socket.on("userJoined", (payload) => {
-  console.log(payload, payload.duel.roomId, payload.userId, payload.duel)
+socket.on("roomJoined", (payload) => {
+  console.log(payload, payload.duel.roomId, payload.duel)
   store.roomId = payload.duel.roomId
   store.user = payload.user
   store.room = payload.duel
   toast.success("You joined the room")
+})
+
+socket.on("endDuel", (payload: object) => {
+  console.log("endDuel", payload)
+  toast.success("You won the duel")
 })
 
 const joinRoom = () => {

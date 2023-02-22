@@ -17,8 +17,7 @@ const router = useRouter()
 
 const socket: Socket = inject("socket") as Socket;
 
-socket.on("userJoined", (payload) => {
-  console.log(payload, payload.duel.roomId, payload.userId, payload.duel)
+socket.on("roomJoined", (payload) => {
   store.roomId = payload.duel.roomId
   store.user = payload.user
   store.room = payload.duel
@@ -26,9 +25,12 @@ socket.on("userJoined", (payload) => {
   router.push({name: GAME_ROUTE_NAME})
 })
 
+
+
 socket.on("joinRoom", (rooms: String, user: String) => {
     console.log("join", rooms, user)
 })
+
 
 
 socket.on("roomFull", () => {
@@ -53,18 +55,18 @@ const joinRoom = () => {
                 <p>Connectez-vous à votre compte pour jouer</p>
             </span>
             <div class="formConnexion">
-                <input 
-                    class="inputCustom" 
+                <input
+                    class="inputCustom"
                     placeholder="PSEUDO"
                     v-model="userName"
                 />
-                <input 
-                    class="inputCustom" 
+                <input
+                    class="inputCustom"
                     placeholder="MOT DE PASSE"
                     v-model="password"
                 />
-                <input 
-                    class="inputCustom" 
+                <input
+                    class="inputCustom"
                     placeholder="ROOM"
                     v-model="idRoom"
                 />
@@ -98,7 +100,7 @@ const joinRoom = () => {
                 font-family: 'BluuNext-Bold';
                 font-size: 34px;
             }
-            
+
             span {
                 font-size: 18px;
                 font-family: "Poppins-ExtraLight";
@@ -134,7 +136,7 @@ const joinRoom = () => {
                     color: #fff;
                     font-family: "Poppins-ExtraLight";
                 }
-            }   
+            }
         }
 
         .logoRow {
