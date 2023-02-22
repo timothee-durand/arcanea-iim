@@ -4,7 +4,7 @@ import {
     DIFFINDO,
     ENDOLORIS,
     EXPELLIARMUS,
-    INCENDIO,
+    INCENDIO, PETRIFICUS_TOTALUS,
     PROTEGO,
     SECTUM_SEMPRA, STUPEFIX
 } from "../../@types/cardsName";
@@ -62,6 +62,12 @@ export const cards = [
     {
         key: STUPEFIX,
         title:"Stupefix",
+        description: "Expelliarmus is a spell that disarms the target.",
+        image: "https://vignette.wikia.nocookie.net/harrypotter/images/3/3e/Expelliarmus.jpg/revision/latest?cb=20170701182529",
+    },
+    {
+        key: PETRIFICUS_TOTALUS,
+        title:"Petrificus Totalus",
         description: "Expelliarmus is a spell that disarms the target.",
         image: "https://vignette.wikia.nocookie.net/harrypotter/images/3/3e/Expelliarmus.jpg/revision/latest?cb=20170701182529",
     }

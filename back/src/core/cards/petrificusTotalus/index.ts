@@ -1,0 +1,1 @@
+export {PetrificusTotalus} from "./PetrificusTotalus"
