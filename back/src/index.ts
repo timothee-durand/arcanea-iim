@@ -6,8 +6,7 @@ import helmet from "helmet";
 // @ts-ignore
 import cors = require("cors");
 import * as express from "express";
-import {joinRoom} from "./socket";
-import {playCard} from "./socket/play";
+import {joinRoom, leaveRoom,playCard} from "./socket";
 
 const app = express();
 app.use(helmet());
@@ -35,16 +34,13 @@ io.on('connection', (socket) => {
         joinRoom(io, socket, roomId, username)
     })
 
-    socket.on("playCard", (roomId, userId, cardName) => {
+    socket.on("playCard", async (roomId, userId, cardName) => {
         console.log(`${cardName} try added to board by ${userId}`)
-        playCard(io, socket, roomId, userId, cardName)
+        await playCard(io, socket, roomId, userId, cardName)
     })
-
-    socket.on("message", ({ idRoom, message }) => {
-        io.in(idRoom).emit('chatMessage', message);
-        socket.to(idRoom).emit("message", {
-            message
-        })
+    socket.on("leaveRoom", async (roomId, userId) => {
+        await leaveRoom(io, socket, roomId, userId)
+        console.log(`${userId} leave  ${roomId}`)
     })
 
     socket.on('disconnect', () => {

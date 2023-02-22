@@ -1,12 +1,14 @@
 import {describe,beforeEach, expect, it} from 'vitest';
-import {Wizard} from "@/core/wizard/Wizard";
-import {ExampleCard} from "@/core/cards/exampleCard/ExampleCard";
+import {ExampleCard} from "./ExampleCard";
+import {Wizard} from "../../wizard";
+import {cards} from "../../../cards";
+
 describe('exemple', function () {
     let exampleCard: ExampleCard;
     let defender: Wizard
     beforeEach(() => {
         exampleCard = new ExampleCard();
-        defender = new Wizard('defender');
+        defender = new Wizard('defender', cards);
     })
     it('should return false', async () => {
         const result = await exampleCard.action({defender});

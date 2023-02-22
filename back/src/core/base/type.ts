@@ -1,19 +1,11 @@
 import {Wizard} from "../wizard";
 import {CardName} from "../../../../@types/cardsName";
+import {HistoryAction} from "../../../../@types/dto/HistoryAction";
 
 
 export type Order = 0 | 1 | 2
 
-export interface HistoryAction {
-    player: {
-        name: string,
-    },
-    card: {
-        name: string,
-            type: "Attack" | "Defense" | "Utility"
-    },
-    info: string
-}
+
 
 interface Action {
     action: (object : {attacker: Wizard, defender: Wizard}) => Promise<{ action : HistoryAction, block : boolean }>

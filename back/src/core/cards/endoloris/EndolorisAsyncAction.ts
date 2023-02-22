@@ -1,5 +1,5 @@
-import {AbstractAsyncAction, AsyncActionBase, HistoryAction} from "../../base";
-import {Wizard} from "../../wizard";
+import {AbstractAsyncAction, AsyncActionBase} from "../../base";
+import {HistoryAction} from "../../../../../@types/dto/HistoryAction";
 
 
 export class EndolorisAsyncAction extends AsyncActionBase implements AbstractAsyncAction {

@@ -2,15 +2,17 @@ import {describe,beforeEach, expect, it} from 'vitest';
 import {Endoloris} from "./Endoloris";
 import {EndolorisAsyncAction} from "./EndolorisAsyncAction";
 import {Wizard} from "../../wizard";
+import {cards} from "../../../cards";
+import {ENDOLORIS} from "../../../../../@types/cardsName";
 
 describe('endoloris', function () {
     let endoloris: Endoloris;
     let defender: Wizard
     let attacker: Wizard
     beforeEach(() => {
-        endoloris = new Endoloris();
-        defender = new Wizard('defender');
-        attacker = new Wizard('attacker');
+        endoloris = new Endoloris(ENDOLORIS);
+        defender = new Wizard('defender', cards);
+        attacker = new Wizard('attacker', cards);
     })
     it('should return true', async () => {
         const result = await endoloris.action({defender});

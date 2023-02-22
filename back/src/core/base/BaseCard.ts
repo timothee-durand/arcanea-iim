@@ -1,6 +1,7 @@
-import {AbstractCard, HistoryAction, Order} from "./type";
+import {AbstractCard, Order} from "./type";
 import {Wizard} from "../wizard";
 import {CardName} from "../../../../@types/cardsName";
+import {HistoryAction} from "../../../../@types/dto/HistoryAction";
 
 export class BaseCard implements AbstractCard {
     key: CardName;
