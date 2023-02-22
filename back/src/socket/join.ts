@@ -10,13 +10,13 @@ export function joinRoom (io: Server, socket: Socket, idRooms: string, userName:
         const {newRoom, newPlayer} = createRoom(idRooms, userName)
         wizardsRoom[newPlayer.id] = idRooms
         socket.join(idRooms)
-        emitRoomJoined(io, newRoom, newPlayer)
+        emitRoomJoined(io, socket, newRoom, newPlayer)
     } else {
         try {
             const newPlayer = room.addPlayer(userName)
             wizardsRoom[newPlayer.id] = idRooms
             socket.join(idRooms)
-            emitRoomJoined(io, room, newPlayer)
+            emitRoomJoined(io, socket, room, newPlayer)
         } catch (e) {
             console.log(e)
             socket.emit('roomFull')
@@ -24,8 +24,9 @@ export function joinRoom (io: Server, socket: Socket, idRooms: string, userName:
     }
 }
 
-function emitRoomJoined(io: Server, room: Duel, user: Wizard) {
+function emitRoomJoined(io: Server, socket: Socket, room: Duel, user: Wizard) {
     console.log(`${user.id} (${user.name}) joined ${room.roomId}`)
+    socket.emit("roomJoined", {duel : room.toObject, user: user.toObject()})
     io.in(room.roomId).emit("userJoined", {duel : room.toObject, user: user.toObject()})
 }
 

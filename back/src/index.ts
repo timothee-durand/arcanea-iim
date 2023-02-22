@@ -38,6 +38,7 @@ io.on('connection', (socket) => {
         console.log(`${cardName} try added to board by ${userId}`)
         await playCard(io, socket, roomId, userId, cardName)
     })
+
     socket.on("leaveRoom", async (roomId, userId) => {
         await leaveRoom(io, socket, roomId, userId)
         console.log(`${userId} leave  ${roomId}`)
