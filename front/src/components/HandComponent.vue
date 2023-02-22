@@ -84,7 +84,7 @@
         },
         methods: {
            updateHistoric(payload) {
-             console.log(payload);
+             this.canDraw = true;
            },
 
             playCard(playedCard) {
@@ -101,7 +101,7 @@
             updateDuel(payload) {
               console.log(payload)
               this.authStore.room.players = payload.players;
-              this.canDraw = true;
+
 
             },
             showCard(event) {

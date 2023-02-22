@@ -21,7 +21,7 @@ export class Endoloris extends BaseCard implements AbstractCard {
                 },
                 card: {
                     name: this.title,
-                    type: "Attack"
+                    type: "Unforgivable"
                 },
                 info: `${defender.name} has been attacked by ${this.title} and take ${this.damage} damage`
             },

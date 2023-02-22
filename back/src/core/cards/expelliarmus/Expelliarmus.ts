@@ -19,7 +19,7 @@ export class Expelliarmus extends BaseCard implements AbstractCard {
                 },
                 card: {
                     name: this.title,
-                    type: "Attack"
+                    type: "Utility"
                 },
                 info: `${defender.name} will be blocked by ${this.title} next turn`
             },

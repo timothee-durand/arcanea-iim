@@ -25,7 +25,7 @@ export class AvadaKedavra extends BaseCard implements AbstractCard {
             },
             card: {
                 name: this.title,
-                type: "Attack"
+                type: "Unforgivable"
             },
             info: blocked ? `${this.title} has no effect on ${defender.name} because it has more than 15hp` :`${defender.name} has been attacked by ${this.title} and take 100 damage`
         }
