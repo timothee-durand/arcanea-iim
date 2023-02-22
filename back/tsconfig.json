@@ -1,2 +1,11 @@
 {
+  "compilerOptions": {
+    "target": "ESNext",
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "lib": [
+      "ESNext"
+    ]
+  },
+"include": ["src/**/*", "vitest.config.ts"],
 }

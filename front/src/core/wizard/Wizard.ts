@@ -1,12 +1,12 @@
 import {AbstractWizard} from "@/core/wizard/type";
-import {AbstractCard, AbstractAsyncAction, AsyncActionBase} from "@/core/base";
+import {AbstractAsyncAction, AbstractCard} from "@/core/base";
 
 export class Wizard implements AbstractWizard {
     name: string
     cards: AbstractCard[] = [];
     draft: AbstractCard[] = [];
     hand: AbstractCard[] = [];
-    asyncCard: AsyncActionBase[] = [];
+    asyncCard: AbstractAsyncAction[] = [];
     currentCard: AbstractCard | null = null;
     health: number = 100;
 
@@ -18,7 +18,7 @@ export class Wizard implements AbstractWizard {
         this.health -= damage;
     }
 
-    addAsyncAction(asyncAction: AsyncActionBase) {
+    addAsyncAction(asyncAction: AbstractAsyncAction) {
         this.asyncCard.push(asyncAction);
     }
 

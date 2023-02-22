@@ -1,9 +1,12 @@
-import * as express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
+
+import {createServer} from "http";
+import {Server} from "socket.io";
 import {router} from "./api";
 import helmet from "helmet";
-import cors = require("cors");
+// @ts-ignore
+const cors = require("cors");
+const express = require("express");
+import {joinRoom, leaveRoom,playCard} from "./socket";
 
 const app = express();
 app.use(helmet());
@@ -14,28 +17,30 @@ app.use("/api", router)
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-        cors: {
-            origin: true,
-        }
+    cors: {
+        origin: true,
     }
+}
 );
 const port = process.env.PORT || 3000
 
 
 
-io.on('connection', (socket) => {
-    console.log('user connected', socket.id);
 
-    socket.on("joinRoom", rooms => {
-        io.emit('roomName', rooms)
-        socket.join(rooms.room)
+
+
+io.on('connection', (socket) => {
+    socket.on("joinRoom", (roomId, username) => {
+        joinRoom(io, socket, roomId, username)
     })
 
-    socket.on("message", ({room, message}) => {
-        io.emit('chatMessage', message);
-        socket.to(room).emit("message", {
-            message
-        })
+    socket.on("playCard", async (roomId, userId, cardName) => {
+        console.log(`${cardName} try added to board by ${userId}`)
+        await playCard(io, socket, roomId, userId, cardName)
+    })
+    socket.on("leaveRoom", async (roomId, userId) => {
+        await leaveRoom(io, socket, roomId, userId)
+        console.log(`${userId} leave  ${roomId}`)
     })
 
     socket.on('disconnect', () => {
@@ -43,7 +48,7 @@ io.on('connection', (socket) => {
     })
 })
 
-httpServer.listen(port, function() {
-  console.log(`Listening on port ${port}`);
+httpServer.listen(port, function () {
+    console.log(`Listening on port ${port}`);
 });
 

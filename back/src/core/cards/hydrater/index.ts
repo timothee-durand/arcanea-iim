@@ -1,0 +1,1 @@
+export { getCardByName} from './cardsMap';
