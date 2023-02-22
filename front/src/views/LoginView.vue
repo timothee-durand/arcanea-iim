@@ -27,6 +27,11 @@ socket.on("roomJoined", (payload) => {
 })
 
 
+socket.on("errorLogin", (error:string) => {
+  console.log("errorLogin", error)
+  toast.error(error)
+})
+
 
 socket.on("joinRoom", (rooms: String, user: String) => {
     console.log("join", rooms, user)
@@ -55,13 +60,13 @@ const joinRoom = () => {
             <div class="formConnexion">
                 <input
                     type="text"
-                    class="inputCustom" 
+                    class="inputCustom"
                     placeholder="PSEUDO"
                     v-model="userName"
                 />
                 <input
                     type="password"
-                    class="inputCustom" 
+                    class="inputCustom"
                     placeholder="MOT DE PASSE"
                     v-model="password"
                 />

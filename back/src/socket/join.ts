@@ -13,23 +13,24 @@ export async function joinRoom (io: Server, socket: Socket, idRooms: string, use
     }
 
     try {
+        console.log("Try get user " + userName)
         const response =  await postLogin(data);
         const userIim = {
             "iimId": response.user.id,
             "iimToken": response.token
         }
-        socket.emit("login work")    
+        console.log("Get user ", userIim)
     if (!room) {
             const { newRoom, newPlayer } = createRoom(idRooms, userName, userIim)
             wizardsRoom[newPlayer.id] = idRooms
             socket.join(idRooms)
-            emitRoomJoined(io, newRoom, newPlayer)
+            emitRoomJoined(io, socket, newRoom, newPlayer)
         } else {
             try {
                 const newPlayer = room.addPlayer(userName, userIim)
                 wizardsRoom[newPlayer.id] = idRooms
                 socket.join(idRooms)
-                emitRoomJoined(io, room, newPlayer)
+                emitRoomJoined(io,socket, room, newPlayer)
             } catch (e) {
                 console.log(e)
                 socket.emit('roomFull')
@@ -37,9 +38,10 @@ export async function joinRoom (io: Server, socket: Socket, idRooms: string, use
 
         }
     } catch(e) {
-        socket.emit("errorLogin", e);
+        console.log('error on iim login', e?.response?.data?.message)
+        socket.emit("errorLogin", e?.response?.data?.message);
     }
- 
+
 
 }
 

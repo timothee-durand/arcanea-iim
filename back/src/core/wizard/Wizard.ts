@@ -72,8 +72,7 @@ export class Wizard implements AbstractWizard {
             draft: this.draft.map(card => card.key),
             hand: this.hand.map(card => card.key),
             currentCard: this.currentCard?.key,
-            health: this.health,
-            userIim: this.userIim
+            health: this.health
         }
     }
 }
