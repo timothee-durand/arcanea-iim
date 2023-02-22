@@ -1,30 +1,36 @@
-<script setup lang="ts">
-import { ref } from 'vue'
+<script>
+import {inject, ref} from 'vue'
+import {Socket} from "socket.io-client";
 
-
-let historic = {
-  1: {
-    player: {
-        name: "Player 1",
-    },
-    card: {
-      name: "Fireball",
-      type: "Attack",
-    },
-    info: "Player inflict 10 damage to the enemy"
+export default {
+  name: "HistoricDuelComponent",
+  data() {
+    return {
+      historic: [],
+      socket: inject("socket")
+    };
   },
-  2: {
-    player: {
-      name: "Player 2",
-    },
-    card: {
-      name: "Lumos",
-      type: "Utility",
-    },
-    info: "Player heal 10 HP to the enemy"
+  mounted() {
+
+    this.socket.on("pushActions", (payload) => {
+      this.updateHistoric(payload);
+    })
+
   },
 
+  methods: {
+    updateHistoric(payload) {
+      payload.map((item, index) => {
+        this.historic.push(item);
+      })
+    }
+  },
 }
+
+
+
+
+
 </script>
 
 <template>

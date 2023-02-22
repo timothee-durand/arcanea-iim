@@ -1,9 +1,12 @@
 <template>
-  <div class="app-top">
-    <DuelComponent/>
-    <HistoricDuelComponent/>
+  <div class="app-duel">
+
+    <div class="app-top">
+      <DuelComponent/>
+      <HistoricDuelComponent/>
+    </div>
+    <HandComponent/>
   </div>
-  <HandComponent/>
 </template>
 
 <script setup>
@@ -18,5 +21,9 @@ import HandComponent from "@/components/HandComponent.vue";
   flex-direction: row;
   align-items: center;
   justify-content: center;
+}
+
+.app-duel {
+  background: linear-gradient(rgba(0,0,0,1), rgba(0,0,0,1),rgba(19,35,59,1));
 }
 </style>

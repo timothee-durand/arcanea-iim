@@ -1,10 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import {computed, ref} from 'vue'
 import {Wizard} from "@/core/wizard";
+import {useAuthStore} from "@/store/auth";
 
-let player1: Wizard = new Wizard("Player 1");
-let player2: Wizard = new Wizard("Player 2");
-player2.health = 50;
+const store = useAuthStore();
+
+let player1 = computed(() => {
+  if(store.room?.players[0].id === store.user?.id) {
+    return store.room?.players[0] as Wizard;
+  } else {
+    return store.room?.players[1] as Wizard;
+  }
+});
+let player2 = computed(() => {
+  return store.room.players.find(player => player.id !== store.user?.id) as Wizard;
+});
+
+
+
 </script>
 
 <template>
@@ -12,15 +25,16 @@ player2.health = 50;
     <div class="duel-player">
       <p class="duel-player__name">{{player1.name}}</p>
       <div class="duel-player-healthBar">
-        <progress class="progressplayer" :value="player1.health" max="100"></progress><span class="duel-player__life">{{player1.health}}/100 HP</span>
+        <progress  class="progressplayer" :value="player1.health" max="100"></progress><span class="duel-player__life">{{player1.health}}/100 HP</span>
       </div>
       <span class="duel-player__playedCard"></span>
     </div>
     <div class="duel-player">
       <span class="duel-player__playedCard"></span>
-      <p class="duel-player__name">{{player2.name}}</p>
-      <div class="duel-player-healthBar">
-        <progress class="progressplayer" :value="player2.health" max="100"></progress><span class="duel-player__life">{{player2.health}}/100 HP</span>
+      <p v-if="player2" class="duel-player__name">{{player2.name}}</p>
+      <b v-if="!player2" style="color: red" class="duel-player__name">En attente d'un autre joueur</b>
+      <div v-if="player2" class="duel-player-healthBar">
+        <progress  class="progressplayer" :value="player2.health" max="100"></progress><span class="duel-player__life">{{player2.health}}/100 HP</span>
       </div>
 
     </div>
@@ -28,11 +42,16 @@ player2.health = 50;
 </template>
 
 <style scoped lang="scss">
+body {
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+}
 .duel-container {
   color: white;
   width: 100%;
   height: 70vh;
-  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),url(@/assets/img/plate.png)
+  box-sizing: border-box;
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),url(@/assets/img/plate.png);
+  background-size: cover;
 }
 
 .duel {

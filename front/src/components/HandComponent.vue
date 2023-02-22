@@ -11,15 +11,15 @@
         <section class="hand">
             <div class="hand-box box">
                 <h2>Card 1</h2>
-                <img v-if="hand[0]" v-on:click="showCard" class="hand-box__card" :src="hand[0].image">
+                <img v-if="hand[0]" v-on:click="showCard" v-on:click.right="playCard(hand[0])" class="hand-box__card" :src="hand[0].image">
             </div>
             <div class="hand-box box">
                 <h2>Card 2</h2>
-              <img v-if="hand[1]" v-on:click="showCard" class="hand-box__card" :src="hand[1].image">
+              <img v-if="hand[1]" v-on:click="showCard" v-on:click.right="playCard(hand[1])" class="hand-box__card" :src="hand[1].image">
             </div>
             <div class="hand-box box">
                 <h2>Card 3</h2>
-                <img v-if="hand[2]" v-on:click="showCard" class="hand-box__card" :src="hand[2].image">
+                <img v-if="hand[2]" v-on:click="showCard" v-on:click.right="playCard(hand[2])"  class="hand-box__card" :src="hand[2].image">
             </div>
         </section>
         <section class="draw">
@@ -34,6 +34,10 @@
     import * as THREE from 'three';
     import threeMixin from '../mixins/threeMixin';
     import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+    import {Socket} from "socket.io-client";
+    import {useAuthStore} from "@/store/auth";
+    import {inject, ref} from "vue";
+    import { mapStores } from 'pinia'
 
     export default {
         name: 'HandComponent',
@@ -51,32 +55,69 @@
                 deck: null,
                 hand: [],
                 canDraw: true,
+                socket: inject("socket")
+
             };
+        },
+        computed: {
+          // note we are not passing an array, just one store after the other
+          // each store will be accessible as its id + 'Store'
+          ...mapStores(useAuthStore)
         },
         mixins: [threeMixin],
         mounted() {
+
             // initialize container, target and viewport
             this.container = this.$refs.canvas;
             this.viewport = this.setViewportSize(this.container);
             this.launchDuel();
 
+            this.socket.on("updateRoom", (payload) => {
+              this.updateDuel(payload);
+            })
+
+            this.socket.on("pushActions", (payload) => {
+              this.updateHistoric(payload);
+            })
+
             this.createScene();
         },
         methods: {
+           updateHistoric(payload) {
+             console.log(payload);
+           },
+
+            playCard(playedCard) {
+                this.hand = this.hand.filter(card => card !== playedCard);
+                this.canDraw = true;
+
+                this.socket.emit("playCard",
+                    this.authStore.room.roomId,
+                    this.authStore.user.id,
+                    playedCard.key
+                )
+            },
+
+            updateDuel(payload) {
+              console.log(payload)
+              this.authStore.room.players = payload.players;
+
+            },
             showCard(event) {
                event.target.classList.toggle('viewed');
                document.querySelector('.overlay').classList.toggle('active');
             },
 
             async constructDeck() {
-              //call api to get cards
-              await this.fetchCards();
-              console.log(this.cardsApi);
-              //get cards from store
-              //link cards keys from store with cards api
-              //create Deck with cards
-              this.deck = this.cardsApi;
+              if(!this.cardsApi) await this.fetchCards();
+
+              this.deck = this.authStore.user.cards.map((cardName)=>{
+                if(this.cardsApi.find(element=> element.key === cardName)){
+                  return this.cardsApi.find(element=> element.key === cardName)
+                }
+              })
             },
+
             async fetchCards() {
               var myHeaders = new Headers();
               myHeaders.append("apikey", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzY5ODU5MDksImV4cCI6MTk5MjU2MTkwOX0.uq-mxWGU7ayNeoA0gkGRkWBTEz2hR1bIuReLittF0BI");
@@ -95,15 +136,13 @@
 
             async launchDuel() {
                 await this.constructDeck();
-                this.drawCard(2);
-                this.canDraw = true;
-                console.log(this.hand);
-                console.log(this.deck);
+                this.drawCard(3);
+
             },
 
             drawCard(nbCards) {
                 //draw nbCards from deck
-              if (this.canDraw && this.deck.length > 0 && this.hand.length < 3) {
+              if (this.canDraw && this.deck.length >= nbCards && this.hand.length < 3) {
                 for (let i = 0; i < nbCards; i++) {
                   this.hand.push(this.deck.pop());
                 }
@@ -175,10 +214,7 @@
 <style scoped lang="scss">
 
     section.container {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
+
         height: 30vh;
         display: flex;
         width: 100%;

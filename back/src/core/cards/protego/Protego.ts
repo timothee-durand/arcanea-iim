@@ -13,15 +13,15 @@ export class Protego extends BaseCard implements AbstractCard {
     async action({attacker, defender}: { attacker: Wizard, defender: Wizard }) {
         const blocked = defender.currentCard?.key !== AVADA_KEDAVRA;
         return {
-            action: this.getHistoryAction(defender, blocked),
+            action: this.getHistoryAction(defender,attacker, blocked),
             block: blocked
         }
     }
 
-    getHistoryAction(defender: Wizard, blocked: boolean): HistoryAction {
+    getHistoryAction(defender: Wizard,attacker: Wizard, blocked: boolean): HistoryAction {
         return {
             player: {
-                name: defender.name,
+                name: attacker.name,
             },
             card: {
                 name: this.title,
