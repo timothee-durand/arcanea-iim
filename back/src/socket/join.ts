@@ -34,6 +34,7 @@ export async function joinRoom (io: Server, socket: Socket, idRooms: string, use
                 console.log(e)
                 socket.emit('roomFull')
             }
+
         }
     } catch(e) {
         socket.emit("errorLogin", e);
@@ -42,9 +43,13 @@ export async function joinRoom (io: Server, socket: Socket, idRooms: string, use
 
 }
 
-function emitRoomJoined(io: Server, room: Duel, user: Wizard) {
+function emitRoomJoined(io: Server, socket: Socket, room: Duel, user: Wizard) {
     console.log(`${user.id} (${user.name}) joined ${room.roomId}`)
-    io.in(room.roomId).emit("userJoined", {duel : room.toObject, user: user.toObject()})
+    socket.emit("roomJoined", {duel : room.toObject, user: user.toObject()})
+
+    io.in(room.roomId).emit("updateRoom", room.toObject)
+    io.in(room.roomId).emit("userJoined", user.toObject())
+
 }
 
 function createRoom(roomId:string, username:string, userIim) : { newRoom: Duel, newPlayer: Wizard } {

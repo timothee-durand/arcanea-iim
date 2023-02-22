@@ -3,7 +3,7 @@ import type { Plugin } from "vue";
 
 export const Socket: Plugin = {
   install(app) {
-    const socket = io("http://localhost:3000");
+    const socket = io(import.meta.env.DEV ? "http://localhost:3000" : "https://arcanea-api.onrender.com");
 
     socket.on("connect", () => {
       console.log("Connected to socket");

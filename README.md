@@ -1,5 +1,15 @@
 # Arcanea
 
+Try it here : https://arcanea-front.onrender.com
+
+## Team
+- Timothée DURAND
+- Adrien BOUTEILLER
+- Piero NERI
+- Cécile DENONCIN
+- Jessy ERNATUS
+- Tristan SECLET
+
 ## Setup Project
 
 ### Back
@@ -8,20 +18,8 @@
 cd back
 pnpm i
 pnpm dev
-docker compose up
 ````
 The back run at `http://localhost:3000`
-
-To access database admin run
-````
-cd back
-npx prisma studio
-````
-Go to `http://localhost:5555`
-
-
-
-
 
 ### Front
 

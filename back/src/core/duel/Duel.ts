@@ -22,7 +22,7 @@ type BoardCard = {
 
 export class Duel {
     public readonly roomId: string;
-    private players: Wizard[] =[];
+    players: Wizard[] =[];
     private turn: number;
     private readonly cards: ApiCard[];
     private board: BoardCard[] = [];
@@ -91,7 +91,6 @@ export class Duel {
                 break
             }
         }
-
         this.players.forEach((player) => {
             player.isBlockedNextTurn = false;
             console.log(`${player.name} has ${player.health} health`)

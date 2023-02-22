@@ -5,21 +5,21 @@
         <section class="draft">
             <div class="draft-box box">
                 <h2>Draft</h2>
-                <img src="src/assets/img/draft.png" alt="draft">
+                <img src="@/assets/img/draft.png" alt="draft">
             </div>
         </section>
         <section class="hand">
             <div class="hand-box box">
                 <h2>Card 1</h2>
-                <img v-if="hand[0]" v-on:click="showCard" class="hand-box__card" :src="hand[0].image">
+                <img v-if="hand[0]" v-on:click="showCard" v-on:click.right="playCard(hand[0])" class="hand-box__card" :src="hand[0].image">
             </div>
             <div class="hand-box box">
                 <h2>Card 2</h2>
-              <img v-if="hand[1]" v-on:click="showCard" class="hand-box__card" :src="hand[1].image">
+                <img v-if="hand[1]" v-on:click="showCard" v-on:click.right="playCard(hand[1])" class="hand-box__card" :src="hand[1].image">
             </div>
             <div class="hand-box box">
                 <h2>Card 3</h2>
-                <img v-if="hand[2]" v-on:click="showCard" class="hand-box__card" :src="hand[2].image">
+                <img v-if="hand[2]" v-on:click="showCard" v-on:click.right="playCard(hand[2])" class="hand-box__card" :src="hand[2].image">
             </div>
         </section>
         <section class="draw">
@@ -34,6 +34,10 @@
     import * as THREE from 'three';
     import threeMixin from '../mixins/threeMixin';
     import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+    import {Socket} from 'socket.io-client';
+    import {useAuthStore} from '@/store/auth';
+    import {inject, ref} from 'vue';
+    import {mapStores} from 'pinia';
 
     export default {
         name: 'HandComponent',
@@ -50,8 +54,17 @@
                 cardsApi: null,
                 deck: null,
                 hand: [],
-                canDraw: true,
+                socket: inject("socket")
+
             };
+        },
+        computed: {
+            // note we are not passing an array, just one store after the other
+            // each store will be accessible as its id + 'Store'
+            ...mapStores(useAuthStore),
+            canDraw() {
+                return this.hand.length < 3 && this.deck && this.deck.length > 1;
+            },
         },
         mixins: [threeMixin],
         mounted() {
@@ -60,59 +73,78 @@
             this.viewport = this.setViewportSize(this.container);
             this.launchDuel();
 
+            this.socket.on('updateRoom', (payload) => {
+                this.updateDuel(payload);
+            });
+
+            this.socket.on('pushActions', (payload) => {
+                this.updateHistoric(payload);
+            });
+
             this.createScene();
         },
         methods: {
-            showCard(event) {
-               event.target.classList.toggle('viewed');
-               document.querySelector('.overlay').classList.toggle('active');
+            updateHistoric(payload) {
+                this.canDraw = true;
             },
 
+            playCard(playedCard) {
+                this.hand = this.hand.filter(card => card !== playedCard);
+                this.$emit('use-card', playedCard);
+
+                this.socket.emit('playCard',
+                    this.authStore.room.roomId,
+                    this.authStore.user.id,
+                    playedCard.key,
+                );
+            },
+
+            updateDuel(payload) {
+                console.log(payload);
+                this.authStore.room.players = payload.players;
+            },
+            showCard(event) {
+                event.target.classList.toggle('viewed');
+                document.querySelector('.overlay').classList.toggle('active');
+            },
             async constructDeck() {
-              //call api to get cards
-              await this.fetchCards();
-              console.log(this.cardsApi);
-              //get cards from store
-              //link cards keys from store with cards api
-              //create Deck with cards
-              this.deck = this.cardsApi;
+                if (!this.cardsApi) {
+                    await this.fetchCards();
+                }
+
+                this.deck = this.authStore.user.cards.map((cardName) => {
+                    if (this.cardsApi.find(element => element.key === cardName)) {
+                        return this.cardsApi.find(element => element.key === cardName);
+                    }
+                });
             },
             async fetchCards() {
-              var myHeaders = new Headers();
-              myHeaders.append("apikey", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzY5ODU5MDksImV4cCI6MTk5MjU2MTkwOX0.uq-mxWGU7ayNeoA0gkGRkWBTEz2hR1bIuReLittF0BI");
-              myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY3Njk4NTkwOSwiZXhwIjoxOTkyNTYxOTA5fQ.RP5ToLS04asei6AMnzwDgse6LyG0vANaFqM5uzn-SJc");
+                var myHeaders = new Headers();
+                myHeaders.append('apikey', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzY5ODU5MDksImV4cCI6MTk5MjU2MTkwOX0.uq-mxWGU7ayNeoA0gkGRkWBTEz2hR1bIuReLittF0BI');
+                myHeaders.append('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY3Njk4NTkwOSwiZXhwIjoxOTkyNTYxOTA5fQ.RP5ToLS04asei6AMnzwDgse6LyG0vANaFqM5uzn-SJc');
 
-              var requestOptions = {
-                method: 'GET',
-                headers: myHeaders,
-                redirect: 'follow'
-              };
+                var requestOptions = {
+                    method: 'GET',
+                    headers: myHeaders,
+                    redirect: 'follow',
+                };
 
-              const response = await fetch("https://ktyxaunussvaacscgpon.supabase.co/rest/v1/Cards?select=*", requestOptions)
-              this.cardsApi = await response.json()
-
+                const response = await fetch('https://ktyxaunussvaacscgpon.supabase.co/rest/v1/Cards?select=*', requestOptions);
+                this.cardsApi = await response.json();
             },
 
             async launchDuel() {
                 await this.constructDeck();
-                this.drawCard(2);
-                this.canDraw = true;
-                console.log(this.hand);
-                console.log(this.deck);
+                this.drawCard(3);
             },
 
-            drawCard(nbCards) {
-                //draw nbCards from deck
-              if (this.canDraw && this.deck.length > 0 && this.hand.length < 3) {
-                for (let i = 0; i < nbCards; i++) {
-                  this.hand.push(this.deck.pop());
+            drawCard(count) {
+                if (this.canDraw && this.deck.length >= count ) {
+                    for (let i = 0; i < count; i++) {
+                        this.hand.push(this.deck.pop());
+                    }
                 }
-                this.canDraw = false;
-              }
-
                 //emit event to update hand and deck with socket.io
-
-
             },
 
             createScene() {
@@ -137,7 +169,7 @@
                 this.controls.enableDamping = true;
             },
             createLight() {
-                const blueLight = new THREE.SpotLight(0x0000ff, .2)
+                const blueLight = new THREE.SpotLight(0x0000ff, .2);
                 this.pointLight = new THREE.SpotLight(0xffff00, 1);
                 this.pointLight.position.set(200, 200, 200);
                 blueLight.position.set(-200, 500, -100);
@@ -173,15 +205,13 @@
     };
 </script>
 <style scoped lang="scss">
-
     section.container {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
         height: 30vh;
         display: flex;
         width: 100%;
+        .draggable-img {
+            cursor: grab;
+        }
         .canvas {
             position: absolute;
             bottom: 0;
@@ -245,6 +275,7 @@
             }
         }
         .draw-box {
+            border: 1px dashed rgba(188, 117, 36, 0.5);
             box-shadow: 2px 2px 0px 0px #494949,
             4px 4px 0px 0px #626262,
             6px 6px 0px 0px #797979,
@@ -275,29 +306,27 @@
                 left: 50%;
             }
         }
+        .viewed {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            width: 450px !important;
+            height: calc(450px * 1.4) !important;
+            z-index: 1000;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+        .active {
+            display: block;
+        }
     }
-    .viewed {
-      position: fixed!important;
-      top: 50%!important;
-      left: 50%!important;
-      transform: translate(-50%, -50%)!important;
-      width: 450px!important;
-      height: calc(450px * 1.4)!important;
-      z-index: 1000;
-    }
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.7);
-      z-index: 999;
-    }
-
-    .active {
-      display: block;
-    }
-
 </style>
