@@ -3,6 +3,7 @@ import {authGuard} from "@/router/guards";
 
 export const LOGIN_ROUTE_NAME = "login";
 export const GAME_ROUTE_NAME = "game";
+export const END_GAME_ROUTE = "end";
 
 
 export const routes : RouteRecordRaw[] = [
@@ -15,6 +16,12 @@ export const routes : RouteRecordRaw[] = [
         path: "/game",
         name: GAME_ROUTE_NAME,
         component: () => import("../views/GameView.vue"),
+        beforeEnter: authGuard
+    },
+    {
+        path: "/end",
+        name: END_GAME_ROUTE,
+        component: () => import("../views/EndGameView.vue"),
         beforeEnter: authGuard
     }
 ]
