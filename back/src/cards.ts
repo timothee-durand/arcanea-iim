@@ -6,7 +6,7 @@ import {
     EXPELLIARMUS,
     INCENDIO,
     PROTEGO,
-    SECTUM_SEMPRA
+    SECTUM_SEMPRA, STUPEFIX
 } from "../../@types/cardsName";
 import {Diffindo} from "./core/cards/diffindo";
 
@@ -56,6 +56,12 @@ export const cards = [
     {
         key: SECTUM_SEMPRA,
         title:"Sectum Sempra",
+        description: "Expelliarmus is a spell that disarms the target.",
+        image: "https://vignette.wikia.nocookie.net/harrypotter/images/3/3e/Expelliarmus.jpg/revision/latest?cb=20170701182529",
+    },
+    {
+        key: STUPEFIX,
+        title:"Stupefix",
         description: "Expelliarmus is a spell that disarms the target.",
         image: "https://vignette.wikia.nocookie.net/harrypotter/images/3/3e/Expelliarmus.jpg/revision/latest?cb=20170701182529",
     }

@@ -1,0 +1,1 @@
+export {Stupefix} from "./stupefix";
