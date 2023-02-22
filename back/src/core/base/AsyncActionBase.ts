@@ -1,5 +1,6 @@
-import {AbstractAsyncAction} from "@/core/base/type";
-import {Wizard} from "@/core/wizard";
+import {AbstractAsyncAction, HistoryAction} from "./type";
+import {Wizard} from "../wizard";
+
 
 export class AsyncActionBase implements AbstractAsyncAction {
     turns;
@@ -11,8 +12,8 @@ export class AsyncActionBase implements AbstractAsyncAction {
     }
 
 
-    action({defender, attacker} : {defender : Wizard, attacker: Wizard}): Promise<boolean> {
-        return Promise.resolve(false);
+    async action({defender, attacker} : {defender : Wizard, attacker: Wizard}) : Promise<{action: HistoryAction, block: boolean}>{
+        throw new Error("Action not implemented")
     }
 
     passTurn() {

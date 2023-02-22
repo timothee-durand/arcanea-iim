@@ -1,4 +1,4 @@
-import {AbstractCard, AbstractAsyncAction} from "@/core/base";
+import {AbstractAsyncAction, AbstractCard} from "../base";
 
 export interface AbstractWizard {
     name: string

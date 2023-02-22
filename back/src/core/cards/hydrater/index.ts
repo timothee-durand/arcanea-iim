@@ -1,1 +1,1 @@
-export {cardsMap, getCardByName} from './cardsMap';
+export { getCardByName} from './cardsMap';

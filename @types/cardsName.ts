@@ -4,3 +4,8 @@ export const STUPEFIX = 'STUPEFIX';
 export const EXPELLIARMUS = 'EXPELLIARMUS';
 export const INCENDIO = 'INCENDIO';
 export const PROTEGO = 'PROTEGO';
+
+
+const cardsKeys = [AVADA_KEDAVRA, ENDOLORIS,EXPELLIARMUS,INCENDIO,PROTEGO] as const;
+
+export type CardName = typeof cardsKeys[number];

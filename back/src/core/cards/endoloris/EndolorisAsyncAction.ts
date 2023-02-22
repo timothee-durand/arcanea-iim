@@ -1,5 +1,6 @@
-import {AbstractAsyncAction, AsyncActionBase} from "@/core/base";
-import {Wizard} from "@/core/wizard";
+import {AbstractAsyncAction, AsyncActionBase, HistoryAction} from "../../base";
+import {Wizard} from "../../wizard";
+
 
 export class EndolorisAsyncAction extends AsyncActionBase implements AbstractAsyncAction {
     damages= 5;
@@ -9,8 +10,20 @@ export class EndolorisAsyncAction extends AsyncActionBase implements AbstractAsy
 
     }
 
-    async action({defender}: {defender: Wizard}): Promise<boolean> {
+    async action({defender})  : Promise<{action: HistoryAction, block: boolean}> {
         defender.takeDamage(this.damages)
-        return true
+        return {
+            action: {
+                player: {
+                    name: defender.name,
+                },
+                card: {
+                    name: "Endoloris",
+                    type: "Attack"
+                },
+                info: `${defender.name} has been async attacked by Endoloris and take ${this.damages} damage`
+            },
+            block: false
+        }
     }
 }

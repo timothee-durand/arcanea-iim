@@ -1,7 +1,8 @@
 import {describe,beforeEach, expect, it} from 'vitest';
-import {Wizard} from "@/core/wizard/Wizard";
-import {Endoloris} from "@/core/cards/endoloris/Endoloris";
-import {EndolorisAsyncAction} from "@/core/cards/endoloris/EndolorisAsyncAction";
+import {Endoloris} from "./Endoloris";
+import {EndolorisAsyncAction} from "./EndolorisAsyncAction";
+import {Wizard} from "../../wizard";
+
 describe('endoloris', function () {
     let endoloris: Endoloris;
     let defender: Wizard

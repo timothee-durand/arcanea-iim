@@ -5,6 +5,7 @@ specifiers:
   '@types/cors': ^2.8.13
   '@types/express': ^4.17.17
   '@types/node': ^18.14.0
+  '@types/uuid': ^9.0.0
   cors: ^2.8.5
   express: ^4.18.2
   helmet: ^6.0.1
@@ -12,13 +13,16 @@ specifiers:
   prisma: ^4.10.1
   socket.io: ^4.6.0
   ts-node: ^10.9.1
+  tsconfig-paths: ^4.1.2
   typescript: ^4.9.5
+  uuid: ^9.0.0
   vitest: ^0.28.5
 
 dependencies:
   '@prisma/client': 4.10.1_prisma@4.10.1
   '@types/cors': 2.8.13
   '@types/express': 4.17.17
+  '@types/uuid': 9.0.0
   cors: 2.8.5
   express: 4.18.2
   helmet: 6.0.1
@@ -26,11 +30,13 @@ dependencies:
   socket.io: 4.6.0
   ts-node: 10.9.1_tncu2ai53lzgmizdedur7lbibe
   typescript: 4.9.5
+  uuid: 9.0.0
   vitest: 0.28.5
 
 devDependencies:
   '@types/node': 18.14.0
   prisma: 4.10.1
+  tsconfig-paths: 4.1.2
 
 packages:
 
@@ -367,6 +373,10 @@ packages:
     dependencies:
       '@types/mime': 3.0.1
       '@types/node': 18.14.0
+    dev: false
+
+  /@types/uuid/9.0.0:
+    resolution: {integrity: sha512-kr90f+ERiQtKWMz5rP32ltJ/BtULDI5RVO0uavn1HQUOwjx0R1h0rnDYNL0CepF1zL5bSY6FISAfd9tOdDhU5Q==}
     dev: false
 
   /@vitest/expect/0.28.5:
@@ -948,6 +958,12 @@ packages:
     engines: {node: '>=0.12.0'}
     dev: false
 
+  /json5/2.2.3:
+    resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
+    engines: {node: '>=6'}
+    hasBin: true
+    dev: true
+
   /jsonc-parser/3.2.0:
     resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
     dev: false
@@ -1004,6 +1020,10 @@ packages:
     dependencies:
       brace-expansion: 1.1.11
     dev: false
+
+  /minimist/1.2.8:
+    resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
+    dev: true
 
   /mlly/1.1.1:
     resolution: {integrity: sha512-Jnlh4W/aI4GySPo6+DyTN17Q75KKbLTyFK8BrGhjNP4rxuUjbRWhE6gHg3bs33URWAF44FRm7gdQA348i3XxRw==}
@@ -1378,6 +1398,11 @@ packages:
       ansi-regex: 6.0.1
     dev: false
 
+  /strip-bom/3.0.0:
+    resolution: {integrity: sha512-vavAMRXOgBVNF6nyEEmL3DBK19iRpDcoIwW+swQ+CbGiu7lju6t+JklA1MHweoWtadgt4ISVUsXLyDq34ddcwA==}
+    engines: {node: '>=4'}
+    dev: true
+
   /strip-literal/1.0.1:
     resolution: {integrity: sha512-QZTsipNpa2Ppr6v1AmJHESqJ3Uz247MUS0OjrnnZjFAvEoWqxuyFuXn2xLgMtRnijJShAa1HL0gtJyUs7u7n3Q==}
     dependencies:
@@ -1460,6 +1485,15 @@ packages:
       yn: 3.1.1
     dev: false
 
+  /tsconfig-paths/4.1.2:
+    resolution: {integrity: sha512-uhxiMgnXQp1IR622dUXI+9Ehnws7i/y6xvpZB9IbUVOPy0muvdvgXeZOn88UcGPiT98Vp3rJPTa8bFoalZ3Qhw==}
+    engines: {node: '>=6'}
+    dependencies:
+      json5: 2.2.3
+      minimist: 1.2.8
+      strip-bom: 3.0.0
+    dev: true
+
   /type-detect/4.0.8:
     resolution: {integrity: sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==}
     engines: {node: '>=4'}
@@ -1495,6 +1529,11 @@ packages:
   /utils-merge/1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
+    dev: false
+
+  /uuid/9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
+    hasBin: true
     dev: false
 
   /v8-compile-cache-lib/3.0.1:

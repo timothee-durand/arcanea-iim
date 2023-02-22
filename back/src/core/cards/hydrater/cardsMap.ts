@@ -1,14 +1,11 @@
-import {AVADA_KEDAVRA, ENDOLORIS, EXPELLIARMUS, INCENDIO, PROTEGO} from "@/core/cards/hydrater/cardsName";
-import {AvadaKedavra} from "@/core/cards/avadaKedavra";
-import {Endoloris} from "@/core/cards/endoloris";
-import {Expelliarmus} from "@/core/cards/expelliarmus";
-import {Incendio} from "@/core/cards/incendio";
-import {Protego} from "@/core/cards/protego";
-import {AbstractCard, BaseCard} from "@/core/base";
+import {AVADA_KEDAVRA, ENDOLORIS, EXPELLIARMUS, INCENDIO, PROTEGO} from "../../../../../@types/cardsName";
+import {Expelliarmus} from "../expelliarmus";
+import {Incendio} from "../incendio";
+import {AvadaKedavra} from "../avadaKedavra";
+import {Endoloris} from "../endoloris";
+import {Protego} from "../protego";
+import {AbstractCard} from "../../base";
 
-const cardsKeys = [AVADA_KEDAVRA, ENDOLORIS,EXPELLIARMUS,INCENDIO,PROTEGO] as const;
-
-type CardName = typeof cardsKeys[number];
 
 export function getCardByName(name: string): AbstractCard | undefined{
     switch (name) {

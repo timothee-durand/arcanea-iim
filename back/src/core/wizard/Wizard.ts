@@ -1,9 +1,13 @@
-import {AbstractWizard} from "@/core/wizard/type";
-import {AbstractAsyncAction, AbstractCard} from "@/core/base";
-import {ApiCard} from "@/core/duel/Duel";
-import {getCardByName} from "@/core/cards/hydrater";
+import {getCardByName} from "../cards/hydrater";
+import {ApiCard} from "../duel/Duel";
+import {AbstractAsyncAction, AbstractCard, HistoryAction} from "../base";
+import {AbstractWizard} from "./type";
+import {v4} from "uuid";
+import {UserDto} from "../../../../@types/dto";
+
 
 export class Wizard implements AbstractWizard {
+    id: string
     name: string
     cards: AbstractCard[] = [];
     draft: AbstractCard[] = [];
@@ -11,11 +15,17 @@ export class Wizard implements AbstractWizard {
     asyncCard: AbstractAsyncAction[] = [];
     currentCard: AbstractCard | null = null;
     health: number = 100;
+    isBlockedNextTurn = false;
 
     constructor(name: string, apiCards: ApiCard[]) {
+        this.id = v4()
         this.name = name
         this.cards = apiCards.map(apiCard => {
-            return getCardByName(apiCard.key)
+            const card = getCardByName(apiCard.key)
+            if(!card) {
+                throw new Error(`Card ${apiCard.key} not found`)
+            }
+            return card
         }).filter(card => card !== undefined) as AbstractCard[];
     }
 
@@ -27,14 +37,37 @@ export class Wizard implements AbstractWizard {
         this.asyncCard.push(asyncAction);
     }
 
-    async executeAsyncAction(attacker: Wizard) {
-        const asyncActions = this.asyncCard.map(async asyncAction => {
-            await asyncAction.action({defender: this, attacker});
+    async executeAsyncAction(attacker: Wizard) : Promise<{ actions: HistoryAction[], block :boolean }> {
+        const historyActions: HistoryAction[] = [];
+        let blocked = false;
+        for (const asyncAction of this.asyncCard) {
+            const result = await asyncAction.action({defender: this, attacker});
+            historyActions.push(result.action)
+            if(result.block) {
+                blocked = true;
+            }
             asyncAction.passTurn()
+            console.log(`${this.name} executed async action ${typeof asyncAction} with ${asyncAction.remainingTurns} remaining turns`)
             if (asyncAction.remainingTurns === 0) {
                 this.asyncCard = this.asyncCard.filter(action => action !== asyncAction)
             }
-        })
-        await Promise.all(asyncActions);
+        }
+        if(blocked) {
+            console.log(`${this.name} will be blocked next turn`)
+            this.isBlockedNextTurn = true;
+        }
+        return {actions: historyActions, block: blocked}
+    }
+
+    toObject(): UserDto {
+        return {
+            id: this.id,
+            name: this.name,
+            cards: this.cards.map(card => card.key),
+            draft: this.draft.map(card => card.key),
+            hand: this.hand.map(card => card.key),
+            currentCard: this.currentCard?.key,
+            health: this.health,
+        }
     }
 }

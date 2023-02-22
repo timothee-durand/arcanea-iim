@@ -1,7 +1,7 @@
-import {AttackCard} from "@/core/base";
-import {INCENDIO} from "@/core/cards/hydrater/cardsName";
+import {INCENDIO} from "../../../../../@types/cardsName";
+import {AbstractCard, AttackCard, HistoryAction} from "../../base";
 
-export class Incendio extends AttackCard {
+export class Incendio extends AttackCard implements AbstractCard {
     constructor(name :string) {
         super(INCENDIO, name, 10);
     }
