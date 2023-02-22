@@ -1,4 +1,13 @@
-import {AVADA_KEDAVRA, BOMBARDA, DIFFINDO, ENDOLORIS, EXPELLIARMUS, INCENDIO, PROTEGO} from "../../@types/cardsName";
+import {
+    AVADA_KEDAVRA,
+    BOMBARDA,
+    DIFFINDO,
+    ENDOLORIS,
+    EXPELLIARMUS,
+    INCENDIO,
+    PROTEGO,
+    SECTUM_SEMPRA
+} from "../../@types/cardsName";
 import {Diffindo} from "./core/cards/diffindo";
 
 export const cards = [
@@ -41,6 +50,12 @@ export const cards = [
     {
         key: BOMBARDA,
         title:"Bombarda",
+        description: "Expelliarmus is a spell that disarms the target.",
+        image: "https://vignette.wikia.nocookie.net/harrypotter/images/3/3e/Expelliarmus.jpg/revision/latest?cb=20170701182529",
+    },
+    {
+        key: SECTUM_SEMPRA,
+        title:"Sectum Sempra",
         description: "Expelliarmus is a spell that disarms the target.",
         image: "https://vignette.wikia.nocookie.net/harrypotter/images/3/3e/Expelliarmus.jpg/revision/latest?cb=20170701182529",
     }

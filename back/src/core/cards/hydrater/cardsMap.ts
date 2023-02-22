@@ -5,7 +5,7 @@ import {
     ENDOLORIS,
     EXPELLIARMUS,
     INCENDIO,
-    PROTEGO
+    PROTEGO, SECTUM_SEMPRA
 } from "../../../../../@types/cardsName";
 import {Expelliarmus} from "../expelliarmus";
 import {Incendio} from "../incendio";
@@ -15,6 +15,7 @@ import {Protego} from "../protego";
 import {AbstractCard} from "../../base";
 import {Diffindo} from "../diffindo";
 import {Bombarda} from "../bombarda";
+import {SectumSempra} from "../sectumSempra";
 
 
 export function getCardByName(name: string): AbstractCard | undefined{
@@ -33,5 +34,7 @@ export function getCardByName(name: string): AbstractCard | undefined{
             return new Diffindo(name);
         case BOMBARDA:
             return new Bombarda(name);
+        case SECTUM_SEMPRA:
+            return new SectumSempra(name);
     }
 }
