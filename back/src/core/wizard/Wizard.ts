@@ -5,6 +5,7 @@ import {AbstractWizard} from "./type";
 import {v4} from "uuid";
 import {UserDto} from "../../../../@types/dto";
 import {HistoryAction} from "../../../../@types/dto/HistoryAction";
+import {shuffleArray} from "../utils";
 
 
 export class Wizard implements AbstractWizard {
@@ -30,6 +31,7 @@ export class Wizard implements AbstractWizard {
             }
             return card
         }).filter(card => card !== undefined) as AbstractCard[];
+        this.cards = shuffleArray(this.cards);
     }
 
     takeDamage(damage: number) {

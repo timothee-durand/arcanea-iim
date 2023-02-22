@@ -1,6 +1,5 @@
 <template>
   <div class="app-duel">
-
     <div class="app-top">
       <DuelComponent/>
       <HistoricDuelComponent/>
@@ -9,10 +8,35 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import DuelComponent from "@/components/DuelComponent.vue";
 import HistoricDuelComponent from "@/components/HistoricDuelComponent.vue";
 import HandComponent from "@/components/HandComponent.vue";
+import {inject} from "vue";
+import {Socket} from "socket.io-client";
+import {Wizard} from "@/core/wizard";
+import {useAuthStore} from "@/store/auth";
+import {useRouter} from "vue-router";
+import {END_GAME_ROUTE} from "@/router";
+import {useToast} from "vue-toastification";
+
+const socket: typeof Socket = inject("socket") as typeof Socket;
+const store = useAuthStore();
+const toast = useToast();
+const router = useRouter()
+socket.on("endDuel", (payload: Wizard) => {
+  console.log("endDuel", payload)
+  store.winner = payload
+  store.room = null
+  router.push({name: END_GAME_ROUTE})
+})
+socket.on('showBoard', (error: string) => {
+  console.log("showBoard", error)
+})
+socket.on('inGameError', (error: string) => {
+  console.log("error", error)
+  toast.error(error)
+})
 </script>
 
 <style scoped>
