@@ -17,10 +17,12 @@ export class Wizard implements AbstractWizard {
     currentCard: AbstractCard | null = null;
     health: number = 100;
     isBlockedNextTurn = false;
+    userIim: object  = {};
 
-    constructor(name: string, apiCards: ApiCard[]) {
+    constructor(name: string, apiCards: ApiCard[], userIim: object) {
         this.id = v4()
         this.name = name
+        this.userIim = userIim
         this.cards = apiCards.map(apiCard => {
             const card = getCardByName(apiCard.key)
             if(!card) {
@@ -69,6 +71,7 @@ export class Wizard implements AbstractWizard {
             hand: this.hand.map(card => card.key),
             currentCard: this.currentCard?.key,
             health: this.health,
+            userIim: this.userIim
         }
     }
 }
