@@ -11,7 +11,7 @@ const store = useAuthStore();
 
 const socket: Socket = inject("socket") as Socket;
 
-socket.on("roomJoined", (payload) => {
+socket.on("userJoined", (payload) => {
   console.log(payload, payload.duel.roomId, payload.userId, payload.duel)
   store.roomId = payload.duel.roomId
   store.user = payload.user
