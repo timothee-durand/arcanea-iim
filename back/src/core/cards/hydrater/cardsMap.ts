@@ -1,4 +1,12 @@
-import {AVADA_KEDAVRA, DIFFINDO, ENDOLORIS, EXPELLIARMUS, INCENDIO, PROTEGO} from "../../../../../@types/cardsName";
+import {
+    AVADA_KEDAVRA,
+    BOMBARDA,
+    DIFFINDO,
+    ENDOLORIS,
+    EXPELLIARMUS,
+    INCENDIO,
+    PROTEGO
+} from "../../../../../@types/cardsName";
 import {Expelliarmus} from "../expelliarmus";
 import {Incendio} from "../incendio";
 import {AvadaKedavra} from "../avadaKedavra";
@@ -6,6 +14,7 @@ import {Endoloris} from "../endoloris";
 import {Protego} from "../protego";
 import {AbstractCard} from "../../base";
 import {Diffindo} from "../diffindo";
+import {Bombarda} from "../bombarda";
 
 
 export function getCardByName(name: string): AbstractCard | undefined{
@@ -22,5 +31,7 @@ export function getCardByName(name: string): AbstractCard | undefined{
             return new Protego(name);
         case DIFFINDO:
             return new Diffindo(name);
+        case BOMBARDA:
+            return new Bombarda(name);
     }
 }
