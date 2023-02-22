@@ -30,7 +30,8 @@ export async function joinRoom (io: Server, socket: Socket, idRooms: string, use
             try {
                 const newPlayer = room.addPlayer(userName, userIim)
                 wizardsRoom[newPlayer.id] = idRooms
-                postStart("arcaneaIim", room.userPlayerIimId, "1v1", response.token)
+                const resultStartIim = await postStart("arcaneaIim", room.userPlayerIimId, "1v1", response.token)
+                console.log("game started on iim", resultStartIim)
                 socket.join(idRooms)
                 emitRoomJoined(io,socket, room, newPlayer)
             } catch (e) {
