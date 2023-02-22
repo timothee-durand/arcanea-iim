@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue';
+import Deck from './components/Deck.vue';
 /* import {getCards, getDeck, getDecks} from "@/services/arcaneaApi"; */
 
 /* // API USE EXAMPLE
@@ -9,7 +9,7 @@ console.log(await getDecks()) */
 </script>
 
 <template>
-  <HelloWorld msg="Vite + Vue" />
+  <Deck />
 </template>
 
 <style scoped>
