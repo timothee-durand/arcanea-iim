@@ -1,4 +1,4 @@
-import axios from "axios";
+/* import axios from "axios";
 
 export const arcaneaApi = axios.create({
     baseURL: 'http://localhost:3000/api'
@@ -29,3 +29,4 @@ export const getDecks = async () => {
 export const getDeck = async (id:number) => {
     return await makeRequest('get',`/decks/${id}`);
 }
+ */
