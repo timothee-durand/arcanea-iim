@@ -46,7 +46,6 @@ let historic = {
     width: 35vh;
     color: white;
     height: 70vh;
-    background-color: black;
     display: flex;
     flex-direction: column;
     padding: 30px;

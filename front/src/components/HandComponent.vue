@@ -21,6 +21,7 @@
             <div class="box">
                 <h2>Draw</h2>
             </div>
+          <img class="draw-box --card" src="@/assets/img/card-back.png">
         </section>
     </section>
 </template>
@@ -138,7 +139,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 100vh;
+            height: 30vh;
         }
         .draw, .hand, .draft {
             padding: 25px;
@@ -156,9 +157,16 @@
             border: 1px dashed rgba(188, 117, 36, 0.5);
             border-radius: 10px;
             width: 150px;
-            height: 100%;
+            height: calc(150px * 1.4);
             text-align: center;
             vertical-align: center;
+            -webkit-box-shadow: 5px 5px 0px 0px #289fed, 10px 10px 0px 0px #5fb8ff, 15px 15px 0px 0px #a1d8ff, 20px 20px 0px 0px #cae6ff, 25px 25px 0px 0px #e1eeff, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+            box-shadow: 2px 2px 0px 0px #494949,
+            4px 4px 0px 0px #626262,
+            6px 6px 0px 0px #797979,
+            8px 8px 0px 0px #7a7a7a,
+            10px 10px 0px 0px #a9a9a9,
+            5px 5px 15px 5px rgba(0, 0, 0, 0);
             img {
                 max-width: 100%;
             }
