@@ -40,8 +40,6 @@ export default {
 
       const back = await fetch("https://ktyxaunussvaacscgpon.supabase.co/rest/v1/Cards?name=eq.back", requestOptions)
       this.resultBack = await back.json()
-      console.log(this.resultBack)
-      let toto = document.querySelector('.BACK').style.display = 'none'
 
     },
 
