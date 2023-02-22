@@ -4,8 +4,8 @@ import {Server} from "socket.io";
 import {router} from "./api";
 import helmet from "helmet";
 // @ts-ignore
-import cors = require("cors");
-import * as express from "express";
+const cors = require("cors");
+const express = require("express");
 import {joinRoom, leaveRoom,playCard} from "./socket";
 
 const app = express();
