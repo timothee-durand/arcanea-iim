@@ -10,7 +10,7 @@
         <section class="hand">
             <div class="hand-box">
                 <h2>Card 1</h2>
-                <img v-if="hand[0]" class="hand-box__card" :src="hand[0].image">
+                <img v-if="hand[0]" v-on:click="showCard" class="hand-box__card" :src="hand[0].image">
             </div>
             <div class="hand-box">
                 <h2>Card 2</h2>
@@ -68,6 +68,10 @@
             this.createScene();
         },
         methods: {
+            showCard(event) {
+                event.target.classList.toggle('viewed');
+
+            },
 
             async constructDeck() {
               //call api to get cards
@@ -179,6 +183,9 @@
     };
 </script>
 <style scoped lang="scss">
+    .viewed {
+      width: 800px!important;
+    }
     section.container {
         position: absolute;
         bottom: 0;
@@ -214,9 +221,19 @@
       8px 8px 0px 0px #7a7a7a,
       10px 10px 0px 0px #a9a9a9,
       5px 5px 15px 5px rgba(0,0,0,0);
+      transition: box-shadow 0.3s ease-in-out;
       & .canDraw {
-        -webkit-box-shadow: #FFF 0 -1px 4px, #ff0 0 -2px 10px, #ff8000 0 -10px 20px, red 0 -18px 40px, 5px 5px 15px 5px rgba(0,0,0,0);
-        box-shadow: #FFF 0 -1px 4px, #ff0 0 -2px 10px, #ff8000 0 -10px 20px, red 0 -18px 40px, 5px 5px 15px 5px rgba(0,0,0,0);
+        animation: canDrawAnimation 1s ease-in-out;
+        animation-fill-mode: both;
+        @keyframes canDrawAnimation {
+
+          100% {box-shadow: #FFF 0 -1px 4px,
+          #ff0 0 -2px 10px,
+          #ff8000 0 -10px 20px,
+          red 0 -18px 40px,
+          5px 5px 15px 5px rgba(0,0,0,0);
+          }
+        }
       }
       h2 {
         position: absolute;
@@ -282,6 +299,8 @@
     .draft-box > h2 {
         color: rgba(188, 117, 36, 0.5)
     }
+
+
 
 
 </style>
