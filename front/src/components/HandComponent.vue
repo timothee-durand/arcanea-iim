@@ -9,12 +9,15 @@
         <section class="hand">
             <div class="box">
                 <h2>Card 1</h2>
+                <img v-if="hand[0]" class="hand-box__card" :src="hand[0].image">
             </div>
             <div class="box">
                 <h2>Card 2</h2>
+              <img v-if="hand[1]" class="hand-box__card" :src="hand[1].image">
             </div>
             <div class="box">
                 <h2>Card 3</h2>
+                <img v-if="hand[2]" class="hand-box__card" :src="hand[2].image">
             </div>
         </section>
         <section class="draw">
@@ -45,6 +48,9 @@
                 sphere: null,
                 viewport: null,
                 loader: null,
+                cardsApi: null,
+                deck: null,
+                hand: [],
             };
         },
         mixins: [threeMixin],
@@ -52,10 +58,55 @@
             // initialize container, target and viewport
             this.container = this.$refs.canvas;
             this.viewport = this.setViewportSize(this.container);
+            this.loader = new GLTFLoader();
+            this.launchDuel();
 
             this.createScene();
         },
         methods: {
+
+            async constructDeck() {
+              //call api to get cards
+              await this.fetchCards();
+              console.log(this.cardsApi);
+              //get cards from store
+              //link cards keys from store with cards api
+              //create Deck with cards
+              this.deck = this.cardsApi;
+            },
+            async fetchCards() {
+              var myHeaders = new Headers();
+              myHeaders.append("apikey", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzY5ODU5MDksImV4cCI6MTk5MjU2MTkwOX0.uq-mxWGU7ayNeoA0gkGRkWBTEz2hR1bIuReLittF0BI");
+              myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY3Njk4NTkwOSwiZXhwIjoxOTkyNTYxOTA5fQ.RP5ToLS04asei6AMnzwDgse6LyG0vANaFqM5uzn-SJc");
+
+              var requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+              };
+
+              const response = await fetch("https://ktyxaunussvaacscgpon.supabase.co/rest/v1/Cards?select=*", requestOptions)
+              this.cardsApi = await response.json()
+
+            },
+
+            async launchDuel() {
+                await this.constructDeck();
+                this.drawCard(3);
+                console.log(this.hand);
+                console.log(this.deck);
+            },
+
+            drawCard(nbCards) {
+                //draw nbCards from deck
+                for(let i = 0; i < nbCards; i++) {
+                    this.hand.push(this.deck.pop());
+                }
+                //emit event to update hand and deck with socket.io
+
+
+            },
+
             createScene() {
                 window.addEventListener('resize', this.onWindowResize.bind(this));
                 this.scene = new THREE.Scene();
@@ -130,7 +181,6 @@
         bottom: 0;
         left: 0;
         right: 0;
-        border: 1px solid red;
         height: 30vh;
         display: flex;
         width: 100%;
