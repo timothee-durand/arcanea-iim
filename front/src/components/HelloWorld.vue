@@ -5,354 +5,203 @@ import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.118/examples
 import { OBJLoader } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/OBJLoader.js";
 import { MTLLoader } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/MTLLoader.js";
 
-  
-  export default{
-    mounted(){
-      //SCENE
-      const scene = new THREE.Scene();
-      const renderer = new THREE.WebGLRenderer({
-        canvas: document.getElementById("canvas"),
-        antialias: true,
+
+export default {
+
+  data() {
+    return {
+      name: "",
+      result: "",
+      resultBack: "",
+      canvas: false,
+    }
+  },
+
+
+  mounted() {
+    this.fetchCards();
+  },
+
+  methods: {
+    async fetchCards() {
+      var myHeaders = new Headers();
+      myHeaders.append("apikey", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzY5ODU5MDksImV4cCI6MTk5MjU2MTkwOX0.uq-mxWGU7ayNeoA0gkGRkWBTEz2hR1bIuReLittF0BI");
+      myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY3Njk4NTkwOSwiZXhwIjoxOTkyNTYxOTA5fQ.RP5ToLS04asei6AMnzwDgse6LyG0vANaFqM5uzn-SJc");
+
+      var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+      };
+
+      const response = await fetch("https://ktyxaunussvaacscgpon.supabase.co/rest/v1/Cards", requestOptions)
+      this.result = await response.json()
+
+      const back = await fetch("https://ktyxaunussvaacscgpon.supabase.co/rest/v1/Cards?name=eq.Lumos", requestOptions)
+      this.resultBack = await back.json()
+      console.log(this.resultBack)
+
+    },
+
+    Image(image) {
+
+      this.canvas = true
+
+
+      var imageFront = new Image();
+      imageFront.src = image
+      var textureFront = new THREE.Texture();
+      textureFront.image = imageFront;
+      imageFront.onload = function () {
+        textureFront.needsUpdate = true;
+      };
+
+      textureFront.wrapS = textureFront.wrapT = THREE.MirroredRepeatWrapping;
+
+
+      var imageBack = new Image();
+      imageBack.src = this.result[0].image;
+      var textureBack = new THREE.Texture();
+      textureBack.image = imageBack;
+      imageBack.onload = function () {
+        textureBack.needsUpdate = true;
+      };
+
+      textureBack.wrapS = textureBack.wrapT = THREE.MirroredRepeatWrapping;
+
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      var renderer = new THREE.WebGLRenderer({
+        canvas: this.$refs.canvas,
+        alpha: true
       });
-      renderer.setClearColor(0x131313);
-      renderer.setPixelRatio(window.devicePixelRatio);
-      renderer.setSize(window.innerWidth/2, window.innerHeight/2);
+      renderer.setSize(window.innerWidth, window.innerHeight);
 
-      //CAMERA
-      const camera = new THREE.PerspectiveCamera(
-        55,
-        (window.innerWidth) / (window.innerHeight),
-        0.1,
-        500
-      );
-      camera.position.z = 150;
 
-      // CONTROLS
-      const controls = new OrbitControls(camera, renderer.domElement);
-      controls.autoRotate = false;
-      controls.autoRotateSpeed = 7;
+      const geometry1 = new THREE.PlaneGeometry(0.65, 1);
 
-      //LIGHTS
-      const spotLight = new THREE.SpotLight(0xffffff);
-      spotLight.position.set(0, 40, 25);
-      spotLight.castShadow = true;
-      spotLight.shadow.mapSize.width = 1024;
-      spotLight.shadow.mapSize.height = 1024;
-      spotLight.shadow.camera.near = 500;
-      spotLight.shadow.camera.far = 4000;
-      spotLight.shadow.camera.fov = 70;
-      scene.add(spotLight);
-      const spotLight2 = new THREE.SpotLight(0xffffff);
-      spotLight2.position.set(0, -40, -25);
-      spotLight2.castShadow = true;
-      spotLight2.shadow.mapSize.width = 1024;
-      spotLight2.shadow.mapSize.height = 1024;
-      spotLight2.shadow.camera.near = 500;
-      spotLight2.shadow.camera.far = 4000;
-      spotLight2.shadow.camera.fov = 70;
-      scene.add(spotLight2);
+      const geometry2 = new THREE.PlaneGeometry(0.65, 1);
+      geometry2.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI));
 
-      // OBJECT
-      const loader = new OBJLoader();
-      const mtlLoader = new MTLLoader();
-      let card;
-      mtlLoader.load("/src/components/card.mtl", (materials) => {
-        materials.preload();
-        loader.setMaterials(materials);
-        loader.load("/src/components/card.obj", (object) => {
-          card = object;
-          card.rotateX(Math.PI / 2);
-          card.rotateY(-Math.PI / 2);
-          card.scale.set(13, 13, 13);
-          scene.add(card);
-        });
-      });
+      var material1 = new THREE.MeshLambertMaterial({ map: textureFront });
+      var material2 = new THREE.MeshLambertMaterial({ map: textureBack });
 
-      // LOAD MANAGER
-      // Load Manager
-      
+      const plane1 = new THREE.Mesh(geometry1, material1);
+      scene.add(plane1);
+      const plane2 = new THREE.Mesh(geometry2, material2);
+      scene.add(plane2);
 
-     
 
-      
 
-      function selectCardColor(e) {
-        card.children[0].material = new THREE.MeshPhongMaterial({
-          color: e.target.value,
-        });
-        document.getElementById("colorPicker").value = e.target.value;
-      }
+      scene.add(new THREE.HemisphereLight(0xaaaaaa, 0x333333));
 
-      function selectTextColor(e) {
-        current.material = new THREE.MeshBasicMaterial({ color: e.target.value });
-        prevNum.material = new THREE.MeshBasicMaterial({ color: e.target.value });
-        prevExp.material = new THREE.MeshBasicMaterial({ color: e.target.value });
-        prevCvv.material = new THREE.MeshBasicMaterial({ color: e.target.value });
-        document.getElementById("textColorPicker").value = e.target.value;
-      }
+      var keyLight = new THREE.PointLight(0xaaaaaa);
+      keyLight.position.x = 15;
+      keyLight.position.y = -10;
+      keyLight.position.z = 35;
+      scene.add(keyLight);
 
-      function setRotation() {
-        controls.autoRotate = !controls.autoRotate;
-      }
+      var rimLight = new THREE.PointLight(0x888888);
+      rimLight.position.x = 100;
+      rimLight.position.y = 100;
+      rimLight.position.z = -50;
+      scene.add(rimLight);
 
-      function toggleModal() {
-        let cardInfoContainerRef =
-          document.getElementsByClassName("cardInfoContainer")[0];
-        let openModalBtnRef = document.getElementsByClassName("openModalBtn")[0];
-        if (openModalBtnRef.style.display === "none") {
-          cardInfoContainerRef.style.display = "none";
-          openModalBtnRef.style.display = "flex";
-        } else {
-          cardInfoContainerRef.style.display = "flex";
-          openModalBtnRef.style.display = "none";
-        }
-      }
+      camera.position.z = 2;
 
-      const floader = new THREE.FontLoader();
-      let current;
-      function createName(name = "CARDHOLDER NAME") {
-        if (current) {
-          scene.remove(current);
-        }
-        floader.load("src/components/font.json", function (font) {
-          const geometry2 = new THREE.TextGeometry(name, {
-            font: font,
-            size: 3,
-            height: 0.5,
-            curveSegments: 21,
-            bevelEnabled: false,
-            bevelThickness: 1,
-            bevelSize: 1,
-            bevelOffset: 0,
-            bevelSegments: 10,
-          });
-          const materials2 = new THREE.MeshBasicMaterial({ color: 0xfafafa });
-          const mesh = new THREE.Mesh(geometry2, materials2);
-          mesh.position.set(-30, -15, 1);
-          current = mesh;
-          scene.add(current);
-        });
-      }
-      //createName();
+      var render = function () {
 
-      let prevNum;
-      function createNumber(number = "") {
-        if (prevNum) {
-          scene.remove(prevNum);
-        }
-        floader.load("./font.json", function (font) {
-          const geometry2 = new THREE.TextGeometry(number, {
-            font: font,
-            size: 3,
-            height: 0.5,
-            curveSegments: 21,
-            bevelEnabled: false,
-            bevelThickness: 1,
-            bevelSize: 1,
-            bevelOffset: 0,
-            bevelSegments: 10,
-          });
-          const materials2 = new THREE.MeshBasicMaterial({ color: 0xfafafa });
-          const mesh = new THREE.Mesh(geometry2, materials2);
-          mesh.position.set(-30, -5, 1);
-          prevNum = mesh;
-          scene.add(prevNum);
-        });
-      }
-
-      let prevExp;
-      function createDate(date = "12/12") {
-        if (prevExp) {
-          scene.remove(prevExp);
-        }
-        floader.load("./font.json", function (font) {
-          const geometry2 = new THREE.TextGeometry(date, {
-            font: font,
-            size: 3,
-            height: 0.5,
-            curveSegments: 21,
-            bevelEnabled: false,
-            bevelThickness: 1,
-            bevelSize: 1,
-            bevelOffset: 0,
-            bevelSegments: 10,
-          });
-          const materials2 = new THREE.MeshBasicMaterial({ color: 0xfafafa });
-          const mesh = new THREE.Mesh(geometry2, materials2);
-          mesh.position.set(15, -15, 1);
-          prevExp = mesh;
-          scene.add(prevExp);
-        });
-      }
-
-      let prevCvv;
-      function createCvv(date = "736") {
-        if (prevCvv) {
-          scene.remove(prevCvv);
-        }
-        floader.load("./font.json", function (font) {
-          const geometry2 = new THREE.TextGeometry(date, {
-            font: font,
-            size: 3,
-            height: 0.5,
-            curveSegments: 21,
-            bevelEnabled: false,
-            bevelThickness: 1,
-            bevelSize: 1,
-            bevelOffset: 0,
-            bevelSegments: 10,
-          });
-          const materials2 = new THREE.MeshBasicMaterial({ color: 0xfafafa });
-          const mesh = new THREE.Mesh(geometry2, materials2);
-          mesh.position.set(-15, -15, -1);
-          mesh.rotateY(Math.PI);
-          prevCvv = mesh;
-          scene.add(prevCvv);
-        });
-      }
-
-      //RENDER LOOP
-      requestAnimationFrame(render);
-      function render() {
-        controls.update();
-        renderer.render(scene, camera);
         requestAnimationFrame(render);
+
+        renderer.render(scene, camera);
+
+      };
+
+
+
+      render();
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+
+      //controls.update() must be called after any manual changes to the camera's transform
+      camera.position.set(0, 0, 1);
+      controls.update();
+
+      function animate() {
+
+        requestAnimationFrame(animate);
+
+        // required if controls.enableDamping or controls.autoRotate are set to true
+        controls.update();
+
+        renderer.render(scene, camera);
+
       }
-
-      window.addEventListener(
-        "resize",
-        function () {
-          camera.aspect = window.innerWidth / window.innerHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(window.innerWidth, window.innerHeight);
-        },
-        false
-      );
-
-      // Event Listeners
-      document.getElementById("name").addEventListener("change", (e) => {
-        // Change Card Name Model
-        createName(e.target.value);
-      });
-
-      document.getElementById("number").addEventListener("change", (e) => {
-        // Change Card number Model
-        createNumber(e.target.value);
-      });
-
-      document.getElementById("expiration").addEventListener("change", (e) => {
-        // Change Card Expiration Model
-        createDate(e.target.value);
-      });
-
-      document.getElementById("cvv").addEventListener("change", (e) => {
-        // Change Card Expiration Model
-        createCvv(e.target.value);
-      });
-
-      document
-        .getElementById("colorPicker")
-        .addEventListener("change", selectCardColor);
-
-      document
-        .getElementById("textColorPicker")
-        .addEventListener("change", selectTextColor);
-
-      document.getElementById("rotateCard").addEventListener("change", setRotation);
-
-      document.getElementById("confirm").addEventListener("click", toggleModal);
-
-      document
-        .getElementsByClassName("openModalBtn")[0]
-        .addEventListener("click", toggleModal);
     }
   }
+}
 </script>
 
 <template>
-  
-    <canvas id="canvas"></canvas>
-    <!-- <div class="cardInfoContainer">
-      <div class="content">
-        <h2 class="title">Card Settings</h2>
-        <div class="inputDiv">
-          <label class="label" for="Name">Name:</label>
-          <input
-            class="inputField"
-            type="text"
-            name="Name"
-            id="name"
-            placeholder="Your Full Name"
-          />
+  <div class="deckPage">
+    <div class="cross" v-show="canvas"></div>
+    <canvas ref="canvas" v-show="canvas">
+    </canvas>
+    <div class="deck">
+      <div class="cards" v-for="item in result" :key="item.result">
+        <div v-if="item.name !== 'back'">
+          <img :src="item.image" :alt="item.name" @click="Image(item.image)">
         </div>
-        <div class="inputDiv">
-          <label class="label" for="number">Card Number:</label>
-          <input
-            class="inputField"
-            type="text"
-            name="number"
-            id="number"
-            placeholder="0000 0000 0000 0000"
-          />
-        </div>
-        <div class="inputDiv">
-          <label class="label" for="expiration">Expiration Date:</label>
-          <input
-            class="inputField"
-            type="text"
-            name="expiration"
-            id="expiration"
-            placeholder="12/12"
-          />
-        </div>
-        <div class="inputDiv">
-          <label class="label" for="expiration">CVV:</label>
-          <input
-            class="inputField"
-            type="text"
-            name="cvv"
-            id="cvv"
-            placeholder="736"
-          />
-        </div>
-        <div class="inputDiv colorDiv">
-          <label class="label name" for="colorPicker">Card color:</label>
-          <input
-            class="colorPicker"
-            type="color"
-            name="color"
-            id="colorPicker"
-            value="#791d10"
-          />
-        </div>
-        <div class="inputDiv colorDiv">
-          <label class="label name" for="textColorPicker">Text color:</label>
-          <input
-            class="colorPicker"
-            type="color"
-            name="textColorPicker"
-            id="textColorPicker"
-            value="#ffffff"
-          />
-        </div>
-        <div class="inputDiv colorDiv">
-          <label class="label name" for="textColorPicker">Rotate Card:</label>
-          <input
-            class="rotateCard"
-            type="checkbox"
-            name="rotateCard"
-            id="rotateCard"
-            checked
-          />
-        </div>
-        <button id="confirm" class="confirmBtn">Close</button>
       </div>
-    </div> -->
-    <!-- <button class="openModalBtn">Edit Card</button> -->
+
+    </div>
+  </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .read-the-docs {
   color: #888;
+}
+
+.deckPage {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5718662464985995) 0%, rgba(19, 35, 59, 1) 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100vh
+}
+
+.cross {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 50px;
+  aspect-ratio: 1/1;
+  top: 15px;
+  right: 15px
+}
+
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+
+
+}
+
+.deck {
+  display: flex;
+  justify-content: center;
+  gap: 5%;
+
+  .cards {
+    img {
+      width: 250px;
+
+
+    }
+  }
+
 }
 </style>

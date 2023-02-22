@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue';
-import {getCards, getDeck, getDecks} from "@/services/arcaneaApi";
+/* import {getCards, getDeck, getDecks} from "@/services/arcaneaApi"; */
 
-// API USE EXAMPLE
+/* // API USE EXAMPLE
 console.log(await getCards())
 console.log(await getDeck(1))
-console.log(await getDecks())
+console.log(await getDecks()) */
 </script>
 
 <template>
-  
   <HelloWorld msg="Vite + Vue" />
 </template>
 
@@ -20,9 +19,11 @@ console.log(await getDecks())
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }

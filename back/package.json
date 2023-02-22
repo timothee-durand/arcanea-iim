@@ -1,7 +1,8 @@
 {
 	"scripts": {
 		"dev": "nodemon src/index.ts",
-		"serve": "node src/index.ts"
+		"serve": "node src/index.ts",
+		"studio": "prisma studio"
 	},
 	"dependencies": {
 		"@prisma/client": "^4.10.1",
