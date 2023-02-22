@@ -1,4 +1,5 @@
 <template>
+    <div class="overlay"></div>
     <section class="container">
         <div class="canvas" ref="canvas"></div>
         <section class="draft">
@@ -10,15 +11,15 @@
         <section class="hand">
             <div class="hand-box box">
                 <h2>Card 1</h2>
-                <img v-if="hand[0]" class="hand-box__card" :src="hand[0].image">
+                <img v-if="hand[0]" v-on:click="showCard" class="hand-box__card" :src="hand[0].image">
             </div>
             <div class="hand-box box">
                 <h2>Card 2</h2>
-              <img v-if="hand[1]" class="hand-box__card" :src="hand[1].image">
+              <img v-if="hand[1]" v-on:click="showCard" class="hand-box__card" :src="hand[1].image">
             </div>
             <div class="hand-box box">
                 <h2>Card 3</h2>
-                <img v-if="hand[2]" class="hand-box__card" :src="hand[2].image">
+                <img v-if="hand[2]" v-on:click="showCard" class="hand-box__card" :src="hand[2].image">
             </div>
         </section>
         <section class="draw">
@@ -62,6 +63,10 @@
             this.createScene();
         },
         methods: {
+            showCard(event) {
+               event.target.classList.toggle('viewed');
+               document.querySelector('.overlay').classList.toggle('active');
+            },
 
             async constructDeck() {
               //call api to get cards
@@ -168,6 +173,7 @@
     };
 </script>
 <style scoped lang="scss">
+
     section.container {
         position: absolute;
         bottom: 0;
@@ -235,6 +241,7 @@
                 top: 50%;
                 left: 50%;
                 height: 100%;
+                cursor: pointer;
             }
         }
         .draw-box {
@@ -268,6 +275,29 @@
                 left: 50%;
             }
         }
+    }
+    .viewed {
+      position: fixed!important;
+      top: 50%!important;
+      left: 50%!important;
+      transform: translate(-50%, -50%)!important;
+      width: 450px!important;
+      height: calc(450px * 1.4)!important;
+      z-index: 1000;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 999;
+    }
+
+    .active {
+      display: block;
     }
 
 </style>
