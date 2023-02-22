@@ -50,7 +50,8 @@ body {
   width: 100%;
   height: 70vh;
   box-sizing: border-box;
-  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),url(@/assets/img/plate.png)
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),url(@/assets/img/plate.png);
+  background-size: cover;
 }
 
 .duel {

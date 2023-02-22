@@ -11,11 +11,11 @@
         <section class="hand">
             <div class="hand-box box">
                 <h2>Card 1</h2>
-                <img v-if="hand[0]" v-on:click="showCard" class="hand-box__card" :src="hand[0].image">
+                <img v-if="hand[0]" v-on:click="showCard" v-on:click.right="playCard(hand[0])" class="hand-box__card" :src="hand[0].image">
             </div>
             <div class="hand-box box">
                 <h2>Card 2</h2>
-              <img v-if="hand[1]" v-on:click="showCard" class="hand-box__card" :src="hand[1].image">
+              <img v-if="hand[1]" v-on:click="showCard" v-on:click.right="playCard(hand[1])" class="hand-box__card" :src="hand[1].image">
             </div>
             <div class="hand-box box">
                 <h2>Card 3</h2>
