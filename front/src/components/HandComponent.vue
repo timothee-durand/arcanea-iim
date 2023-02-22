@@ -54,6 +54,7 @@
                 deck: null,
                 hand: [],
                 canDraw: true,
+                draft: [],
             };
         },
         mixins: [threeMixin],
@@ -97,8 +98,7 @@
                 await this.constructDeck();
                 this.drawCard(2);
                 this.canDraw = true;
-                console.log(this.hand);
-                console.log(this.deck);
+
             },
 
             drawCard(nbCards) {
@@ -258,6 +258,7 @@
             transform: translate(-50%, -50%);
         }
         &__card{
+          transform: translate(0, 0);
           position: absolute;
           top: -5px;
           left: 0;
