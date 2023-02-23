@@ -1,9 +1,9 @@
-import {Wizard} from "../wizard";
+import {UserIim, Wizard} from "../wizard";
 import {AbstractCard} from "../base";
-import {ac} from "vitest/dist/types-0373403c";
 import {RoomDto} from "../../../../@types/dto";
 import {HistoryAction} from "../../../../@types/dto/HistoryAction";
 import {CardName} from "../../../../@types/cardsName";
+
 
 
 
@@ -22,7 +22,7 @@ type BoardCard = {
 
 export class Duel {
     public readonly roomId: string;
-    private players: Wizard[] =[];
+    players: Wizard[] =[];
     private turn: number;
     private readonly cards: ApiCard[];
     private board: BoardCard[] = [];
@@ -33,10 +33,10 @@ export class Duel {
         this.turn = 0;
     }
 
-    addPlayer(username) {
+    addPlayer(username, userIim: UserIim) {
         if(this.players.length >= 2)
             throw new Error("Room is full")
-        const newPlayer = new Wizard(username, this.cards);
+        const newPlayer = new Wizard(username, this.cards, userIim);
         this.players.push(newPlayer);
         return newPlayer
     }
@@ -49,6 +49,10 @@ export class Duel {
         const card = player.cards.find(card => card.key === cardKey);
         if(!card) {
             throw new Error("Card not found")
+        }
+        const hasAlreadyPlayed = this.board.find(boardCard => boardCard.playerId === playerId);
+        if(hasAlreadyPlayed) {
+            throw new Error("Player has already played")
         }
         this.board.push({card: card, playerId})
         console.log(`${cardKey} added to board by ${playerId}`)
@@ -67,7 +71,6 @@ export class Duel {
             }
             return 0;
         })
-        console.log("Ordered board", orderedBoard.map(card => card.card.key))
         this.board = [];
         const actions : HistoryAction[]= []
 
@@ -77,25 +80,52 @@ export class Duel {
                 actions.push(...result.actions)
             }
         }
-
+        let isBlocked = false;
         for (const boardCard of orderedBoard) {
             const attacker = this.players.find(player => player.id === boardCard.playerId);
             const defender = this.players.find(player => player.id !== boardCard.playerId);
             if(!attacker || !defender) {
                 throw new Error("Player not found")
             }
+
+            let blockedPlayer = this.players.filter(player => player.isBlockedNextTurn).map(player => player.id);
+            if(blockedPlayer.length > 0 && blockedPlayer.includes(boardCard.playerId)) {
+                actions.push({
+                    player: {
+                        name: attacker.name,
+                    },
+                    card: {
+                        name: boardCard.card.key,
+                        type: "Block"
+                    },
+                    info: `${attacker.name} can't play ${boardCard.card.title} because it has been blocked`
+                })
+                continue;
+            }
+            if(isBlocked) {
+                actions.push({
+                    player: {
+                        name: attacker.name,
+                    },
+                    card: {
+                        name: boardCard.card.key,
+                        type: "Block"
+                    },
+                    info: `${boardCard.card.key} has no effect on ${defender.name} because it has been blocked`
+                })
+                continue;
+            }
             console.log(`${boardCard.card.key} played by ${attacker.name} on ${defender.name}`)
             const result = await boardCard.card.action({defender, attacker})
             actions.push(result.action)
-            if(result.block) {
-                break
-            }
+            if(result.block)  isBlocked = true
         }
 
         this.players.forEach((player) => {
             player.isBlockedNextTurn = false;
             console.log(`${player.name} has ${player.health} health`)
         })
+
         this.turn++;
         return actions
     }
@@ -108,8 +138,8 @@ export class Duel {
         }
     }
 
-    get boardObject() : CardName[] {
-        return this.board.map(boardCard => boardCard.card.key)
+    get boardObject() : BoardCard[] {
+        return this.board
     }
 
     removePlayer(userId: string) : Wizard {
@@ -120,5 +150,10 @@ export class Duel {
         }
         this.players.splice(playerIndex, 1);
         return player
+    }
+
+    get userPlayerIimId():string[] {
+        //@ts-ignore
+        return this.players.map(players => players.userIim.iimId)
     }
 }

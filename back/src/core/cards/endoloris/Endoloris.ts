@@ -11,17 +11,17 @@ export class Endoloris extends BaseCard implements AbstractCard {
         super(ENDOLORIS, name);
     }
 
-    async action({  defender }: { defender: Wizard})  : Promise<{action: HistoryAction, block: boolean}> {
+    async action({  defender, attacker }: { defender: Wizard, attacker: Wizard})  : Promise<{action: HistoryAction, block: boolean}> {
         defender.takeDamage(this.damage)
         defender.addAsyncAction(new EndolorisAsyncAction())
         return {
             action : {
                 player: {
-                    name: defender.name,
+                    name: attacker.name,
                 },
                 card: {
                     name: this.title,
-                    type: "Attack"
+                    type: "Unforgivable"
                 },
                 info: `${defender.name} has been attacked by ${this.title} and take ${this.damage} damage`
             },

@@ -9,17 +9,17 @@ export class Expelliarmus extends BaseCard implements AbstractCard {
         super(EXPELLIARMUS, name);
     }
 
-    async action({defender}) : Promise<{ action : HistoryAction, block : boolean }>{
+    async action({defender, attacker}) : Promise<{ action : HistoryAction, block : boolean }>{
         const asyncAction = new ExpelliarmusAsyncAction();
         defender.addAsyncAction(asyncAction)
         return {
             action: {
                 player: {
-                    name: defender.name,
+                    name: attacker.name,
                 },
                 card: {
                     name: this.title,
-                    type: "Attack"
+                    type: "Utility"
                 },
                 info: `${defender.name} will be blocked by ${this.title} next turn`
             },

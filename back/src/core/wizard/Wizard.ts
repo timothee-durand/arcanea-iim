@@ -1,10 +1,11 @@
 import {getCardByName} from "../cards/hydrater";
 import {ApiCard} from "../duel/Duel";
 import {AbstractAsyncAction, AbstractCard} from "../base";
-import {AbstractWizard} from "./type";
+import {AbstractWizard, UserIim} from "./type";
 import {v4} from "uuid";
 import {UserDto} from "../../../../@types/dto";
 import {HistoryAction} from "../../../../@types/dto/HistoryAction";
+import {shuffleArray} from "../utils";
 
 
 export class Wizard implements AbstractWizard {
@@ -17,10 +18,12 @@ export class Wizard implements AbstractWizard {
     currentCard: AbstractCard | null = null;
     health: number = 100;
     isBlockedNextTurn = false;
+    userIim: UserIim;
 
-    constructor(name: string, apiCards: ApiCard[]) {
+    constructor(name: string, apiCards: ApiCard[], userIim: UserIim) {
         this.id = v4()
         this.name = name
+        this.userIim = userIim
         this.cards = apiCards.map(apiCard => {
             const card = getCardByName(apiCard.key)
             if(!card) {
@@ -28,6 +31,7 @@ export class Wizard implements AbstractWizard {
             }
             return card
         }).filter(card => card !== undefined) as AbstractCard[];
+        this.cards = shuffleArray(this.cards);
     }
 
     takeDamage(damage: number) {
@@ -68,7 +72,7 @@ export class Wizard implements AbstractWizard {
             draft: this.draft.map(card => card.key),
             hand: this.hand.map(card => card.key),
             currentCard: this.currentCard?.key,
-            health: this.health,
+            health: this.health
         }
     }
 }

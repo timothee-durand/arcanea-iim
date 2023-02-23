@@ -3,6 +3,7 @@ import type {Socket} from "socket.io-client";
 import {inject, ref, computed, onBeforeUnmount} from "vue";
 import {useAuthStore} from "@/store/auth";
 import { useToast } from "vue-toastification";
+import {CardName} from "../../../@types/cardsName";
 
 const idRoom = ref<String>("");
 const userName = ref<String>("");
@@ -13,12 +14,17 @@ const store = useAuthStore();
 
 const socket: Socket = inject("socket") as Socket;
 
-socket.on("userJoined", (payload) => {
-  console.log(payload, payload.duel.roomId, payload.userId, payload.duel)
+socket.on("roomJoined", (payload) => {
+  console.log(payload, payload.duel.roomId, payload.duel)
   store.roomId = payload.duel.roomId
   store.user = payload.user
   store.room = payload.duel
   toast.success("You joined the room")
+})
+
+socket.on("endDuel", (payload: object) => {
+  console.log("endDuel", payload)
+  toast.success("You won the duel")
 })
 
 const joinRoom = () => {
@@ -44,9 +50,9 @@ socket.on("updateRoom", (payload) => {
   console.log("updateRoom", payload)
 })
 
-function playCard(card: string) {
-  console.log("playCard", card)
-  socket.emit("playCard", store.roomId, store.user?.id, card)
+function playCard(cardName: CardName) {
+  console.log("playCard", cardName)
+  socket.emit("playCard", store.roomId, store.user?.id, cardName)
 }
 
 onBeforeUnmount(() => {

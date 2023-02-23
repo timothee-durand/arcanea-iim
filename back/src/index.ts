@@ -30,14 +30,15 @@ const port = process.env.PORT || 3000
 
 
 io.on('connection', (socket) => {
-    socket.on("joinRoom", (roomId, username) => {
-        joinRoom(io, socket, roomId, username)
+    socket.on("joinRoom", async (roomId, username, password) => {
+        await joinRoom(io, socket, roomId, username, password)
     })
 
     socket.on("playCard", async (roomId, userId, cardName) => {
         console.log(`${cardName} try added to board by ${userId}`)
         await playCard(io, socket, roomId, userId, cardName)
     })
+
     socket.on("leaveRoom", async (roomId, userId) => {
         await leaveRoom(io, socket, roomId, userId)
         console.log(`${userId} leave  ${roomId}`)

@@ -9,25 +9,25 @@ export class AvadaKedavra extends BaseCard implements AbstractCard {
         super(AVADA_KEDAVRA, name);
     }
 
-    async action({  defender }: { defender: Wizard}) {
+    async action({  defender, attacker }: { defender: Wizard, attacker: Wizard }) {
         if(defender.health > 15) return {
-            action: this.getHistoryAction(defender, true),
-            block: true
+            action: this.getHistoryAction(defender, attacker, true),
+            block: false
         }
         defender.takeDamage(100);
-        return { action: this.getHistoryAction(defender, false), block : false }
+        return { action: this.getHistoryAction(defender, attacker, false), block : false }
     }
 
-    getHistoryAction(defender: Wizard, blocked: boolean): HistoryAction {
+    getHistoryAction(defender: Wizard, attacker:Wizard, hasEffect: boolean): HistoryAction {
         return {
             player: {
-                name: defender.name,
+                name: attacker.name,
             },
             card: {
                 name: this.title,
-                type: "Attack"
+                type: "Unforgivable"
             },
-            info: blocked ? `${this.title} has no effect on ${defender.name} because it has more than 15hp` :`${defender.name} has been attacked by ${this.title} and take 100 damage`
+            info: hasEffect ? `${this.title} has no effect on ${defender.name} because it has more than 15hp` :`${defender.name} has been attacked by ${this.title} and take 100 damage`
         }
     }
 }
