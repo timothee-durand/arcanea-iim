@@ -28,6 +28,10 @@ socket.on("roomJoined", (payload) => {
   router.push({name: GAME_ROUTE_NAME})
 })
 
+socket.on("rooms", (payload: any) => {
+  console.log("rooms", payload)
+})
+
 
 socket.on("errorLogin", (error: string) => {
   console.log("errorLogin", error)
