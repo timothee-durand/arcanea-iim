@@ -1,10 +1,10 @@
 <template>
   <div class="app-duel">
     <div class="app-top">
-      <DuelComponent/>
+      <DuelComponent :card="myCard" :other-card="otherCard"/>
       <HistoricDuelComponent/>
     </div>
-    <HandComponent/>
+    <HandComponent @use-card="(c) => myCard = c" @show-other-card="(c) => otherCard = c"/>
   </div>
 </template>
 
@@ -12,7 +12,7 @@
 import DuelComponent from "@/components/DuelComponent.vue";
 import HistoricDuelComponent from "@/components/HistoricDuelComponent.vue";
 import HandComponent from "@/components/HandComponent.vue";
-import {inject} from "vue";
+import {inject, ref} from "vue";
 import {Socket} from "socket.io-client";
 import {Wizard} from "@/core/wizard";
 import {useAuthStore} from "@/store/auth";
@@ -37,6 +37,9 @@ socket.on('inGameError', (error: string) => {
   console.log("error", error)
   toast.error(error)
 })
+
+const myCard = ref(null)
+const otherCard = ref(null)
 </script>
 
 <style scoped>
