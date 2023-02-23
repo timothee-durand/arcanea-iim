@@ -1,4 +1,4 @@
-import {AVADA_KEDAVRA, PROTEGO} from "../../../../../@types/cardsName";
+import {AVADA_KEDAVRA, PROTEGO, VULNERA_SANENTUR} from "../../../../../@types/cardsName";
 import {AbstractCard, BaseCard, Order} from "../../base";
 import {Wizard} from "../../wizard";
 import {HistoryAction} from "../../../../../@types/dto/HistoryAction";
@@ -7,7 +7,7 @@ export class VulneraSanentur extends BaseCard implements AbstractCard {
     health = 20;
 
     constructor(name: string) {
-        super(PROTEGO, name);
+        super(VULNERA_SANENTUR, name);
     }
 
     async action({attacker, defender}: { attacker: Wizard, defender: Wizard }) {

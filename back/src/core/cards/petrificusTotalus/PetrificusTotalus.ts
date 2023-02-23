@@ -1,13 +1,13 @@
 import {PetrificusTotalusAsyncAction} from "./PetrificusTotalusAsyncAction";
 import {AbstractCard, BaseCard} from "../../base";
-import {EXPELLIARMUS} from "../../../../../@types/cardsName";
+import {PETRIFICUS_TOTALUS} from "../../../../../@types/cardsName";
 import {HistoryAction} from "../../../../../@types/dto/HistoryAction";
 import {Wizard} from "../../wizard";
 
 export class PetrificusTotalus extends BaseCard implements AbstractCard {
     damages = 5;
     constructor(name: string) {
-        super(EXPELLIARMUS, name);
+        super(PETRIFICUS_TOTALUS, name);
     }
 
     async action({defender, attacker} : {defender: Wizard, attacker: Wizard}) : Promise<{ action : HistoryAction, block : boolean }>{
