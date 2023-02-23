@@ -122,9 +122,9 @@
                 }
 
                 this.deck = this.authStore.user.cards.map((cardName) => {
-                    if (this.cardsApi.find(element => element.key === cardName)) {
-                        return this.cardsApi.find(element => element.key === cardName);
-                    }
+                  const card = this.cardsApi.find(element => element.key === cardName);
+                  if(!card) console.log('card not found', cardName)
+                  return card;
                 });
             },
             async fetchCards() {
