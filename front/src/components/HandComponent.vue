@@ -1,4 +1,5 @@
 <template>
+    <section class="draft">
     <section class="container">
         <section class="draft">
             <div class="draft-box box">
@@ -31,6 +32,7 @@
         <div class="blur" v-show="canvas"></div>
         <canvas class="canvas" ref="canvas" v-show="canvas"></canvas>
     </section>
+  </section>
 </template>
 <script>
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
@@ -76,13 +78,13 @@
             this.viewport = this.setViewportSize(this.container);
             this.launchDuel();
 
-            this.socket.on('updateRoom', (payload) => {
-                this.updateDuel(payload);
-            });
+    this.socket.on('updateRoom', (payload) => {
+      this.updateDuel(payload);
+    });
 
-            this.socket.on('pushActions', (payload) => {
-                this.updateHistoric(payload);
-            });
+    this.socket.on('pushActions', (payload) => {
+      this.updateHistoric(payload);
+    });
 
             this.socket.on('showBoard', (boardArray) => {
               console.log('showboard', boardArray)
@@ -103,12 +105,12 @@
                 this.$emit('play-card', playedCard);
                 this.$emit('show-other-card', null)
 
-                this.socket.emit('playCard',
-                    this.authStore.room.roomId,
-                    this.authStore.user.id,
-                    playedCard.key,
-                );
-            },
+      this.socket.emit('playCard',
+          this.authStore.room.roomId,
+          this.authStore.user.id,
+          playedCard.key,
+      );
+    },
 
             updateDuel(payload) {
                 console.log(payload);
@@ -120,9 +122,9 @@
                 }
 
                 this.deck = this.authStore.user.cards.map((cardName) => {
-                    if (this.cardsApi.find(element => element.key === cardName)) {
-                        return this.cardsApi.find(element => element.key === cardName);
-                    }
+                  const card = this.cardsApi.find(element => element.key === cardName);
+                  if(!card) console.log('card not found', cardName)
+                  return card;
                 });
             },
             async fetchCards() {
@@ -143,10 +145,10 @@
                 this.backCard = await back.json();
             },
 
-            async launchDuel() {
-                await this.constructDeck();
-                this.drawCard(3);
-            },
+    async launchDuel() {
+      await this.constructDeck();
+      this.drawCard(3);
+    },
 
             drawCard(count) {
                 if (this.canDraw && this.deck.length >= count ) {
@@ -391,4 +393,46 @@
             cursor: pointer
         }
     }
+
+    h2 {
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    &__card {
+      height: 100%;
+      transform: translate(-50%, -50%);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+    }
+  }
+
+  .viewed {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 450px !important;
+    height: calc(450px * 1.4) !important;
+    z-index: 1000;
+  }
+
+  .overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+  }
+
+  .active {
+    display: block;
+  }
+}
 </style>
