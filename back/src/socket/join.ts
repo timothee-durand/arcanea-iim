@@ -32,6 +32,8 @@ export async function joinRoom (io: Server, socket: Socket, idRooms: string, use
                 wizardsRoom[newPlayer.id] = idRooms
                 const resultStartIim = await postStart("arcaneaIim", room.userPlayerIimId, "1v1", response.token)
                 console.log("game started on iim", resultStartIim)
+                room.iimGameId = resultStartIim.id
+                console.log(room.iimGameId)
                 socket.join(idRooms)
                 emitRoomJoined(io,socket, room, newPlayer)
             } catch (e) {
@@ -45,8 +47,6 @@ export async function joinRoom (io: Server, socket: Socket, idRooms: string, use
         console.log('error on iim login', e?.response?.data?.message)
         socket.emit("errorLogin", e?.response?.data?.message);
     }
-
-
 }
 
 function emitRoomJoined(io: Server, socket: Socket, room: Duel, user: Wizard) {

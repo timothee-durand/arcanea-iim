@@ -22,6 +22,7 @@ type BoardCard = {
 
 export class Duel {
     public readonly roomId: string;
+    public iimGameId: number;
     players: Wizard[] =[];
     private turn: number;
     private readonly cards: ApiCard[];
@@ -156,4 +157,5 @@ export class Duel {
         //@ts-ignore
         return this.players.map(players => players.userIim.iimId)
     }
+
 }
