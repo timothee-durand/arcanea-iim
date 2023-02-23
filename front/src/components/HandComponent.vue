@@ -1,7 +1,5 @@
 <template>
-    <div class="overlay"></div>
     <section class="container">
-        <div class="canvas" ref="canvas"></div>
         <section class="draft">
             <div class="draft-box box">
                 <h2>Draft</h2>
@@ -11,14 +9,15 @@
         <section class="hand">
             <div class="hand-box box">
                 <h2>Card 1</h2>
-                <img v-if="hand[0]" v-on:click.right="showCard" v-on:click="playCard(hand[0])" class="hand-box__card" :src="hand[0].image">
+                <img :alt="hand[0].name" v-if="hand[0]" @click="showCard(hand[0].image)" v-on:click.right="playCard(hand[0])" class="hand-box__card" :src="hand[0].image">
             </div>
             <div class="hand-box box">
                 <h2>Card 2</h2>
-                <img v-if="hand[1]" v-on:click.right="showCard" v-on:click="playCard(hand[1])" class="hand-box__card" :src="hand[1].image">
+                <img :alt="hand[1].name" v-if="hand[1]" @click="showCard(hand[1].image)" v-on:click.right="playCard(hand[1])" class="hand-box__card" :src="hand[1].image">
             </div>
             <div class="hand-box box">
                 <h2>Card 3</h2>
+                <img :alt="hand[2].name" v-if="hand[2]" @click="showCard(hand[2].image)" v-on:click.right="playCard(hand[2])" class="hand-box__card" :src="hand[2].image">
                 <img v-if="hand[2]" v-on:click.right="showCard" v-on:click="playCard(hand[2])" class="hand-box__card" :src="hand[2].image">
             </div>
         </section>
@@ -27,14 +26,17 @@
                 <h2>Draw</h2>
                 <img v-on:click="drawCard(1)" v-if="deck && deck.length > 0" :class="canDraw ? 'draw-box__card canDraw' : 'draw-box__card'" src="@/assets/img/card-back.png">
             </div>
-
         </section>
+        <div class="cross" v-show="canvas" @click="this.canvas = false"></div>
+        <div class="blur" v-show="canvas"></div>
+        <canvas class="canvas" ref="canvas" v-show="canvas"></canvas>
     </section>
 </template>
 <script>
-    import * as THREE from 'three';
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
+    import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
     import threeMixin from '../mixins/threeMixin';
-    import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+    import {Socket} from 'socket.io-client';
     import {useAuthStore} from '@/store/auth';
     import {inject} from 'vue';
     import {mapStores} from 'pinia';
@@ -55,6 +57,8 @@
                 deck: null,
                 hand: [],
                 socket: inject("socket"),
+                canvas: false,
+                backCard: null
             };
         },
         computed: {
@@ -88,8 +92,6 @@
               console.log({apiCard})
               this.$emit('show-other-card', apiCard);
             });
-
-            this.createScene();
         },
         methods: {
             updateHistoric(payload) {
@@ -98,8 +100,8 @@
 
             playCard(playedCard) {
                 this.hand = this.hand.filter(card => card !== playedCard);
-                this.$emit('use-card', playedCard);
-                this.$emit("show-other-card", null)
+                this.$emit('play-card', playedCard);
+                this.$emit('show-other-card', null)
 
                 this.socket.emit('playCard',
                     this.authStore.room.roomId,
@@ -111,10 +113,6 @@
             updateDuel(payload) {
                 console.log(payload);
                 this.authStore.room.players = payload.players;
-            },
-            showCard(event) {
-                event.target.classList.toggle('viewed');
-                document.querySelector('.overlay').classList.toggle('active');
             },
             async constructDeck() {
                 if (!this.cardsApi) {
@@ -128,11 +126,11 @@
                 });
             },
             async fetchCards() {
-                var myHeaders = new Headers();
+                const myHeaders = new Headers();
                 myHeaders.append('apikey', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzY5ODU5MDksImV4cCI6MTk5MjU2MTkwOX0.uq-mxWGU7ayNeoA0gkGRkWBTEz2hR1bIuReLittF0BI');
                 myHeaders.append('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY3Njk4NTkwOSwiZXhwIjoxOTkyNTYxOTA5fQ.RP5ToLS04asei6AMnzwDgse6LyG0vANaFqM5uzn-SJc');
 
-                var requestOptions = {
+                const requestOptions = {
                     method: 'GET',
                     headers: myHeaders,
                     redirect: 'follow',
@@ -140,6 +138,9 @@
 
                 const response = await fetch('https://ktyxaunussvaacscgpon.supabase.co/rest/v1/Cards?select=*', requestOptions);
                 this.cardsApi = await response.json();
+
+                const back = await fetch('https://ktyxaunussvaacscgpon.supabase.co/rest/v1/Cards?name=eq.back', requestOptions);
+                this.backCard = await back.json();
             },
 
             async launchDuel() {
@@ -155,60 +156,98 @@
                 }
                 //emit event to update hand and deck with socket.io
             },
+            showCard(image) {
+                this.canvas = true;
 
-            createScene() {
-                window.addEventListener('resize', this.onWindowResize.bind(this));
-                this.scene = new THREE.Scene();
-                this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
-                this.renderer.setSize(this.viewport.width, this.viewport.height);
-                this.renderer.setPixelRatio(window.devicePixelRatio);
-                this.setUpCamera();
-                this.createControls();
-                this.createLight();
-                this.container.appendChild(this.renderer.domElement);
-                this.renderer.outputEncoding = THREE.sRGBEncoding;
-                this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-                this.renderer.toneMappingExposure = 1.25;
-                this.render();
-            },
-            createControls() {
-                this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-                this.controls.autoRotate = true;
-                this.controls.autoRotateSpeed = 1;
-                this.controls.enableDamping = true;
-            },
-            createLight() {
-                const blueLight = new THREE.SpotLight(0x0000ff, .2);
-                this.pointLight = new THREE.SpotLight(0xffff00, 1);
-                this.pointLight.position.set(200, 200, 200);
-                blueLight.position.set(-200, 500, -100);
-                this.scene.add(this.pointLight);
-                this.scene.add(blueLight);
-            },
-            onMouseHover(el) {
-                el.addEventListener('mouseenter', () => {
-                    this.isHover = true;
+                const frontCard = new Image();
+                frontCard.src = image;
+                const textureFront = new THREE.Texture();
+                textureFront.image = frontCard;
+                frontCard.onload = () => {
+                    textureFront.needsUpdate = true;
+                };
+
+                textureFront.wrapS = textureFront.wrapT = THREE.MirroredRepeatWrapping;
+
+                const backCard = new Image();
+                backCard.src = this.backCard[0].image;
+                const textureBack = new THREE.Texture();
+                textureBack.image = backCard;
+                backCard.onload = () => {
+                    textureBack.needsUpdate = true;
+                };
+
+                textureBack.wrapS = textureBack.wrapT = THREE.MirroredRepeatWrapping;
+
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({
+                    canvas: this.$refs.canvas,
+                    alpha: true,
                 });
-                el.addEventListener('mouseleave', () => {
-                    this.isHover = false;
-                });
-            },
-            onWindowResize() {
-                // redefine the viewport
-                this.viewport = this.setViewportSize(this.container);
-                this.camera.aspect = this.viewport.aspectRatio;
-                this.camera.fov = (180 * (2 * Math.atan(this.viewport.height / 2 / this.perspective))) / Math.PI;
-                this.renderer.setSize(this.viewport.width, this.viewport.height);
-                this.camera.updateProjectionMatrix();
-            },
-            render() {
-                this.controls.update();
-                this.renderer.render(this.scene, this.camera);
-                requestAnimationFrame(this.render);
-            },
-            setUpCamera() {
-                this.camera = new THREE.PerspectiveCamera(50, this.viewport.width / this.viewport.height, 1, 1000);
-                this.camera.position.set(0, 0, 600);
+                renderer.setSize(window.innerWidth, window.innerHeight);
+
+                const geometry1 = new THREE.PlaneGeometry(0.65, 1);
+
+                const geometry2 = new THREE.PlaneGeometry(0.65, 1);
+                geometry2.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI));
+
+                const material1 = new THREE.MeshLambertMaterial({map: textureFront});
+                const material2 = new THREE.MeshLambertMaterial({map: textureBack});
+
+                const plane1 = new THREE.Mesh(geometry1, material1);
+                const plane2 = new THREE.Mesh(geometry2, material2);
+
+                const group = new THREE.Group();
+                group.add(plane1);
+                group.add(plane2);
+
+                scene.add(group);
+
+                scene.add(new THREE.HemisphereLight(0xaaaaaa, 0x333333));
+
+                const keyLight = new THREE.PointLight(0xaaaaaa);
+                keyLight.position.x = 15;
+                keyLight.position.y = -10;
+                keyLight.position.z = 35;
+                scene.add(keyLight);
+
+                const rimLight = new THREE.PointLight(0x888888);
+                rimLight.position.x = 100;
+                rimLight.position.y = 100;
+                rimLight.position.z = -50;
+                scene.add(rimLight);
+
+                camera.position.z = 2;
+
+                const render = function () {
+
+                    requestAnimationFrame(render);
+
+                    renderer.render(scene, camera);
+
+                };
+
+                render();
+
+                const controls = new OrbitControls(camera, renderer.domElement);
+
+                //controls.update() must be called after any manual changes to the camera's transform
+                camera.position.set(0, 0, 1);
+                // controls.autoRotate = true;
+                controls.update();
+
+                function animate() {
+
+                    requestAnimationFrame(animate);
+
+                    // required if controls.enableDamping or controls.autoRotate are set to true
+
+                    controls.update();
+                    renderer.render(scene, camera);
+                }
+
+                animate();
             },
         },
     };
@@ -218,9 +257,6 @@
         height: 30vh;
         display: flex;
         width: 100%;
-        .draggable-img {
-            cursor: grab;
-        }
       .connexionButton {
         margin: 0 1rem;
       }
@@ -229,7 +265,12 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 30vh;
+            height: 100vh;
+            z-index: 101;
+            cursor: grab;
+        }
+        .draggable-img {
+            cursor: grab;
         }
         .draw, .hand, .draft {
             padding: 25px;
@@ -327,18 +368,27 @@
             height: calc(450px * 1.4) !important;
             z-index: 1000;
         }
-        .overlay {
-            display: none;
+        .blur {
+            width: 100%;
+            height: 100%;
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 999;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(8px);
+            z-index: 100;
         }
-        .active {
-            display: block;
+        .cross {
+            position: fixed;
+            background-image: url('/src/assets/img/close.svg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            width: 50px;
+            aspect-ratio: 1/1;
+            top: 15px;
+            right: 15px;
+            z-index: 102;
+            cursor: pointer
         }
     }
 </style>

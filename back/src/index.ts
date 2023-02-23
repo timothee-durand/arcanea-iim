@@ -1,7 +1,6 @@
 
 import {createServer} from "http";
 import {Server} from "socket.io";
-import {router} from "./api";
 import helmet from "helmet";
 // @ts-ignore
 const cors = require("cors");
@@ -13,7 +12,6 @@ app.use(helmet());
 app.use(cors({
     origin: '*',
 }))
-app.use("/api", router)
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
