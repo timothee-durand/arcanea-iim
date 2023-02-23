@@ -5,7 +5,7 @@
         <HistoricDuelComponent/>
       </div>
     <keep-alive>
-      <HandComponent @use-card="(c) => myCard = c" @show-other-card="(c) => otherCard = c"/>
+      <HandComponent @play-card="(c) => myCard = c" @show-other-card="(c) => otherCard = c"/>
     </keep-alive>
   </div>
 </template>
