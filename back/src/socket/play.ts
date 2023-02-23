@@ -1,5 +1,6 @@
 import {deleteRoom, findRoom} from "./singletons";
 import {Server, Socket} from "socket.io";
+import { postEndGame } from "../services/iimApi";
 
 export async function playCard(io: Server, socket: Socket, roomId: string, userId: string, cardName: string) {
     try {
@@ -17,6 +18,8 @@ export async function playCard(io: Server, socket: Socket, roomId: string, userI
                         let winner = room.players.find(player => player.health > 0);
                         io.in(room.roomId).emit('endDuel', winner.toObject())
                         console.log(`${winner.name} coucou won the duel!`)
+                        const resultEndGame = await postEndGame(room.iimGameId, room.userPlayerIimId, winner.userIim.iimId, winner.userIim.iimToken)
+                        console.log(resultEndGame)
                         deleteRoom(room.roomId)
                     }
                 }

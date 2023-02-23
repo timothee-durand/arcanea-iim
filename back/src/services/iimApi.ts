@@ -42,3 +42,16 @@ export const postStart = async (game: string, userIds: string[], type: string, t
         } 
     )
 }
+
+export const postEndGame = async (gameId: number, userIds: string[], userId: string, token: string) => {
+    return await makeRequest('post', 'matches/end',
+        {
+            "gameId": gameId,
+            "userIds": userIds,
+            "userId": userId
+        },
+        {
+            'Authorization': `Bearer ${token}`
+        }
+    )
+}
