@@ -95,6 +95,7 @@ const joinRoom = () => {
 .container {
   position: relative;
   max-height: 100vh;
+  overflow: hidden;
 
   img:nth-child(3) {
     width: 400px;
