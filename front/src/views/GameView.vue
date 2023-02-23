@@ -5,7 +5,7 @@
         <HistoricDuelComponent/>
       </div>
     <keep-alive>
-      <HandComponent @play-card="(c) => myCard = c" @show-other-card="(c) => otherCard = c"/>
+      <HandComponent @play-card="playCard" @show-other-card="(c) => otherCard = c"/>
     </keep-alive>
   </div>
 </template>
@@ -22,14 +22,11 @@ import {useRouter} from "vue-router";
 import {END_GAME_ROUTE} from "@/router";
 import {useToast} from "vue-toastification";
 
-const card = ref<Object>(null);
-const draft = ref<Array<Object>>([])
+const myCard = ref<Object>(null);
+const otherCard = ref(null);
 
 function playCard(playedCard: Object) {
-    if (card.value !== null) {
-        draft.value.push(card.value);
-    }
-    card.value = playedCard;
+    myCard.value = playedCard;
 }
 
 
@@ -50,9 +47,6 @@ socket.on('inGameError', (error: string) => {
   console.log("error", error)
   toast.error(error)
 })
-
-const myCard = ref(null)
-const otherCard = ref(null)
 </script>
 
 <style scoped>
