@@ -57,7 +57,7 @@ const joinRoom = () => {
 </script>
 <template>
   <div class="container">
-    <form @submit="joinRoom" class="formContainer">
+    <form @submit.prevent="joinRoom" class="formContainer">
       <h1>Connexion</h1>
       <div class="spaceBetweenTerms"/>
       <span class="spaceBetweenTerms">

@@ -15,7 +15,7 @@ export async function playCard(io: Server, socket: Socket, roomId: string, userI
 
                 for (const player of room.players) {
                     if(player.health <= 0) {
-                        let winner = room.players.find(player => player.health > 0);
+                        let winner = room.players.sort((a, b) => b.health - a.health)[0]
                         io.in(room.roomId).emit('endDuel', winner.toObject())
                         console.log(`${winner.name} coucou won the duel!`)
                         const resultEndGame = await postEndGame(room.iimGameId, room.userPlayerIimId, winner.userIim.iimId, winner.userIim.iimToken)
