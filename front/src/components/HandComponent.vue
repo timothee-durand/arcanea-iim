@@ -21,8 +21,8 @@
         <div class="hand-box box">
           <h2>Card 3</h2>
           <img :alt="hand[2].name" v-if="hand[2]" @click="showCard(hand[2].image)" v-on:click.right="playCard(hand[2])"
-               class="hand-box__card" :src="hand[2].image">
-          <img v-if="hand[2]" v-on:click.right="showCard" v-on:click="playCard(hand[2])" class="hand-box__card"
+               class="hand-box__card --third" :src="hand[2].image">
+          <img v-if="hand[2]" v-on:click.right="showCard" v-on:click="playCard(hand[2])" class="hand-box__card --third"
                :src="hand[2].image">
         </div>
       </section>
@@ -355,6 +355,7 @@ section.container {
       left: 50%;
       height: 100%;
       cursor: pointer;
+
     }
   }
 
@@ -459,6 +460,20 @@ h2 {
 
 .active {
   display: block;
+}
+
+.--third {
+  animation: drawAnimation 0.5s ease-in-out;
+  @keyframes drawAnimation {
+    0% {
+      transform: translate(calc(-50% + 300px), -50%);
+      opacity: 0;
+    }
+    100% {
+      transform: translate(-50%, -50%);;
+      opacity: 1;
+    }
+  }
 }
 
 </style>
