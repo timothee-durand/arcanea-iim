@@ -31,11 +31,18 @@ let player2 = computed(() => {
       </div>
       <div class="duel-player__playedCard">
         <img v-if="props.card" class="hand-box__card" :src="props.card.image">
+        <video class="fx-effect" v-if="props.card && props.otherCard" autoplay width="500">
+          <source :src="'/fx/' + props.card.key + '_FX.webm'" type="video/webm">
+
+        </video>
       </div>
     </div>
     <div class="duel-player">
       <div class="duel-player__playedCard">
         <img v-if="props.otherCard" class="hand-box__card" :src="props.otherCard.image">
+        <video class="fx-effect" v-if="props.card && props.otherCard" autoplay width="500">
+          <source :src="'/fx/' + props.otherCard.key + '_FX.webm'" type="video/webm">
+        </video>
       </div>
       <p v-if="player2" class="duel-player__name">{{ player2.name }}</p>
       <b v-if="!player2" style="color: red" class="duel-player__name">En attente d'un autre joueur</b>
@@ -47,6 +54,13 @@ let player2 = computed(() => {
   </div>
 </template>
 <style scoped lang="scss">
+.fx-effect{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 998;
+}
 .roomName {
   color: white;
   font-size: 2rem;
@@ -116,7 +130,7 @@ let player2 = computed(() => {
       border-radius: 10px;
       margin: 10px 0;
       border: 2px solid white;
-      overflow: hidden;
+      position: relative;
 
       img {
         width: 100%;
