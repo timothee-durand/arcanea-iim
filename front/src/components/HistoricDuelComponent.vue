@@ -1,13 +1,16 @@
 <script>
 import {inject, ref} from 'vue'
 import {Socket} from "socket.io-client";
+import {DECK_ROUTE_NAME} from "@/router/routes";
 
 export default {
   name: "HistoricDuelComponent",
   data() {
     return {
       historic: [],
-      socket: inject("socket")
+      socket: inject("socket"),
+      deckRoute: DECK_ROUTE_NAME
+
     };
   },
   mounted() {
@@ -38,6 +41,7 @@ export default {
 <template>
   <div class="historic-container">
     <img class="historic__logo" src="@/assets/img/Arcanea-logo-white.png" alt="Logo Arcanea">
+    <router-link :to="{name:deckRoute}" class="connexionButton">Deck</router-link>
     <ul class="historic-list">
       <li class="historic-item" v-for="item in historic">
         <hr size="1" >
