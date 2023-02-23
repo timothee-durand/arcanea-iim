@@ -98,10 +98,14 @@ export default {
       const apiCard = this.cardsApi.find(card => card.key === otherPlayerCard.key);
       console.log({apiCard})
       this.$emit('show-other-card', apiCard);
-
+      this.canDraw = false;
+      let handCards = document.querySelectorAll('.hand-box__card');
+      handCards.forEach(card => card.style.pointerEvents = 'none');
       setTimeout(() => {
         this.$emit('show-other-card', null);
         this.$emit('play-card', null);
+        this.canDraw = true;
+        handCards.forEach(card => card.style.pointerEvents = 'auto');
       }, 3000)
     });
   },
