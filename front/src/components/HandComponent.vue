@@ -98,6 +98,11 @@ export default {
       const apiCard = this.cardsApi.find(card => card.key === otherPlayerCard.key);
       console.log({apiCard})
       this.$emit('show-other-card', apiCard);
+
+      setTimeout(() => {
+        this.$emit('show-other-card', null);
+        this.$emit('play-card', null);
+      }, 3000)
     });
   },
   methods: {
