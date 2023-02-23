@@ -135,7 +135,7 @@ export default {
         const card = this.cardsApi.find(element => element.key === cardName);
         if (!card) console.log('card not found', cardName)
         return card;
-      });
+      }).filter(card => card !== undefined);
     },
     async fetchCards() {
       const myHeaders = new Headers();

@@ -1,6 +1,5 @@
 <script>
 import {inject, ref} from 'vue'
-import {Socket} from "socket.io-client";
 import {DECK_ROUTE_NAME} from "@/router/routes";
 
 export default {
@@ -23,11 +22,10 @@ export default {
 
   methods: {
     updateHistoric(payload) {
-      payload.map((item, index) => {
+      payload.map((item) => {
         this.historic.push(item);
       })
-      let container = document.querySelector(".historic-container");
-      container.scrollTop = container.scrollHeight;
+      this.$refs.container.scrollTop = this.$refs.container.scrollHeight;
     }
   },
 }
@@ -39,14 +37,14 @@ export default {
 </script>
 
 <template>
-  <div class="historic-container">
+  <div class="historic-container" ref="container">
     <img class="historic__logo" src="@/assets/img/Arcanea-logo-white.png" alt="Logo Arcanea">
     <router-link :to="{name:deckRoute}" class="connexionButton">Deck</router-link>
     <ul class="historic-list">
       <li class="historic-item" v-for="item in historic">
         <hr size="1" >
         <p class="historic-item-player">{{item.player.name}} à lancé
-          <span :style="[item.card.type==='Attack' ? 'color:red' :
+          <span class="historic-item-type" :style="[item.card.type==='Attack' ? 'color:red' :
                          item.card.type==='Utility' ? 'color:yellow' :
                          item.card.type==='Unforgivable' ? 'color:green' :
                          item.card.type==='Defense' ? 'color: blue' : 'color:white']">
@@ -96,7 +94,7 @@ export default {
   }
 
   &-item{
-
+    font-size: 0.9rem;
     box-sizing: border-box;
     &-player {
       font-weight: bold;
@@ -110,6 +108,10 @@ export default {
       color: #cccccc;
       font-weight: lighter;
       font-style: italic;
+    }
+
+    &-type {
+      font-family: var(--font-title);
     }
   }
 
