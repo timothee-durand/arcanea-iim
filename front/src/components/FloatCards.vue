@@ -134,7 +134,7 @@ export default {
       rimLight.position.z = -50;
       scene.add(rimLight);
 
-      camera.position.z = 3;
+      camera.position.z = 2.5;
 
       /* const controls = new OrbitControls(camera, renderer.domElement); */
 
@@ -159,22 +159,18 @@ export default {
       group.children[2].position.y = -0.5;
       group.children[2].rotateX(6);
 
-      group.children[4].position.x = -2;
-      group.children[4].position.y = 0.34;
+      group.children[4].position.x = 1.7;
+      group.children[4].position.y = 0.2;
       group.children[4].rotateX(6);
 
-      group.children[8].position.x = -3;
-      group.children[8].position.y = 1.5;
-      group.children[8].rotateX(6);
-      /* group.children[0].rotateY(6.5); */
 
-      group.children.forEach((item) => {
+      group.children.forEach((item, index) => {
         scene.add(item);
         var render = function () {
           // rotate group every frame
           requestAnimationFrame(render);
-          item.rotation.y += 0.002;
-          item.rotation.x += 0.002;
+          item.rotation.y += (index + 1) * 0.001;
+          item.rotation.x += 0.0035 / (index + 1);
 
           renderer.render(scene, camera);
         };
@@ -182,9 +178,9 @@ export default {
         render();
       });
 
-      let num = 9;
+      let num = 7;
       for (let i = 0; i < 14; i++) {
-        scene.children.splice(num, 8);
+        scene.children.splice(num, 9);
       }
 
       window.addEventListener("resize", onWindowResize, false);

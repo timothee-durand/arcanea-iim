@@ -52,16 +52,13 @@ const joinRoom = () => {
       </span>
       <div class="formConnexion">
         <input class="inputCustom" placeholder="PSEUDO" v-model="userName" />
-        <input
-          class="inputCustom"
-          placeholder="MOT DE PASSE"
-          v-model="password"
-        />
+        <input class="inputCustom" placeholder="MOT DE PASSE" v-model="password" />
         <input class="inputCustom" placeholder="ROOM" v-model="idRoom" />
         <input type="submit" value="CONNEXION" class="connexionButton" />
       </div>
     </form>
     <FloatCards />
+    <img src="../assets/img/deck.png" alt="deck" class="deck" />
     <div class="logoRow">
       <img class="imgLogo" :src="arcaneaLogo" />
     </div>
@@ -72,6 +69,13 @@ const joinRoom = () => {
   position: relative;
   max-height: 100vh;
   overflow: hidden;
+
+  img:nth-child(3) {
+    width: 400px;
+    position: absolute;
+    bottom: -100px;
+    right: 22%
+  }
 
   .formContainer {
     display: flex;
