@@ -10,7 +10,7 @@
             <section class="hand">
                 <div class="hand-box box">
                     <h2>Card 1</h2>
-                    <img :alt="hand[0].name" v-if="hand[0]" v-on:click.right="showCard(hand[0].image)" @clickt="playCard(hand[0])" class="hand-box__card" :src="hand[0].image">
+                    <img :alt="hand[0].name" v-if="hand[0]" v-on:click.right="showCard(hand[0].image)" @click="playCard(hand[0])" class="hand-box__card" :src="hand[0].image">
                 </div>
                 <div class="hand-box box">
                     <h2>Card 2</h2>
@@ -178,7 +178,8 @@
                     }
                 }
                 if (this.deck.length === 0) {
-                    this.deck = this.randomize(this.draft);
+                    this.deck.push(...this.randomize(this.draft));
+                    this.draft = [];
                 }
                 //emit event to update hand and deck with socket.io
             },
