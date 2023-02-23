@@ -138,8 +138,8 @@ export class Duel {
         }
     }
 
-    get boardObject() : CardName[] {
-        return this.board.map(boardCard => boardCard.card.key)
+    get boardObject() : BoardCard[] {
+        return this.board
     }
 
     removePlayer(userId: string) : Wizard {

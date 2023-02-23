@@ -6,10 +6,10 @@ export async function playCard(io: Server, socket: Socket, roomId: string, userI
         const room = findRoom(roomId)
         if (room) {
             room.addCardToBoard(cardName, userId)
-            io.in(room.roomId).emit('showBoard', room.boardObject)
+            const boardObject = [...room.boardObject]
             const turnResult = await room.tryPlayTurn()
             if(turnResult !== false) {
-
+                io.in(room.roomId).emit('showBoard', boardObject)
                 io.in(room.roomId).emit('pushActions', turnResult)
 
                 for (const player of room.players) {

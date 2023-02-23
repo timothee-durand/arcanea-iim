@@ -11,15 +11,15 @@
         <section class="hand">
             <div class="hand-box box">
                 <h2>Card 1</h2>
-                <img v-if="hand[0]" v-on:click="showCard" v-on:click.right="playCard(hand[0])" class="hand-box__card" :src="hand[0].image">
+                <img v-if="hand[0]" v-on:click.right="showCard" v-on:click="playCard(hand[0])" class="hand-box__card" :src="hand[0].image">
             </div>
             <div class="hand-box box">
                 <h2>Card 2</h2>
-                <img v-if="hand[1]" v-on:click="showCard" v-on:click.right="playCard(hand[1])" class="hand-box__card" :src="hand[1].image">
+                <img v-if="hand[1]" v-on:click.right="showCard" v-on:click="playCard(hand[1])" class="hand-box__card" :src="hand[1].image">
             </div>
             <div class="hand-box box">
                 <h2>Card 3</h2>
-                <img v-if="hand[2]" v-on:click="showCard" v-on:click.right="playCard(hand[2])" class="hand-box__card" :src="hand[2].image">
+                <img v-if="hand[2]" v-on:click.right="showCard" v-on:click="playCard(hand[2])" class="hand-box__card" :src="hand[2].image">
             </div>
         </section>
         <section class="draw">
@@ -81,6 +81,15 @@
                 this.updateHistoric(payload);
             });
 
+            this.socket.on('showBoard', (boardArray) => {
+              console.log('showboard', boardArray)
+              const {card : otherPlayerCard} = boardArray.find(card => card.playerId !== this.authStore.user.id);
+              console.log({otherPlayerCard})
+              const apiCard = this.cardsApi.find(card => card.key === otherPlayerCard.key);
+              console.log({apiCard})
+              this.$emit('show-other-card', apiCard);
+            });
+
             this.createScene();
         },
         methods: {
@@ -91,6 +100,7 @@
             playCard(playedCard) {
                 this.hand = this.hand.filter(card => card !== playedCard);
                 this.$emit('use-card', playedCard);
+                this.$emit("show-other-card", null)
 
                 this.socket.emit('playCard',
                     this.authStore.room.roomId,
