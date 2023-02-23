@@ -27,6 +27,7 @@
                 <h2>Draw</h2>
                 <img v-on:click="drawCard(1)" v-if="deck && deck.length > 0" :class="canDraw ? 'draw-box__card canDraw' : 'draw-box__card'" src="@/assets/img/card-back.png">
             </div>
+
         </section>
     </section>
 </template>
@@ -34,9 +35,8 @@
     import * as THREE from 'three';
     import threeMixin from '../mixins/threeMixin';
     import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-    import {Socket} from 'socket.io-client';
     import {useAuthStore} from '@/store/auth';
-    import {inject, ref} from 'vue';
+    import {inject} from 'vue';
     import {mapStores} from 'pinia';
 
     export default {
@@ -54,8 +54,7 @@
                 cardsApi: null,
                 deck: null,
                 hand: [],
-                socket: inject("socket")
-
+                socket: inject("socket"),
             };
         },
         computed: {
@@ -222,6 +221,9 @@
         .draggable-img {
             cursor: grab;
         }
+      .connexionButton {
+        margin: 0 1rem;
+      }
         .canvas {
             position: absolute;
             bottom: 0;

@@ -37,3 +37,16 @@ h1, h2, h3 {
     font-family: var(--font-title);
 }
 
+.connexionButton {
+    background-color: #514A92;
+    border-radius: 50px;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    font-size: 15px;
+    text-decoration: none;
+    display: flex;
+    place-content: center;
+    margin: 1rem 0;
+}
+
