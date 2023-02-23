@@ -1,10 +1,10 @@
 <template>
   <div class="app-duel">
     <div class="app-top">
-      <DuelComponent :card="myCard" :other-card="otherCard"/>
+      <DuelComponent :card="card"/>
       <HistoricDuelComponent/>
     </div>
-    <HandComponent @use-card="(c) => myCard = c" @show-other-card="(c) => otherCard = c"/>
+    <HandComponent @play-card="playCard"/>
   </div>
 </template>
 
@@ -19,6 +19,17 @@ import {useAuthStore} from "@/store/auth";
 import {useRouter} from "vue-router";
 import {END_GAME_ROUTE} from "@/router";
 import {useToast} from "vue-toastification";
+
+const card = ref<Object>(null);
+const draft = ref<Array<Object>>([])
+
+function playCard(playedCard: Object) {
+    if (card.value !== null) {
+        draft.value.push(card.value);
+    }
+    card.value = playedCard;
+}
+
 
 const socket: typeof Socket = inject("socket") as typeof Socket;
 const store = useAuthStore();
