@@ -1,10 +1,12 @@
 <template>
   <div class="app-duel">
-    <div class="app-top">
-      <DuelComponent :card="card"/>
-      <HistoricDuelComponent/>
-    </div>
-    <HandComponent @play-card="playCard"/>
+      <div class="app-top">
+        <DuelComponent :card="myCard" :other-card="otherCard"/>
+        <HistoricDuelComponent/>
+      </div>
+    <keep-alive>
+      <HandComponent @use-card="(c) => myCard = c" @show-other-card="(c) => otherCard = c"/>
+    </keep-alive>
   </div>
 </template>
 
