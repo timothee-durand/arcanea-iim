@@ -4,7 +4,7 @@ import {inject, ref} from "vue";
 
 import {useToast} from "vue-toastification";
 import {useAuthStore} from "@/store/auth";
-import {useRouter} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 import {GAME_ROUTE_NAME} from "@/router";
 import cardsCascades from "../assets/cardsCascades.png";
 import arcaneaLogo from "../assets/arcaneaLogo.png";
@@ -17,7 +17,11 @@ const userName = ref<String>("");
 const store = useAuthStore();
 const toast = useToast();
 const router = useRouter();
+const route = useRoute()
 
+if(route.query.room) {
+  idRoom.value = route.query.room as string
+}
 
 const socket: Socket = inject("socket") as Socket;
 

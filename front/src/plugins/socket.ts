@@ -1,9 +1,10 @@
 import { io } from "socket.io-client";
 import type { Plugin } from "vue";
+import {BASE_URL} from "@/config";
 
 export const Socket: Plugin = {
   install(app) {
-    const socket = io(import.meta.env.DEV ? "http://localhost:3000" : "https://arcanea-api.onrender.com");
+    const socket = io(BASE_URL);
 
     socket.on("connect", () => {
       console.log("Connected to socket");

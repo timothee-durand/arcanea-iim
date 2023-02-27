@@ -23,7 +23,6 @@ let player2 = computed(() => {
 <template>
     <div class="roomName">
       <b>{{ store.roomId }}</b>
-      <b class="turn">Tour {{ store.room.turn }}</b>
     </div>
 
     <div class="duel-container">
