@@ -1,7 +1,9 @@
 <script>
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
-import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'three';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {GAME_ROUTE_NAME} from "@/router/routes";
+import {useCardsStore} from "@/store/cards";
+import {mapStores} from "pinia";
 
 export default {
   name: 'DeckComponent',
@@ -15,6 +17,7 @@ export default {
     };
   },
   computed: {
+    ...mapStores(useCardsStore),
     filteredResult() {
       return  this.result.filter((item) => {
         return item.key !== 'BACK';
@@ -29,31 +32,19 @@ export default {
 
   methods: {
     async fetchCards() {
-      var myHeaders = new Headers();
-      myHeaders.append('apikey', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzY5ODU5MDksImV4cCI6MTk5MjU2MTkwOX0.uq-mxWGU7ayNeoA0gkGRkWBTEz2hR1bIuReLittF0BI');
-      myHeaders.append('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eXhhdW51c3N2YWFjc2NncG9uIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY3Njk4NTkwOSwiZXhwIjoxOTkyNTYxOTA5fQ.RP5ToLS04asei6AMnzwDgse6LyG0vANaFqM5uzn-SJc');
-
-      var requestOptions = {
-        method: 'GET',
-        headers: myHeaders,
-        redirect: 'follow',
-      };
-
-      const response = await fetch('https://ktyxaunussvaacscgpon.supabase.co/rest/v1/Cards', requestOptions);
-      this.result = await response.json();
-
-      const back = await fetch('https://ktyxaunussvaacscgpon.supabase.co/rest/v1/Cards?name=eq.back', requestOptions);
-      this.resultBack = await back.json();
-
+      await this.cardsStore.fetchCards();
+      this.result = this.cardsStore.cards;
+      this.resultBack = this.cardsStore.backCard;
+      this.Cards();
     },
 
     Image(image) {
 
       this.canvas = true;
 
-      var imageFront = new Image();
+      const imageFront = new Image();
       imageFront.src = image;
-      var textureFront = new THREE.Texture();
+      const textureFront = new THREE.Texture();
       textureFront.image = imageFront;
       imageFront.onload = function () {
         textureFront.needsUpdate = true;
@@ -61,9 +52,9 @@ export default {
 
       textureFront.wrapS = textureFront.wrapT = THREE.MirroredRepeatWrapping;
 
-      var imageBack = new Image();
+      const imageBack = new Image();
       imageBack.src = this.resultBack[0].image;
-      var textureBack = new THREE.Texture();
+      const textureBack = new THREE.Texture();
       textureBack.image = imageBack;
       imageBack.onload = function () {
         textureBack.needsUpdate = true;
@@ -71,9 +62,9 @@ export default {
 
       textureBack.wrapS = textureBack.wrapT = THREE.MirroredRepeatWrapping;
 
-      var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      var renderer = new THREE.WebGLRenderer({
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({
         canvas: this.$refs.canvas,
         alpha: true,
       });
@@ -82,14 +73,13 @@ export default {
       const geometry1 = new THREE.PlaneGeometry(0.65, 1);
 
       const geometry2 = new THREE.PlaneGeometry(0.65, 1);
-      geometry2.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI));
 
-      var material1 = new THREE.MeshLambertMaterial({map: textureFront});
-      var material2 = new THREE.MeshLambertMaterial({map: textureBack});
+      const material1 = new THREE.MeshLambertMaterial({map: textureFront});
+      const material2 = new THREE.MeshLambertMaterial({map: textureBack});
 
       const plane1 = new THREE.Mesh(geometry1, material1);
       const plane2 = new THREE.Mesh(geometry2, material2);
-
+      plane2.rotation.y = Math.PI;
       const group = new THREE.Group();
       group.add(plane1);
       group.add(plane2);
@@ -98,13 +88,13 @@ export default {
 
       scene.add(new THREE.HemisphereLight(0xaaaaaa, 0x333333));
 
-      var keyLight = new THREE.PointLight(0xaaaaaa);
+      const keyLight = new THREE.PointLight(0xaaaaaa);
       keyLight.position.x = 15;
       keyLight.position.y = -10;
       keyLight.position.z = 35;
       scene.add(keyLight);
 
-      var rimLight = new THREE.PointLight(0x888888);
+      const rimLight = new THREE.PointLight(0x888888);
       rimLight.position.x = 100;
       rimLight.position.y = 100;
       rimLight.position.z = -50;
@@ -112,7 +102,7 @@ export default {
 
       camera.position.z = 2;
 
-      var render = function () {
+      const render = function () {
 
         requestAnimationFrame(render);
 
@@ -233,7 +223,7 @@ export default {
 
 .cross {
   position: fixed;
-  background-image: url('/src/assets/img/close.svg');
+  background-image: url('@/assets/img/close.svg');
   background-repeat: no-repeat;
   background-size: cover;
   width: 50px;

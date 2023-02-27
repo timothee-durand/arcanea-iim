@@ -9,14 +9,15 @@ import {GAME_ROUTE_NAME} from "@/router";
 import cardsCascades from "../assets/cardsCascades.png";
 import arcaneaLogo from "../assets/arcaneaLogo.png";
 import FloatCards from "../components/FloatCards.vue";
+import {useCardsStore} from "@/store/cards";
 
 
 const idRoom = ref<String>("");
 const userName = ref<String>("");
-const password = ref<String>("");
 const store = useAuthStore();
 const toast = useToast();
 const router = useRouter();
+
 
 const socket: Socket = inject("socket") as Socket;
 
@@ -50,7 +51,7 @@ socket.on("roomFull", () => {
 
 const joinRoom = () => {
   if (0 !== userName.value.length) {
-    socket.emit("joinRoom", idRoom.value, userName.value, password.value)
+    socket.emit("joinRoom", idRoom.value, userName.value)
   }
 }
 
@@ -72,19 +73,12 @@ const joinRoom = () => {
             v-model="userName"
         />
         <input
-            type="password"
-            class="inputCustom"
-            required
-            placeholder="MOT DE PASSE"
-            v-model="password"
-        />
-        <input
             class="inputCustom"
             placeholder="ROOM"
             required
             v-model="idRoom"
         />
-        <button type="submit" class="connexionButton">CONNEXION</button>
+        <button type="submit" class="connexionButton">REJOINDRE OU CREER</button>
       </div>
     </form>
     <FloatCards/>
@@ -98,7 +92,7 @@ const joinRoom = () => {
 
 .container {
   position: relative;
-  max-height: 100vh;
+  height: 100vh;
   overflow: hidden;
 
   img:nth-child(3) {

@@ -21,7 +21,11 @@ let player2 = computed(() => {
 
 </script>
 <template>
-    <b class="roomName">{{ store.roomId }}</b>
+    <div class="roomName">
+      <b>{{ store.roomId }}</b>
+      <b class="turn">Tour {{ store.room.turn }}</b>
+    </div>
+
     <div class="duel-container">
         <div class="duel-player">
             <p class="duel-player__name">{{ player1.name }}</p>
@@ -71,6 +75,10 @@ let player2 = computed(() => {
         position: absolute;
         top: 20px;
         left: 20px;
+      display: grid;
+      .turn {
+        font-size: 0.8rem;
+      }
     }
     .duel-container {
         color: white;

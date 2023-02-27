@@ -9,19 +9,19 @@ import {postStart} from "../services/iimApi";
 export async function joinRoom(io: Server, socket: Socket, idRooms: string, userName: string, password: string) {
     const room = findRoom(idRooms)
 
-    const data = {
-        userName,
-        password
-    }
+    // const data = {
+    //     userName,
+    //     password
+    // }
 
     try {
-        console.log("Try get user " + userName)
-        const response = await postLogin(data);
+        // console.log("Try get user " + userName)
+        // const response = await postLogin(data);
         const userIim: UserIim = {
-            "iimId": response.user.id,
-            "iimToken": response.token
+            "iimId": "",
+            "iimToken": ""
         }
-        console.log("Get user ", userIim)
+        // console.log("Get user ", userIim)
         if (!room) {
             const {newRoom, newPlayer} = createRoom(idRooms, userName, userIim)
             wizardsRoom[newPlayer.id] = idRooms
@@ -31,10 +31,10 @@ export async function joinRoom(io: Server, socket: Socket, idRooms: string, user
             try {
                 const newPlayer = room.addPlayer(userName, userIim)
                 wizardsRoom[newPlayer.id] = idRooms
-                const resultStartIim = await postStart("Arcanea", room.userPlayerIimId, "1v1", response.token)
-                console.log("game started on iim", resultStartIim)
-                room.iimGameId = resultStartIim.id
-                console.log(room.iimGameId)
+                // const resultStartIim = await postStart("Arcanea", room.userPlayerIimId, "1v1", response.token)
+                // console.log("game started on iim", resultStartIim)
+                room.iimGameId = 0
+                // console.log(room.iimGameId)
                 socket.join(idRooms)
                 emitRoomJoined(io, socket, room, newPlayer)
             } catch (e) {
