@@ -40,11 +40,12 @@
 <script>
 import * as THREE from 'three';
 import threeMixin from '../mixins/threeMixin';
-import {useAuthStore} from '@/store/auth';
 import {inject} from 'vue';
-import {mapStores} from 'pinia';
-import {useCardsStore} from "@/store/cards";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import {cards} from "@/store/cards/cards-content";
+import Back from "@/assets/back.jpg";
+import {useAuthStore} from "@/store/auth";
+import {mapStores} from "pinia";
 
 export default {
   name: 'HandComponent',
@@ -63,7 +64,6 @@ export default {
       hand: [],
       socket: inject('socket'),
       canvas: false,
-      backCard: null,
       draft: [],
       havePlayed: false,
     };
@@ -71,7 +71,7 @@ export default {
   computed: {
     // note we are not passing an array, just one store after the other
     // each store will be accessible as its id + 'Store'
-    ...mapStores(useAuthStore, useCardsStore),
+    ...mapStores(useAuthStore),
     canDraw() {
       return this.hand.length < 3 && this.deck && this.deck.length > 0;
     },
@@ -163,10 +163,8 @@ export default {
       }).filter(card => card !== undefined);
       ;
     },
-    async fetchCards() {
-      await this.cardsStore.fetchCards()
-      this.cardsApi = this.cardsStore.cards
-      this.backCard = this.cardsStore.backCard
+     fetchCards() {
+      this.cardsApi = cards
     },
 
     async launchDuel() {
@@ -200,7 +198,7 @@ export default {
       textureFront.wrapS = textureFront.wrapT = THREE.MirroredRepeatWrapping;
 
       const backCard = new Image();
-      backCard.src = this.backCard[0].image;
+      backCard.src = Back;
       const textureBack = new THREE.Texture();
       textureBack.image = backCard;
       backCard.onload = () => {

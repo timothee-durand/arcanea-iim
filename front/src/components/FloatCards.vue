@@ -4,18 +4,15 @@
 
 <script>
 import * as THREE from "three";
-import {useCardsStore} from "@/store/cards";
-import {mapStores} from "pinia";
+
+import Back from "@/assets/back.jpg";
+import {cards} from "@/store/cards/cards-content";
 
 export default {
   data() {
     return {
-      result: "",
-      resultBack: "",
+      result: [],
     };
-  },
-  computed: {
-    ...mapStores(useCardsStore),
   },
   mounted() {
     this.fetchCards();
@@ -23,74 +20,46 @@ export default {
 
   methods: {
     async fetchCards() {
-      await this.cardsStore.fetchCards();
-      this.result = this.cardsStore.cards;
-      this.resultBack = this.cardsStore.backCard;
+      this.result = cards
       this.Cards();
     },
 
-    Cards() {
-      let image = [];
-      let groups = [];
-
-      let geometry1 = new THREE.PlaneGeometry(0.65, 1);
-
+    async Cards() {
       const group = new THREE.Group();
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
+          75,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          1000
       );
       const renderer = new THREE.WebGLRenderer({
         canvas: this.$refs.canvas,
         alpha: true,
       });
       renderer.setSize(window.innerWidth, window.innerHeight);
-      this.result.forEach((item) => {
-        const imageFront = new Image();
-        const textureFront = new THREE.Texture();
-        image = item.image;
-        imageFront.src = image;
+      const promises = this.result.map(async (item) => {
 
-        textureFront.image = imageFront;
-
-        imageFront.onload = function () {
-          textureFront.needsUpdate = true;
-        };
-
+        const textureLoader = new THREE.TextureLoader();
+        const textureFront = await textureLoader.load(item.image);
+        const textureBack = await textureLoader.load(Back);
         textureFront.wrapS = textureFront.wrapT = THREE.MirroredRepeatWrapping;
-
-        const imageBack = new Image();
-        imageBack.src = this.resultBack[0].image;
-        const textureBack = new THREE.Texture();
-        textureBack.image = imageBack;
-        imageBack.onload = function () {
-          textureBack.needsUpdate = true;
-        };
-
         textureBack.wrapS = textureBack.wrapT = THREE.MirroredRepeatWrapping;
 
-        geometry1 = new THREE.PlaneGeometry(0.65, 1);
-        const geometry2 = new THREE.PlaneGeometry(0.65, 1);
-        const material1 = new THREE.MeshLambertMaterial({
-          map: textureFront,
-          side: THREE.DoubleSide,
-        });
-        const material2 = new THREE.MeshLambertMaterial({
-          map: textureBack,
-          side: THREE.DoubleSide,
-        });
-
-        const plane1 = new THREE.Mesh(geometry1, material1);
-        const plane2 = new THREE.Mesh(geometry2, material2);
-        plane2.rotation.y = Math.PI;
-
-        group.add(plane1);
-        group.add(plane2);
-        groups.push(group);
+        const geometry = new THREE.BoxGeometry(0.65, 1, 0.001);
+        const materials = [
+          new THREE.MeshBasicMaterial({map: textureFront}),
+          new THREE.MeshBasicMaterial({map: textureBack}),
+          new THREE.MeshBasicMaterial({map: textureFront}),
+          new THREE.MeshBasicMaterial({map: textureBack}),
+          new THREE.MeshBasicMaterial({map: textureFront}),
+          new THREE.MeshBasicMaterial({map: textureBack}),
+        ];
+        const mesh = new THREE.Mesh(geometry, materials);
+        group.add(mesh);
       });
+
+      await Promise.all(promises);
 
       /* const controls = new DragControls(group, camera, renderer.domElement); */
 
@@ -157,6 +126,7 @@ export default {
       }
 
       window.addEventListener("resize", onWindowResize, false);
+
       function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
