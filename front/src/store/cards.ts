@@ -7,7 +7,7 @@ export interface Card {
     description: string;
     image: string;
     key: CardName
-    sound: string;
+    sound: string | null;
 }
 
 interface CardsState {
