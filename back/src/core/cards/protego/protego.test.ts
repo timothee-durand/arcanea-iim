@@ -3,7 +3,7 @@ import {AvadaKedavra} from "../avadaKedavra";
 import {Protego} from "./Protego";
 import {Wizard} from "../../wizard";
 import {cards} from "../../../cards";
-import {AVADA_KEDAVRA} from "../../../../../@types/cardsName";
+import {AVADA_KEDAVRA} from "../../../../@types/cardsName";
 
 
 describe('protego', function () {

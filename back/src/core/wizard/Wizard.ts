@@ -3,8 +3,8 @@ import {ApiCard} from "../duel/Duel";
 import {AbstractAsyncAction, AbstractCard} from "../base";
 import {AbstractWizard, UserIim} from "./type";
 import {v4} from "uuid";
-import {UserDto} from "../../../../@types/dto";
-import {HistoryAction} from "../../../../@types/dto/HistoryAction";
+import {UserDto} from "../../../@types/dto";
+import {HistoryAction} from "../../../@types/dto/HistoryAction";
 import {shuffleArray} from "../utils";
 
 

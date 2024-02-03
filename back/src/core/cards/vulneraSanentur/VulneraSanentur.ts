@@ -1,7 +1,7 @@
-import {AVADA_KEDAVRA, PROTEGO, VULNERA_SANENTUR} from "../../../../../@types/cardsName";
+import {AVADA_KEDAVRA, PROTEGO, VULNERA_SANENTUR} from "../../../../@types/cardsName";
 import {AbstractCard, BaseCard, Order} from "../../base";
 import {Wizard} from "../../wizard";
-import {HistoryAction} from "../../../../../@types/dto/HistoryAction";
+import {HistoryAction} from "../../../../@types/dto/HistoryAction";
 
 export class VulneraSanentur extends BaseCard implements AbstractCard {
     health = 20;

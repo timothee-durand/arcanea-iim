@@ -1,6 +1,6 @@
 import {AbstractAsyncAction} from "./type";
 import {Wizard} from "../wizard";
-import {HistoryAction} from "../../../../@types/dto/HistoryAction";
+import {HistoryAction} from "../../../@types/dto/HistoryAction";
 
 
 export class AsyncActionBase implements AbstractAsyncAction {

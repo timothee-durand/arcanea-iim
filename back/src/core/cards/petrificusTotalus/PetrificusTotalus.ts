@@ -1,7 +1,7 @@
 import {PetrificusTotalusAsyncAction} from "./PetrificusTotalusAsyncAction";
 import {AbstractCard, BaseCard} from "../../base";
-import {PETRIFICUS_TOTALUS} from "../../../../../@types/cardsName";
-import {HistoryAction} from "../../../../../@types/dto/HistoryAction";
+import {PETRIFICUS_TOTALUS} from "../../../../@types/cardsName";
+import {HistoryAction} from "../../../../@types/dto/HistoryAction";
 import {Wizard} from "../../wizard";
 
 export class PetrificusTotalus extends BaseCard implements AbstractCard {

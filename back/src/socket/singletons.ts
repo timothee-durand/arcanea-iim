@@ -1,4 +1,5 @@
 import {Duel} from "../core/duel";
+import {RedisClientType} from "redis";
 
 
 export let rooms: Duel[] = [];

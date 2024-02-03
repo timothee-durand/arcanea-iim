@@ -6,7 +6,7 @@ import {
     EXPELLIARMUS,
     INCENDIO, PETRIFICUS_TOTALUS,
     PROTEGO, SECTUM_SEMPRA, STUPEFIX, VULNERA_SANENTUR
-} from "../../../../../@types/cardsName";
+} from "../../../../@types/cardsName";
 import {Expelliarmus} from "../expelliarmus";
 import {Incendio} from "../incendio";
 import {AvadaKedavra} from "../avadaKedavra";

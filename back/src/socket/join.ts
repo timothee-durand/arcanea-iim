@@ -5,8 +5,9 @@ import {cards} from "../cards";
 import {UserIim, Wizard} from "../core/wizard";
 import {postLogin} from "../services/iimApi";
 import {postStart} from "../services/iimApi";
+import {RedisClientType} from "redis";
 
-export async function joinRoom(io: Server, socket: Socket, idRooms: string, userName: string, password: string) {
+export async function joinRoom(io: Server, socket: Socket, idRooms: string, userName: string, password: string, redis: RedisClientType) {
     const room = findRoom(idRooms)
 
     // const data = {

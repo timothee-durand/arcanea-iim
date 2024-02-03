@@ -1,7 +1,7 @@
 import {AbstractCard, BaseCard} from "../../base";
-import {AVADA_KEDAVRA} from "../../../../../@types/cardsName";
+import {AVADA_KEDAVRA} from "../../../../@types/cardsName";
 import {Wizard} from "../../wizard";
-import {HistoryAction} from "../../../../../@types/dto/HistoryAction";
+import {HistoryAction} from "../../../../@types/dto/HistoryAction";
 
 
 export class AvadaKedavra extends BaseCard implements AbstractCard {

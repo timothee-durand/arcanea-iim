@@ -1,8 +1,8 @@
 import {ExpelliarmusAsyncAction} from "./ExpelliarmusAsyncAction";
 import {AbstractCard, BaseCard} from "../../base";
-import {EXPELLIARMUS} from "../../../../../@types/cardsName";
+import {EXPELLIARMUS} from "../../../../@types/cardsName";
 import {Wizard} from "../../wizard";
-import {HistoryAction} from "../../../../../@types/dto/HistoryAction";
+import {HistoryAction} from "../../../../@types/dto/HistoryAction";
 
 export class Expelliarmus extends BaseCard implements AbstractCard {
     constructor(name: string) {
