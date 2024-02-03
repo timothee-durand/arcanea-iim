@@ -153,9 +153,4 @@ export class Duel {
         return player
     }
 
-    get userPlayerIimId():string[] {
-        //@ts-ignore
-        return this.players.map(players => players.userIim.iimId)
-    }
-
 }

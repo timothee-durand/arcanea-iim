@@ -6,8 +6,9 @@ import {UserIim, Wizard} from "../core/wizard";
 import {postLogin} from "../services/iimApi";
 import {postStart} from "../services/iimApi";
 import {RedisClientType} from "redis";
+import {ArcaneaSocket} from "../services/socket";
 
-export async function joinRoom(io: Server, socket: Socket, idRooms: string, userName: string, password: string, redis: RedisClientType) {
+export async function joinRoom({socket, idRooms, userName}:{socket: Socket, idRooms: string, userName: string}) {
     const room = findRoom(idRooms)
 
     // const data = {
@@ -27,7 +28,7 @@ export async function joinRoom(io: Server, socket: Socket, idRooms: string, user
             const {newRoom, newPlayer} = createRoom(idRooms, userName, userIim)
             wizardsRoom[newPlayer.id] = idRooms
             socket.join(idRooms)
-            emitRoomJoined(io, socket, newRoom, newPlayer)
+            emitRoomJoined(socket, newRoom, newPlayer)
         } else {
             try {
                 const newPlayer = room.addPlayer(userName, userIim)
@@ -37,7 +38,7 @@ export async function joinRoom(io: Server, socket: Socket, idRooms: string, user
                 room.iimGameId = 0
                 // console.log(room.iimGameId)
                 socket.join(idRooms)
-                emitRoomJoined(io, socket, room, newPlayer)
+                emitRoomJoined(socket, room, newPlayer)
             } catch (e) {
                 console.log(e)
                 socket.emit('roomFull')
@@ -52,12 +53,12 @@ export async function joinRoom(io: Server, socket: Socket, idRooms: string, user
     }
 }
 
-function emitRoomJoined(io: Server, socket: Socket, room: Duel, user: Wizard) {
+function emitRoomJoined(socket: Socket, room: Duel, user: Wizard) {
     console.log(`${user.id} (${user.name}) joined ${room.roomId}`)
     socket.emit("roomJoined", {duel: room.toObject, user: user.toObject()})
 
-    io.in(room.roomId).emit("updateRoom", room.toObject)
-    io.in(room.roomId).emit("userJoined", user.toObject())
+    ArcaneaSocket.getClient().in(room.roomId).emit("updateRoom", room.toObject)
+    ArcaneaSocket.getClient().in(room.roomId).emit("userJoined", user.toObject())
 
 }
 

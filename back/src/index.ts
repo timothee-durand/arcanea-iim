@@ -1,18 +1,14 @@
 import {createServer} from "http";
-import {Server} from "socket.io";
 import helmet from "helmet";
 // @ts-ignore
 const cors = require("cors");
 const express = require("express");
 import {joinRoom, leaveRoom, playCard} from "./socket";
-import {createClient, RedisClientType} from "redis";
-
+import {ArcaneaSocket} from "./services/socket";
+import {RedisClient} from "./services/redis";
 
 
 async function start() {
-   const redisClient = await createClient()
-        .on('error', err => console.log('Redis Client Error', err))
-        .connect();
     const app = express();
     app.use(helmet());
     app.use(cors({
@@ -21,27 +17,23 @@ async function start() {
 
 
     const httpServer = createServer(app);
-    const io = new Server(httpServer, {
-            cors: {
-                origin: true,
-            }
-        }
-    );
+    ArcaneaSocket.initInstance(httpServer)
+    await RedisClient.initInstance()
     const port = process.env.PORT || 3000
 
 
-    io.on('connection', (socket) => {
-        socket.on("joinRoom", async (roomId, username, password) => {
-            await joinRoom(io, socket, roomId, username, password)
+    ArcaneaSocket.getClient().on('connection', (socket) => {
+        socket.on("joinRoom", async (roomId: string, username: string) => {
+            await joinRoom({socket, idRooms: roomId, userName: username})
         })
 
         socket.on("playCard", async (roomId, userId, cardName) => {
             console.log(`${cardName} try added to board by ${userId}`)
-            await playCard(io, socket, roomId, userId, cardName)
+            await playCard({socket, roomId, userId, cardName})
         })
 
         socket.on("leaveRoom", async (roomId, userId) => {
-            await leaveRoom(io, socket, roomId, userId)
+            await leaveRoom({socket, roomId, userId})
             console.log(`${userId} leave  ${roomId}`)
         })
 
