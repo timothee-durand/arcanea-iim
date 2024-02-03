@@ -9,7 +9,6 @@ import {GAME_ROUTE_NAME} from "@/router";
 import cardsCascades from "../assets/cardsCascades.png";
 import arcaneaLogo from "../assets/arcaneaLogo.png";
 import FloatCards from "../components/FloatCards.vue";
-import {useCardsStore} from "@/store/cards";
 
 
 const idRoom = ref<String>("");

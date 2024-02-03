@@ -1,8 +1,8 @@
 import {UserIim, Wizard} from "../wizard";
 import {AbstractCard} from "../base";
-import {RoomDto} from "../../../../@types/dto";
-import {HistoryAction} from "../../../../@types/dto/HistoryAction";
-import {CardName} from "../../../../@types/cardsName";
+import {RoomDto} from "../../../@types/dto";
+import {HistoryAction} from "../../../@types/dto/HistoryAction";
+import {CardName} from "../../../@types/cardsName";
 
 
 
@@ -151,11 +151,6 @@ export class Duel {
         }
         this.players.splice(playerIndex, 1);
         return player
-    }
-
-    get userPlayerIimId():string[] {
-        //@ts-ignore
-        return this.players.map(players => players.userIim.iimId)
     }
 
 }

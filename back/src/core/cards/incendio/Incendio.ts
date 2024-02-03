@@ -1,4 +1,4 @@
-import {INCENDIO} from "../../../../../@types/cardsName";
+import {INCENDIO} from "../../../../@types/cardsName";
 import {AbstractCard, AttackCard} from "../../base";
 
 export class Incendio extends AttackCard implements AbstractCard {

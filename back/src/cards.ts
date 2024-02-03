@@ -7,7 +7,7 @@ import {
     INCENDIO, PETRIFICUS_TOTALUS,
     PROTEGO,
     SECTUM_SEMPRA, STUPEFIX, VULNERA_SANENTUR
-} from "../../@types/cardsName";
+} from "../@types/cardsName";
 import {Diffindo} from "./core/cards/diffindo";
 
 export const cards = [

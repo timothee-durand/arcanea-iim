@@ -1,7 +1,7 @@
 import {describe,beforeEach, expect, it} from 'vitest';
 import {SectumSempra} from "./sectumSempra";
 import {Wizard} from "../../wizard";
-import {INCENDIO} from "../../../../../@types/cardsName";
+import {INCENDIO} from "../../../../@types/cardsName";
 import {cards} from "../../../cards";
 
 describe('sectum sempra', function () {

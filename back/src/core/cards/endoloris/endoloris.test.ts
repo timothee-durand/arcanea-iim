@@ -3,7 +3,7 @@ import {Endoloris} from "./Endoloris";
 import {EndolorisAsyncAction} from "./EndolorisAsyncAction";
 import {Wizard} from "../../wizard";
 import {cards} from "../../../cards";
-import {ENDOLORIS} from "../../../../../@types/cardsName";
+import {ENDOLORIS} from "../../../../@types/cardsName";
 
 describe('endoloris', function () {
     let endoloris: Endoloris;

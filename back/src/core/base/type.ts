@@ -1,6 +1,6 @@
 import {Wizard} from "../wizard";
-import {CardName} from "../../../../@types/cardsName";
-import {HistoryAction} from "../../../../@types/dto/HistoryAction";
+import {CardName} from "../../../@types/cardsName";
+import {HistoryAction} from "../../../@types/dto/HistoryAction";
 
 
 export type Order = 0 | 1 | 2

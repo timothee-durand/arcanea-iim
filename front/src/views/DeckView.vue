@@ -2,8 +2,8 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {GAME_ROUTE_NAME} from "@/router/routes";
-import {useCardsStore} from "@/store/cards";
-import {mapStores} from "pinia";
+import {cards} from "@/store/cards/cards-content";
+import Back from "@/assets/back.jpg";
 
 export default {
   name: 'DeckComponent',
@@ -11,13 +11,11 @@ export default {
     return {
       name: '',
       result: [],
-      resultBack: '',
       canvas: false,
       gameRoute: GAME_ROUTE_NAME
     };
   },
   computed: {
-    ...mapStores(useCardsStore),
     filteredResult() {
       return  this.result.filter((item) => {
         return item.key !== 'BACK';
@@ -31,11 +29,8 @@ export default {
   },
 
   methods: {
-    async fetchCards() {
-      await this.cardsStore.fetchCards();
-      this.result = this.cardsStore.cards;
-      this.resultBack = this.cardsStore.backCard;
-      this.Cards();
+    fetchCards() {
+      this.result = cards;
     },
 
     Image(image) {
@@ -53,7 +48,7 @@ export default {
       textureFront.wrapS = textureFront.wrapT = THREE.MirroredRepeatWrapping;
 
       const imageBack = new Image();
-      imageBack.src = this.resultBack[0].image;
+      imageBack.src = Back;
       const textureBack = new THREE.Texture();
       textureBack.image = imageBack;
       imageBack.onload = function () {

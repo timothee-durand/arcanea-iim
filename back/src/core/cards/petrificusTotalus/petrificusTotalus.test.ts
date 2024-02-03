@@ -1,7 +1,7 @@
 import {describe,beforeEach, expect, it} from 'vitest';
 import {PetrificusTotalus} from "./PetrificusTotalus";
 import {Wizard} from "../../wizard";
-import {EXPELLIARMUS} from "../../../../../@types/cardsName";
+import {EXPELLIARMUS} from "../../../../@types/cardsName";
 import {cards} from "../../../cards";
 
 describe('petrificus totalus', function () {
