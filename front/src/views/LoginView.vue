@@ -9,6 +9,7 @@ import {GAME_ROUTE_NAME} from "@/router";
 import cardsCascades from "../assets/cardsCascades.png";
 import arcaneaLogo from "../assets/arcaneaLogo.png";
 import FloatCards from "../components/FloatCards.vue";
+import {useSocket} from "@/services/socket";
 
 
 const idRoom = ref<String>("");
@@ -22,7 +23,7 @@ if(route.query.room) {
   idRoom.value = route.query.room as string
 }
 
-const socket: Socket = inject("socket") as Socket;
+const {socket} = useSocket()
 
 socket.on("roomJoined", (payload) => {
   store.roomId = payload.duel.roomId

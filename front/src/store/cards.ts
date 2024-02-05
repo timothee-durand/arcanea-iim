@@ -1,6 +1,4 @@
-import { defineStore } from "pinia";
-import {CardName} from "../../../@types/cardsName";
-import {cards} from "@/store/cards/cards-content";
+import {CardName} from "../../@types/cardsName";
 
 export interface Card {
     id: number;
@@ -15,14 +13,3 @@ interface CardsState {
     cards: Card[];
 }
 
-export const useCardsStore = defineStore("cards", {
-    state: (): CardsState => ({
-        cards: [],
-    }),
-    actions: {
-        async fetchCards() {
-            if(this.cards.length > 0) return
-            this.cards = cards
-        }
-    }
-})

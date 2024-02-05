@@ -15,7 +15,6 @@ async function start() {
         origin: '*',
     }))
 
-
     const httpServer = createServer(app);
     ArcaneaSocket.initInstance(httpServer)
     await RedisClient.initInstance()

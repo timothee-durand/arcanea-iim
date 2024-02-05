@@ -9,6 +9,8 @@
 # https://github.com/docker/awesome-compose
 services:
   server:
+    labels:
+      - traefik.http.routers.server.rule=Host(`api.arcanea.timotheedurand.fr`)
     build:
       context: ./back
     environment:
@@ -19,6 +21,16 @@ services:
       redis:
         condition: service_healthy
 
+  front:
+    labels:
+      - traefik.http.routers.front.rule=Host(`arcanea.timotheedurand.fr`)
+    build:
+      context: ./front
+    environment:
+      NODE_ENV: production
+    ports:
+      - 8081:80
+
   redis:
     image: "redis:alpine"
     ports:
@@ -28,3 +40,17 @@ services:
         interval: 10s
         timeout: 5s
         retries: 5
+
+  reverse-proxy:
+    # The official v2 Traefik docker image
+    image: traefik:v2.10
+    # Enables the web UI and tells Traefik to listen to docker
+    command: --api.insecure=true --providers.docker
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock

@@ -40,12 +40,12 @@
 <script>
 import * as THREE from 'three';
 import threeMixin from '../mixins/threeMixin';
-import {inject} from 'vue';
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {cards} from "@/store/cards/cards-content";
 import Back from "@/assets/back.jpg";
 import {useAuthStore} from "@/store/auth";
 import {mapStores} from "pinia";
+import {useSocket} from "@/services/socket";
 
 export default {
   name: 'HandComponent',
@@ -62,7 +62,6 @@ export default {
       cardsApi: null,
       deck: null,
       hand: [],
-      socket: inject('socket'),
       canvas: false,
       draft: [],
       havePlayed: false,
@@ -83,21 +82,16 @@ export default {
     }
   },
   mixins: [threeMixin],
-  mounted() {
-    // initialize container, target and viewport
-    this.container = this.$refs.canvas;
-    this.viewport = this.setViewportSize(this.container);
-    this.launchDuel();
-
-    this.socket.on('updateRoom', (payload) => {
+  setup() {
+    const {socket} = useSocket()
+    socket.on('updateRoom', (payload) => {
       this.updateDuel(payload);
     });
 
-    this.socket.on('pushActions', (payload) => {
+    socket.on('pushActions', (payload) => {
       this.updateHistoric(payload);
     });
-
-    this.socket.on('showBoard', (boardArray) => {
+    socket.on('showBoard', (boardArray) => {
       console.log('showboard', boardArray)
       const {card: otherPlayerCard} = boardArray.find(card => card.playerId !== this.authStore.user.id);
       console.log({otherPlayerCard})
@@ -115,6 +109,13 @@ export default {
         handCards.forEach(card => card.style.pointerEvents = 'auto');
       }, 3000)
     });
+    return {socket}
+  },
+  mounted() {
+    // initialize container, target and viewport
+    this.container = this.$refs.canvas;
+    this.viewport = this.setViewportSize(this.container);
+    this.launchDuel();
   },
   methods: {
     updateHistoric(payload) {
@@ -133,7 +134,7 @@ export default {
     },
 
     playCard(playedCard) {
-      if(this.handDisabled) return
+      if (this.handDisabled) return
       this.havePlayed = true
       this.hand = this.hand.filter(card => card !== playedCard);
       this.$emit('play-card', playedCard);
@@ -163,7 +164,7 @@ export default {
       }).filter(card => card !== undefined);
       ;
     },
-     fetchCards() {
+    fetchCards() {
       this.cardsApi = cards
     },
 

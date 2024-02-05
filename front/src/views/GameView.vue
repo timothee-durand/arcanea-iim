@@ -7,7 +7,7 @@
     <keep-alive>
       <HandComponent @play-card="playCard" @show-other-card="(c) => otherCard = c"/>
     </keep-alive>
-    <div class="no-other-player" v-if="!store.room.players[1]">
+    <div class="no-other-player" v-if="!store.room || !store.room.players[1]">
       <div class="modal">
         <p>En attente d'un autre joueur...</p>
         <div>
@@ -27,13 +27,14 @@ import HistoricDuelComponent from "@/components/HistoricDuelComponent.vue";
 import HandComponent from "@/components/HandComponent.vue";
 import {inject, ref, computed} from "vue";
 import {Socket} from "socket.io-client";
-import {Wizard} from "@/core/wizard";
 import {useAuthStore} from "@/store/auth";
 import {useRouter} from "vue-router";
 import {END_GAME_ROUTE} from "@/router";
 import {useToast} from "vue-toastification";
+import {useSocket} from "@/services/socket";
+import {UserDto} from "../../@types/dto";
 
-const myCard = ref<Object>(null);
+const myCard = ref<Object | null>(null);
 const otherCard = ref(null);
 
 function playCard(playedCard: Object) {
@@ -41,11 +42,11 @@ function playCard(playedCard: Object) {
 }
 
 
-const socket: typeof Socket = inject("socket") as typeof Socket;
+const {socket} = useSocket();
 const store = useAuthStore();
 const toast = useToast();
 const router = useRouter()
-socket.on("endDuel", (payload: Wizard) => {
+socket.on("endDuel", (payload: UserDto) => {
   console.log("endDuel", payload)
   store.winner = payload
   store.room = null

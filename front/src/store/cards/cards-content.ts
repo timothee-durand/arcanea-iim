@@ -30,14 +30,14 @@ import {Card} from "@/store/cards";
         "image": DIFFINDO,
         "sound": null
     },
-    {
-        "id": 14,
-        "name": "Babbling Beverage",
-        "key": "BABBLING_BEVERAGE",
-        "description": "Potion qui quand elle est jouée fait que le sort de l’adversaire à 50% de chance de se jeter sur lui même ",
-        "image": BABBLING_BEVERAGE,
-        "sound": null
-    },
+    // {
+    //     "id": 14,
+    //     "name": "Babbling Beverage",
+    //     "key": "BABBLING_BEVERAGE",
+    //     "description": "Potion qui quand elle est jouée fait que le sort de l’adversaire à 50% de chance de se jeter sur lui même ",
+    //     "image": BABBLING_BEVERAGE,
+    //     "sound": null
+    // },
     {
         "id": 13,
         "name": "Expelliarmus",
@@ -54,14 +54,14 @@ import {Card} from "@/store/cards";
         "image": ENDOLORIS,
         "sound": null
     },
-    {
-        "id": 15,
-        "name": "Impero",
-        "key": "IMPERO",
-        "description": "Ordonne à l’adversaire de défausser 2 cartes de ses cartes",
-        "image": IMPERO,
-        "sound": null
-    },
+    // {
+    //     "id": 15,
+    //     "name": "Impero",
+    //     "key": "IMPERO",
+    //     "description": "Ordonne à l’adversaire de défausser 2 cartes de ses cartes",
+    //     "image": IMPERO,
+    //     "sound": null
+    // },
     {
         "id": 1,
         "name": "Avada Kedavra",
@@ -86,14 +86,14 @@ import {Card} from "@/store/cards";
         "image": PROTEGO,
         "sound": null
     },
-    {
-        "id": 6,
-        "name": "Lumos",
-        "key": "LUMOS",
-        "description": "trouve les cartes adverse",
-        "image": LUMOS,
-        "sound": null
-    },
+    // {
+    //     "id": 6,
+    //     "name": "Lumos",
+    //     "key": "LUMOS",
+    //     "description": "trouve les cartes adverse",
+    //     "image": LUMOS,
+    //     "sound": null
+    // },
     {
         "id": 8,
         "name": "Sectum Sempra",

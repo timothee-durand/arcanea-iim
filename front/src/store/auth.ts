@@ -1,12 +1,11 @@
 import { defineStore } from "pinia";
-import {RoomDto, UserDto} from "../../../@types/dto";
-import {Wizard} from "@/core/wizard";
+import {RoomDto, UserDto} from "../../@types/dto";
 
 interface Store {
     user: UserDto | null,
     roomId: string | null,
     room: RoomDto | null;
-    winner: Wizard | null;
+    winner: UserDto | null;
     cards: string[];
     deck: string[];
 }

@@ -1,22 +1,25 @@
 <script setup lang="ts">
-import {computed, watch} from 'vue';
-import {Wizard} from '@/core/wizard';
+import {computed, defineProps} from 'vue';
 import {useAuthStore} from '@/store/auth';
+import {UserDto} from "../../@types/dto";
 
 const store = useAuthStore();
 
 const props = defineProps(['card', 'otherCard']);
 
 
-let player1 = computed(() => {
-  if (store.room?.players[0].id === store.user?.id) {
-    return store.room?.players[0] as Wizard;
+const player1 = computed<UserDto>(() => {
+  if(!store.room || !store.user)
+    throw new Error('No room or user');
+  if (store.room.players[0].id === store.user.id) {
+    return store.room.players[0];
   } else {
-    return store.room?.players[1] as Wizard;
+    return store.room.players[1];
   }
 });
-let player2 = computed(() => {
-  return store.room.players.find(player => player.id !== store.user?.id) as Wizard;
+const player2 = computed<UserDto | null>(() => {
+  if(!store.room || !store.user) return null;
+  return store.room.players.find((player) => player.id !== store.user!.id) ?? null
 });
 
 </script>
