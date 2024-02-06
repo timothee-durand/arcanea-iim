@@ -10,8 +10,10 @@
 services:
   server:
     labels:
+      - traefik.enable=true
       - traefik.http.routers.server.rule=Host(`api.arcanea.timotheedurand.fr`)
       - traefik.http.services.server.loadbalancer.server.port=3000
+      - "traefik.http.routers.server.entrypoints=web"
     image: ghcr.io/timothee-durand/arcanea-iim/back:main
     ports:
       - 3000:3000
@@ -21,8 +23,10 @@ services:
 
   front:
     labels:
+      - traefik.enable=true
       - traefik.http.routers.front.rule=Host(`arcanea.timotheedurand.fr`)
       - traefik.http.services.front.loadbalancer.server.port=8081
+      - "traefik.http.routers.front.entrypoints=web"
     image: ghcr.io/timothee-durand/arcanea-iim/front:main
     environment:
       NODE_ENV: production
@@ -33,8 +37,6 @@ services:
     image: "redis:alpine"
     ports:
       - 6379:6379
-    labels:
-      - traefik.enable=false
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
@@ -44,9 +46,16 @@ services:
   reverse-proxy:
     # The official v2 Traefik docker image
     image: traefik:v2.10
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
     ports:
       # The HTTP port
       - "80:80"
+      - "8080:8080"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
