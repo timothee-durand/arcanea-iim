@@ -11,6 +11,7 @@ services:
   server:
     labels:
       - traefik.http.routers.server.rule=Host(`api.arcanea.timotheedurand.fr`)
+      - traefik.http.services.server.loadbalancer.server.port=3000
     image: ghcr.io/timothee-durand/arcanea-iim/back:main
     ports:
       - 3000:3000
@@ -21,6 +22,7 @@ services:
   front:
     labels:
       - traefik.http.routers.front.rule=Host(`arcanea.timotheedurand.fr`)
+      - traefik.http.services.front.loadbalancer.server.port=8081
     image: ghcr.io/timothee-durand/arcanea-iim/front:main
     environment:
       NODE_ENV: production
@@ -31,11 +33,13 @@ services:
     image: "redis:alpine"
     ports:
       - 6379:6379
+    labels:
+      - traefik.enable=false
     healthcheck:
-        test: ["CMD", "redis-cli", "ping"]
-        interval: 10s
-        timeout: 5s
-        retries: 5
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   reverse-proxy:
     # The official v2 Traefik docker image
