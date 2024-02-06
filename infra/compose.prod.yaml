@@ -8,6 +8,18 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
+  front:
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.front.rule=Host(`front.arcanea.timotheedurand.fr`)
+      - traefik.http.services.front.loadbalancer.server.port=8081
+      - "traefik.http.routers.front.entrypoints=web"
+    image: ghcr.io/timothee-durand/arcanea-iim/front:main
+    environment:
+      NODE_ENV: production
+    ports:
+      - 8081:80
+
   server:
     labels:
       - traefik.enable=true
@@ -21,17 +33,7 @@ services:
       redis:
         condition: service_healthy
 
-  front:
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.front.rule=Host(`front.arcanea.timotheedurand.fr`)
-      - traefik.http.services.front.loadbalancer.server.port=8081
-      - "traefik.http.routers.front.entrypoints=web"
-    image: ghcr.io/timothee-durand/arcanea-iim/front:main
-    environment:
-      NODE_ENV: production
-    ports:
-      - 8081:80
+
 
   redis:
     image: "redis:alpine"
@@ -48,14 +50,12 @@ services:
     image: traefik:v2.10
     command:
       - "--log.level=DEBUG"
-      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
     ports:
       # The HTTP port
       - "80:80"
-      - "8080:8080"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
