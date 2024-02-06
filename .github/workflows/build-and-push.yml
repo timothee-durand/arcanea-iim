@@ -20,9 +20,9 @@ jobs:
       matrix:
         include:
           - dockerfile: ./back/Dockerfile
-            image: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE_NAME }}/back
+            image: ghcr.io/timothee-durand/arcanea-iim/back
           - dockerfile: ./front/Dockerfile
-            image: ${{ env.REGISTRY }}/${{ env.IMAGE_BASE_NAME }}/front
+            image: ghcr.io/timothee-durand/arcanea-iim/front
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
       contents: read
