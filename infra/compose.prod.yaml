@@ -24,11 +24,12 @@ services:
       - traefik.enable=true
       - traefik.http.routers.server.rule=Host(`api.arcanea.timotheedurand.fr`)
       - traefik.http.routers.server.entrypoints=web
+      - traefik.http.services.server.loadbalancer.server.port=3000
     image: ghcr.io/timothee-durand/arcanea-iim/back:main
     ports:
       - 3000:3000
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
+      test: ["CMD",  "curl -f http://localhost:3000/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
