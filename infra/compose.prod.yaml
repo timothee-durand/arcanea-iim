@@ -24,7 +24,7 @@ services:
   front:
     labels:
       - traefik.enable=true
-      - traefik.http.routers.front.rule=Host(`arcanea.timotheedurand.fr`)
+      - traefik.http.routers.front.rule=Host(`front.arcanea.timotheedurand.fr`)
       - traefik.http.services.front.loadbalancer.server.port=8081
       - "traefik.http.routers.front.entrypoints=web"
     image: ghcr.io/timothee-durand/arcanea-iim/front:main
