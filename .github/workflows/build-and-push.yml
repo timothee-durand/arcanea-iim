@@ -73,4 +73,4 @@ jobs:
       - name: Deploy to production
         run: |
           scp infra/compose.prod.yaml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_PATH }}/compose.yaml
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.SSH_PATH }} && docker-compose pull && docker compose up -d"
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.SSH_PATH }} && docker compose pull && docker compose up -d"
