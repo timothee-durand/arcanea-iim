@@ -11,7 +11,7 @@ services:
   server:
     labels:
       - traefik.http.routers.server.rule=Host(`api.arcanea.timotheedurand.fr`)
-    image: ghcr.io/timothee-durand/arcanea-iim/back:latest
+    image: ghcr.io/timothee-durand/arcanea-iim/back:main
     ports:
       - 3000:3000
     depends_on:
@@ -21,7 +21,7 @@ services:
   front:
     labels:
       - traefik.http.routers.front.rule=Host(`arcanea.timotheedurand.fr`)
-    image: ghcr.io/timothee-durand/arcanea-iim/front:latest
+    image: ghcr.io/timothee-durand/arcanea-iim/front:main
     environment:
       NODE_ENV: production
     ports:
