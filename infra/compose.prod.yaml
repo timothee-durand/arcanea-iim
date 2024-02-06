@@ -47,7 +47,7 @@ services:
     # The official v2 Traefik docker image
     image: traefik:v2.10
     command:
-      #- "--log.level=DEBUG"
+      - "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
