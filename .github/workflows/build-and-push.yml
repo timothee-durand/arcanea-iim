@@ -21,8 +21,10 @@ jobs:
         include:
           - dockerfile: ./back/Dockerfile
             image: ghcr.io/timothee-durand/arcanea-iim/back
+            context: ./back
           - dockerfile: ./front/Dockerfile
             image: ghcr.io/timothee-durand/arcanea-iim/front
+            context: ./front
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
       contents: read
@@ -50,7 +52,7 @@ jobs:
       - name: Build and push front
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
-          context: .
+          context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
