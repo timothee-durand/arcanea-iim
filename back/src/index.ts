@@ -15,9 +15,19 @@ async function start() {
         origin: '*',
     }))
 
+    app.get('/', (req, res) => {
+        res.send({
+            message: "Welcome to Arcanea"
+        })
+    })
+
+    app.get('/health', (req, res) => {
+        res.send('ok')
+    })
+
     const httpServer = createServer(app);
     ArcaneaSocket.initInstance(httpServer)
-    await RedisClient.initInstance()
+    // await RedisClient.initInstance()
     const port = process.env.PORT || 3000
 
 
