@@ -12,8 +12,11 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.front.rule=Host(`front.arcanea.timotheedurand.fr`)
-      - "traefik.http.routers.back.entrypoints=websecure"
-      - "traefik.http.routers.back.tls.certresolver=myresolver"
+      - "traefik.http.routers.front.entrypoints=http"
+      - "traefik.http.routers.front.middlewares=http_to_https@docker"
+      - "traefik.http.routers.front-secured.rule=Host(`front.arcanea.timotheedurand.fr`)"
+      - "traefik.http.routers.front-secured.entrypoints=https"
+      - "traefik.http.routers.front-secured.tls.certresolver=tls"
     image: ghcr.io/timothee-durand/arcanea-iim/front:main
     environment:
       NODE_ENV: production
@@ -25,8 +28,11 @@ services:
       - traefik.enable=true
       - traefik.http.routers.back.rule=Host(`api.arcanea.timotheedurand.fr`)
       - traefik.http.services.back.loadbalancer.server.port=3000
-      - "traefik.http.routers.back.entrypoints=websecure"
-      - "traefik.http.routers.back.tls.certresolver=myresolver"
+      - "traefik.http.routers.back.entrypoints=http"
+      - "traefik.http.routers.back.middlewares=http_to_https@docker"
+      - "traefik.http.routers.back-secured.rule=Host(`api.arcanea.timotheedurand.fr`)"
+      - "traefik.http.routers.back-secured.entrypoints=https"
+      - "traefik.http.routers.back-secured.tls.certresolver=tls"
     image: ghcr.io/timothee-durand/arcanea-iim/back:main
     ports:
       - 3000:3000
@@ -58,15 +64,17 @@ services:
       - "--log.level=DEBUG"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=timothee.durand70@gmail.com"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-
+      - --entrypoints.http.address=:80
+      - --entrypoints.https.address=:443
+      - "--certificatesresolvers.tls.acme.tlschallenge=true"
+      - "--certificatesresolvers.tls.acme.email=timothee.durand70@gmail.com"
+      - "--certificatesresolvers.tls.acme.storage=acme.json"
     ports:
       - "443:443"
+      - "80:80"
+    labels:
+      - "traefik.http.middlewares.http_to_https.redirectscheme.scheme=https"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
-      - "./letsencrypt:/letsencrypt"
+      - "./acme.json:/acme.json"
