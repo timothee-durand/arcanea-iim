@@ -40,7 +40,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD",  "curl -f http://localhost:3000/health || exit 1" ]
+      test: ["CMD", "curl", "-f", "http://back:3000/health"]
       start_period: 10s
       interval: 10s
       timeout: 5s

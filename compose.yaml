@@ -13,14 +13,15 @@ services:
       context: ./back
     environment:
       NODE_ENV: development
+    restart: always
     ports:
       - 3000:3000
     depends_on:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD",  "curl -f http://localhost:3000/health || exit 1"]
-      interval: 10s
+      test: ["CMD", "curl", "-f", "http://back:3000/health"]
+      interval: 30s
       timeout: 5s
       retries: 5
 
