@@ -8,11 +8,11 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  server:
+  back:
     build:
       context: ./back
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
     ports:
       - 3000:3000
     depends_on:
@@ -28,7 +28,7 @@ services:
     build:
       context: ./front
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
     ports:
       - 8081:80
 

@@ -36,15 +36,15 @@ services:
     image: ghcr.io/timothee-durand/arcanea-iim/back:main
     ports:
       - 3000:3000
-    healthcheck:
-      test: [ "CMD",  "curl -f http://localhost:3000/health || exit 1" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     depends_on:
       redis:
         condition: service_healthy
-
+    healthcheck:
+      test: [ "CMD",  "curl -f http://localhost:3000/health || exit 1" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 
   redis:
