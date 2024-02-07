@@ -22,7 +22,7 @@ async function start() {
     })
 
     app.get('/health', (req, res) => {
-        res.send('ok')
+        res.send()
     })
 
     const httpServer = createServer(app);
