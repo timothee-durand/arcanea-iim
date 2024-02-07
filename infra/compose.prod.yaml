@@ -12,7 +12,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.front.rule=Host(`front.arcanea.timotheedurand.fr`)
-      - traefik.http.routers.front.entrypoints=web
+      - "traefik.http.routers.back.entrypoints=websecure"
+      - "traefik.http.routers.back.tls.certresolver=myresolver"
     image: ghcr.io/timothee-durand/arcanea-iim/front:main
     environment:
       NODE_ENV: production
@@ -23,13 +24,14 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.back.rule=Host(`api.arcanea.timotheedurand.fr`)
-      - traefik.http.routers.back.entrypoints=web
       - traefik.http.services.back.loadbalancer.server.port=3000
+      - "traefik.http.routers.back.entrypoints=websecure"
+      - "traefik.http.routers.back.tls.certresolver=myresolver"
     image: ghcr.io/timothee-durand/arcanea-iim/back:main
     ports:
       - 3000:3000
     healthcheck:
-      test: ["CMD",  "curl -f http://localhost:3000/health || exit 1"]
+      test: [ "CMD",  "curl -f http://localhost:3000/health || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -57,9 +59,14 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=timothee.durand70@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+
     ports:
-      # The HTTP port
-      - "80:80"
+      - "443:443"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
+      - "./letsencrypt:/letsencrypt"
