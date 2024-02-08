@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import type {Socket} from "socket.io-client";
-import {inject, ref} from "vue";
+import { ref} from "vue";
 
 import {useToast} from "vue-toastification";
 import {useAuthStore} from "@/store/auth";
 import {useRouter, useRoute} from "vue-router";
 import {GAME_ROUTE_NAME} from "@/router";
-import cardsCascades from "../assets/cardsCascades.png";
 import arcaneaLogo from "../assets/arcaneaLogo.png";
 import FloatCards from "../components/FloatCards.vue";
-import {useSocket} from "@/services/socket";
+import {socket} from "@/services/socket";
 
 
 const idRoom = ref<String>("");
@@ -23,7 +21,6 @@ if(route.query.room) {
   idRoom.value = route.query.room as string
 }
 
-const {socket} = useSocket()
 
 socket.on("roomJoined", (payload) => {
   store.roomId = payload.duel.roomId

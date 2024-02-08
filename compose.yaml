@@ -8,31 +8,6 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  back:
-    build:
-      context: ./back
-    environment:
-      NODE_ENV: development
-    restart: always
-    ports:
-      - 3000:3000
-    depends_on:
-      redis:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://back:3000/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
-
-  front:
-    build:
-      context: ./front
-    environment:
-      NODE_ENV: development
-    ports:
-      - 8081:80
-
   redis:
     image: "redis:alpine"
     ports:

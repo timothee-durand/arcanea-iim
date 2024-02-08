@@ -31,254 +31,229 @@
                :class="canDraw ? 'draw-box__card canDraw' : 'draw-box__card'" src="@/assets/img/card-back.png">
         </div>
       </section>
-      <div class="cross" v-show="canvas" @click="this.canvas = false"></div>
-      <div class="blur" v-show="canvas"></div>
-      <canvas class="canvas" ref="canvas" v-show="canvas"></canvas>
+      <div class="cross" v-show="isOpen" @click="isOpen = false"></div>
+      <div class="blur" v-show="isOpen"></div>
+      <canvas class="canvas" ref="canvas" v-show="isOpen"></canvas>
     </section>
   </section>
 </template>
-<script>
+<script setup lang="ts">
 import * as THREE from 'three';
-import threeMixin from '../mixins/threeMixin';
+// @ts-ignore
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {cards} from "@/store/cards/cards-content";
 import Back from "@/assets/back.jpg";
 import {useAuthStore} from "@/store/auth";
-import {mapStores} from "pinia";
-import {useSocket} from "@/services/socket";
+import {computed, onMounted, ref} from "vue";
+import {Card} from "@/store/cards";
+import {BoardCard, RoomDto} from "../../@types/dto/Room";
+import {useThreeHelpers, ViewPort} from "@/composables/useThreeHelpers";
+import {socket} from "@/services/socket";
 
-export default {
-  name: 'HandComponent',
-  data() {
-    return {
-      camera: null,
-      container: null,
-      controls: null,
-      pointLight: null,
-      renderer: null,
-      scene: null,
-      sphere: null,
-      viewport: null,
-      cardsApi: null,
-      deck: null,
-      hand: [],
-      canvas: false,
-      draft: [],
-      havePlayed: false,
-    };
-  },
-  computed: {
-    // note we are not passing an array, just one store after the other
-    // each store will be accessible as its id + 'Store'
-    ...mapStores(useAuthStore),
-    canDraw() {
-      return this.hand.length < 3 && this.deck && this.deck.length > 0;
-    },
-    has2Players() {
-      return this.authStore.room.players.length === 2;
-    },
-    handDisabled() {
-      return !this.has2Players || this.havePlayed;
+const authStore = useAuthStore();
+
+let container = ref(null);
+let viewport = ref<ViewPort | null>(null);
+let deck = ref<Card[]>([]);
+let hand = ref<Card[]>([]);
+let canvas = ref<HTMLCanvasElement | null>(null);
+let draft = ref<Card[]>([]);
+let havePlayed = ref(false);
+let isOpen = ref(false);
+
+const canDraw = ref(false);
+const has2Players = computed(() => authStore.room?.players.length === 2);
+const handDisabled = computed(() => !has2Players.value || havePlayed.value);
+console.log(socket)
+socket.on('updateRoom', (payload : RoomDto) => {
+  console.log(payload);
+  if(!authStore.room) {
+    throw new Error('Room not found');
+  }
+  authStore.room.players = payload.players;
+});
+
+const emit = defineEmits(['play-card', 'show-other-card']);
+
+socket.on('pushActions', (payload) => {
+  console.log('pushActions', payload)
+  canDraw.value = true;
+});
+socket.on('showBoard', (boardArray : BoardCard[]) => {
+  console.log('showboard', boardArray)
+  const otherPlayerCard = boardArray.find(card => card.playerId !== authStore.user?.id);
+  console.log({otherPlayerCard})
+  if (!otherPlayerCard) throw new Error('No other player card found');
+  const apiCard = cards.find(card => card.key === otherPlayerCard.card.key);
+  console.log({apiCard})
+  emit('show-other-card', apiCard);
+  let handCards = document.querySelectorAll('.hand-box__card') as NodeListOf<HTMLElement>;
+  handCards.forEach(card => card.style.pointerEvents = 'none');
+  setTimeout(() => {
+    emit('show-other-card', null);
+    emit('play-card', null);
+    canDraw.value = true;
+    havePlayed.value = false
+    handCards.forEach(card => card.style.pointerEvents = 'auto');
+  }, 3000)
+});
+
+function randomize<T extends unknown[]>(arr : T) : T {
+  let i, j, tmp;
+  for (i = arr.length - 1; i > 0; i--) {
+    j = Math.floor(Math.random() * (i + 1));
+    tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+  }
+  return arr;
+}
+
+function playCard(playedCard : Card) {
+  if (handDisabled.value) return
+  havePlayed.value = true
+  hand.value = hand.value.filter(card => card !== playedCard);
+  emit('play-card', playedCard);
+  emit('show-other-card', null);
+  draft.value.push(playedCard);
+
+  socket.emit('playCard',
+      authStore.room!.roomId,
+      authStore.user!.id,
+      playedCard.key,
+  );
+}
+
+function constructDeck() {
+  if (!authStore.user) return;
+  deck.value = authStore.user.cards.map((cardName) => {
+    const card = cards.find(element => element.key === cardName);
+    if (!card) console.log('card not found', cardName);
+    return card;
+  }).filter(card => card !== undefined) as Card[];
+}
+
+ function launchDuel() {
+  constructDeck();
+  drawCard(3);
+}
+
+function drawCard(count : number) {
+  if (canDraw.value && deck.value.length >= count) {
+    for (let i = 0; i < count; i++) {
+      hand.value.push(deck.value.pop() as Card);
     }
-  },
-  mixins: [threeMixin],
-  setup() {
-    const {socket} = useSocket()
-    socket.on('updateRoom', (payload) => {
-      this.updateDuel(payload);
-    });
+  }
+  if (deck.value.length === 0) {
+    deck.value.push(...randomize(draft.value));
+    draft.value = [];
+  }
+  //emit event to update hand and deck with socket.io
+}
+function showCard(image : string) {
+  if(!canvas.value) {
+    throw new Error('Canvas not found');
+  }
+  const frontCard = new Image();
+  frontCard.src = image;
+  const textureFront = new THREE.Texture();
+  textureFront.image = frontCard;
+  frontCard.onload = () => {
+    textureFront.needsUpdate = true;
+  };
 
-    socket.on('pushActions', (payload) => {
-      this.updateHistoric(payload);
-    });
-    socket.on('showBoard', (boardArray) => {
-      console.log('showboard', boardArray)
-      const {card: otherPlayerCard} = boardArray.find(card => card.playerId !== this.authStore.user.id);
-      console.log({otherPlayerCard})
-      const apiCard = this.cardsApi.find(card => card.key === otherPlayerCard.key);
-      console.log({apiCard})
-      this.$emit('show-other-card', apiCard);
-      this.canDraw = false;
-      let handCards = document.querySelectorAll('.hand-box__card');
-      handCards.forEach(card => card.style.pointerEvents = 'none');
-      setTimeout(() => {
-        this.$emit('show-other-card', null);
-        this.$emit('play-card', null);
-        this.canDraw = true;
-        this.havePlayed = false
-        handCards.forEach(card => card.style.pointerEvents = 'auto');
-      }, 3000)
-    });
-    return {socket}
-  },
-  mounted() {
-    // initialize container, target and viewport
-    this.container = this.$refs.canvas;
-    this.viewport = this.setViewportSize(this.container);
-    this.launchDuel();
-  },
-  methods: {
-    updateHistoric(payload) {
-      this.canDraw = true;
-    },
+  textureFront.wrapS = textureFront.wrapT = THREE.MirroredRepeatWrapping;
 
-    randomize(arr) {
-      let i, j, tmp;
-      for (i = arr.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
-        tmp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = tmp;
-      }
-      return arr;
-    },
+  const backCard = new Image();
+  backCard.src = Back;
+  const textureBack = new THREE.Texture();
+  textureBack.image = backCard;
+  backCard.onload = () => {
+    textureBack.needsUpdate = true;
+  };
 
-    playCard(playedCard) {
-      if (this.handDisabled) return
-      this.havePlayed = true
-      this.hand = this.hand.filter(card => card !== playedCard);
-      this.$emit('play-card', playedCard);
-      this.$emit('show-other-card', null);
-      this.draft.push(playedCard);
+  textureBack.wrapS = textureBack.wrapT = THREE.MirroredRepeatWrapping;
 
-      this.socket.emit('playCard',
-          this.authStore.room.roomId,
-          this.authStore.user.id,
-          playedCard.key,
-      );
-    },
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvas.value,
+    alpha: true,
+  });
+  renderer.setSize(window.innerWidth, window.innerHeight);
 
-    updateDuel(payload) {
-      console.log(payload);
-      this.authStore.room.players = payload.players;
-    },
-    async constructDeck() {
-      if (!this.cardsApi) {
-        await this.fetchCards();
-      }
+  const geometry1 = new THREE.PlaneGeometry(0.65, 1);
 
-      this.deck = this.authStore.user.cards.map((cardName) => {
-        const card = this.cardsApi.find(element => element.key === cardName);
-        if (!card) console.log('card not found', cardName);
-        return card;
-      }).filter(card => card !== undefined);
-      ;
-    },
-    fetchCards() {
-      this.cardsApi = cards
-    },
+  const geometry2 = new THREE.PlaneGeometry(0.65, 1);
+  const material1 = new THREE.MeshLambertMaterial({map: textureFront});
+  const material2 = new THREE.MeshLambertMaterial({map: textureBack});
 
-    async launchDuel() {
-      await this.constructDeck();
-      this.drawCard(3);
-    },
+  const plane1 = new THREE.Mesh(geometry1, material1);
+  const plane2 = new THREE.Mesh(geometry2, material2);
+  plane2.rotation.y = Math.PI;
 
-    drawCard(count) {
-      if (this.canDraw && this.deck.length >= count) {
-        for (let i = 0; i < count; i++) {
-          this.hand.push(this.deck.pop());
-        }
-      }
-      if (this.deck.length === 0) {
-        this.deck.push(...this.randomize(this.draft));
-        this.draft = [];
-      }
-      //emit event to update hand and deck with socket.io
-    },
-    showCard(image) {
-      this.canvas = true;
+  const group = new THREE.Group();
+  group.add(plane1);
+  group.add(plane2);
 
-      const frontCard = new Image();
-      frontCard.src = image;
-      const textureFront = new THREE.Texture();
-      textureFront.image = frontCard;
-      frontCard.onload = () => {
-        textureFront.needsUpdate = true;
-      };
+  scene.add(group);
 
-      textureFront.wrapS = textureFront.wrapT = THREE.MirroredRepeatWrapping;
+  scene.add(new THREE.HemisphereLight(0xaaaaaa, 0x333333));
 
-      const backCard = new Image();
-      backCard.src = Back;
-      const textureBack = new THREE.Texture();
-      textureBack.image = backCard;
-      backCard.onload = () => {
-        textureBack.needsUpdate = true;
-      };
+  const keyLight = new THREE.PointLight(0xaaaaaa);
+  keyLight.position.x = 15;
+  keyLight.position.y = -10;
+  keyLight.position.z = 35;
+  scene.add(keyLight);
 
-      textureBack.wrapS = textureBack.wrapT = THREE.MirroredRepeatWrapping;
+  const rimLight = new THREE.PointLight(0x888888);
+  rimLight.position.x = 100;
+  rimLight.position.y = 100;
+  rimLight.position.z = -50;
+  scene.add(rimLight);
 
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({
-        canvas: this.$refs.canvas,
-        alpha: true,
-      });
-      renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.position.z = 2;
 
-      const geometry1 = new THREE.PlaneGeometry(0.65, 1);
+  const render = function () {
 
-      const geometry2 = new THREE.PlaneGeometry(0.65, 1);
-      const material1 = new THREE.MeshLambertMaterial({map: textureFront});
-      const material2 = new THREE.MeshLambertMaterial({map: textureBack});
+    requestAnimationFrame(render);
 
-      const plane1 = new THREE.Mesh(geometry1, material1);
-      const plane2 = new THREE.Mesh(geometry2, material2);
-      plane2.rotation.y = Math.PI;
+    renderer.render(scene, camera);
 
-      const group = new THREE.Group();
-      group.add(plane1);
-      group.add(plane2);
+  };
 
-      scene.add(group);
+  render();
 
-      scene.add(new THREE.HemisphereLight(0xaaaaaa, 0x333333));
+  const controls = new OrbitControls(camera, renderer.domElement);
 
-      const keyLight = new THREE.PointLight(0xaaaaaa);
-      keyLight.position.x = 15;
-      keyLight.position.y = -10;
-      keyLight.position.z = 35;
-      scene.add(keyLight);
+  //controls.update() must be called after any manual changes to the camera's transform
+  camera.position.set(0, 0, 1);
+  // controls.autoRotate = true;
+  controls.update();
 
-      const rimLight = new THREE.PointLight(0x888888);
-      rimLight.position.x = 100;
-      rimLight.position.y = 100;
-      rimLight.position.z = -50;
-      scene.add(rimLight);
+  function animate() {
 
-      camera.position.z = 2;
+    requestAnimationFrame(animate);
 
-      const render = function () {
+    // required if controls.enableDamping or controls.autoRotate are set to true
 
-        requestAnimationFrame(render);
+    controls.update();
+    renderer.render(scene, camera);
+  }
 
-        renderer.render(scene, camera);
+  animate();
+}
 
-      };
+const {setViewportSize} = useThreeHelpers()
 
-      render();
-
-      const controls = new OrbitControls(camera, renderer.domElement);
-
-      //controls.update() must be called after any manual changes to the camera's transform
-      camera.position.set(0, 0, 1);
-      // controls.autoRotate = true;
-      controls.update();
-
-      function animate() {
-
-        requestAnimationFrame(animate);
-
-        // required if controls.enableDamping or controls.autoRotate are set to true
-
-        controls.update();
-        renderer.render(scene, camera);
-      }
-
-      animate();
-    },
-  },
-};
+onMounted(() => {
+  if (!canvas.value) {
+    throw new Error('Canvas not found');
+  }
+  // initialize container, target and viewport
+  viewport.value = setViewportSize(canvas.value);
+  launchDuel();
+})
 </script>
 <style scoped lang="scss">
 section.container {

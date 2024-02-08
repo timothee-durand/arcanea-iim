@@ -26,12 +26,11 @@ import DuelComponent from "@/components/DuelComponent.vue";
 import HistoricDuelComponent from "@/components/HistoricDuelComponent.vue";
 import HandComponent from "@/components/HandComponent.vue";
 import {inject, ref, computed} from "vue";
-import {Socket} from "socket.io-client";
 import {useAuthStore} from "@/store/auth";
 import {useRouter} from "vue-router";
 import {END_GAME_ROUTE} from "@/router";
 import {useToast} from "vue-toastification";
-import {useSocket} from "@/services/socket";
+import {socket} from "@/services/socket";
 import {UserDto} from "../../@types/dto";
 
 const myCard = ref<Object | null>(null);
@@ -42,7 +41,6 @@ function playCard(playedCard: Object) {
 }
 
 
-const {socket} = useSocket();
 const store = useAuthStore();
 const toast = useToast();
 const router = useRouter()

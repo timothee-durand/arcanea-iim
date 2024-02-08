@@ -1,7 +1,6 @@
 <script>
-import {inject, ref} from 'vue'
 import {DECK_ROUTE_NAME} from "@/router/routes";
-import {useSocket} from "@/services/socket";
+import {socket} from "@/services/socket";
 
 export default {
   name: "HistoricDuelComponent",
@@ -15,7 +14,6 @@ export default {
   mounted() {
   },
   setup() {
-    const {socket} = useSocket()
     socket.on("pushActions", (payload) => {
       this.updateHistoric(payload);
     })
