@@ -13,7 +13,7 @@ import {socket} from "@/services/socket";
 const idRoom = ref<String>("");
 const userName = ref<String>("");
 const store = useAuthStore();
-const toast = useToast();
+
 const router = useRouter();
 const route = useRoute()
 
@@ -22,33 +22,6 @@ if(route.query.room) {
 }
 
 
-socket.on("roomJoined", (payload) => {
-  store.roomId = payload.duel.roomId
-  store.user = payload.user
-  store.room = payload.duel
-  toast.success("You joined the room")
-  router.push({name: GAME_ROUTE_NAME})
-})
-
-socket.on("rooms", (payload: any) => {
-  console.log("rooms", payload)
-})
-
-
-socket.on("errorLogin", (error: string) => {
-  console.log("errorLogin", error)
-  toast.error(error)
-})
-
-
-socket.on("joinRoom", (rooms: String, user: String) => {
-  console.log("join", rooms, user)
-})
-
-socket.on("roomFull", () => {
-  console.log("roomFull")
-  toast.error("Room is full")
-})
 
 const joinRoom = () => {
   if (0 !== userName.value.length) {

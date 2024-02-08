@@ -7,7 +7,7 @@
     <keep-alive>
       <HandComponent @play-card="playCard" @show-other-card="(c) => otherCard = c"/>
     </keep-alive>
-    <div class="no-other-player" v-if="!store.room || !store.room.players[1]">
+    <div class="no-other-player" v-if="!gameStore.room || !gameStore.room.players[1]">
       <div class="modal">
         <p>En attente d'un autre joueur...</p>
         <div>
@@ -25,13 +25,9 @@
 import DuelComponent from "@/components/DuelComponent.vue";
 import HistoricDuelComponent from "@/components/HistoricDuelComponent.vue";
 import HandComponent from "@/components/HandComponent.vue";
-import {inject, ref, computed} from "vue";
-import {useAuthStore} from "@/store/auth";
+import { ref, computed} from "vue";
 import {useRouter} from "vue-router";
-import {END_GAME_ROUTE} from "@/router";
-import {useToast} from "vue-toastification";
-import {socket} from "@/services/socket";
-import {UserDto} from "../../@types/dto";
+import {useGameStore} from "@/store/game";
 
 const myCard = ref<Object | null>(null);
 const otherCard = ref(null);
@@ -41,25 +37,12 @@ function playCard(playedCard: Object) {
 }
 
 
-const store = useAuthStore();
-const toast = useToast();
+const gameStore = useGameStore();
 const router = useRouter()
-socket.on("endDuel", (payload: UserDto) => {
-  console.log("endDuel", payload)
-  store.winner = payload
-  store.room = null
-  router.push({name: END_GAME_ROUTE})
-})
-socket.on('showBoard', (error: string) => {
-  console.log("showBoard", error)
-})
-socket.on('inGameError', (error: string) => {
-  console.log("error", error)
-  toast.error(error)
-})
+
 
 const shareLinkUrl = computed(() => {
-  return window.location.origin + "?room=" + store.roomId
+  return window.location.origin + "?room=" + gameStore.roomId
 })
 </script>
 

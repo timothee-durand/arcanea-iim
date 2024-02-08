@@ -1,31 +1,38 @@
 <script setup lang="ts">
-import {computed, defineProps} from 'vue';
-import {useAuthStore} from '@/store/auth';
+import {computed} from 'vue';
 import {UserDto} from "../../@types/dto";
+import {useGameStore} from "@/store/game";
+import {useAuthStore} from "@/store/auth";
 
-const store = useAuthStore();
-
-const props = defineProps(['card', 'otherCard']);
-
+const gameStore = useGameStore()
+const authStore = useAuthStore()
 
 const player1 = computed<UserDto>(() => {
-  if(!store.room || !store.user)
+  if(!gameStore.room || !authStore.user)
     throw new Error('No room or user');
-  if (store.room.players[0].id === store.user.id) {
-    return store.room.players[0];
+  if (gameStore.room.players[0].id === authStore.user.id) {
+    return gameStore.room.players[0];
   } else {
-    return store.room.players[1];
+    return gameStore.room.players[1];
   }
 });
 const player2 = computed<UserDto | null>(() => {
-  if(!store.room || !store.user) return null;
-  return store.room.players.find((player) => player.id !== store.user!.id) ?? null
+  if(!gameStore.room || !authStore.user) return null;
+  return gameStore.room.players.find((player) => player.id !== authStore.user!.id) ?? null
 });
+
+const roomId = computed(() => {
+  return gameStore.roomId
+})
+
+const board = computed(() => {
+  return gameStore.board
+})
 
 </script>
 <template>
     <div class="roomName">
-      <b>{{ store.roomId }}</b>
+      <b>{{ roomId }}</b>
     </div>
 
     <div class="duel-container">
@@ -36,17 +43,17 @@ const player2 = computed<UserDto | null>(() => {
                 <span class="duel-player__life">{{ player1.health }}/100 HP</span>
             </div>
             <div class="duel-player__playedCard">
-                <img v-if="props.card" class="hand-box__card" :src="props.card.image">
-                <video class="fx-effect" v-if="props.card && props.otherCard" autoplay width="500">
-                    <source :src="'/fx/' + props.card.key + '_FX.webm'" type="video/webm">
+                <img v-if="board.userCard" class="hand-box__card" :src="board.userCard.image">
+                <video class="fx-effect" v-if="board.userCard && board.opponentCard" autoplay width="500">
+                    <source :src="'/fx/' + board.userCard.key + '_FX.webm'" type="video/webm">
                 </video>
             </div>
         </div>
         <div class="duel-player">
             <div class="duel-player__playedCard">
-                <img v-if="props.otherCard" class="hand-box__card" :src="props.otherCard.image">
-                <video class="fx-effect" v-if="props.card && props.otherCard" autoplay width="500">
-                    <source :src="'/fx/' + props.otherCard.key + '_FX.webm'" type="video/webm">
+                <img v-if="board.opponentCard" class="hand-box__card" :src="board.opponentCard.image">
+                <video class="fx-effect" v-if="board.userCard && board.opponentCard" autoplay width="500">
+                    <source :src="'/fx/' + board.opponentCard.key + '_FX.webm'" type="video/webm">
                 </video>
             </div>
             <p v-if="player2" class="duel-player__name">{{ player2.name }}</p>

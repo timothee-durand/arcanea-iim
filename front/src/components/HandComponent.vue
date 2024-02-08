@@ -10,25 +10,29 @@
       <section class="hand" :class="{'hand--disabled': handDisabled}">
         <div class="hand-box box">
           <h2>Card 1</h2>
-          <img :alt="hand[0].name" v-if="hand[0]" v-on:click.right="showCard(hand[0].image)" @click="playCard(hand[0])"
-               class="hand-box__card" :src="hand[0].image">
+          <img :alt="gameStore.hand[0].name" v-if="gameStore.hand[0]"
+               v-on:click.right="showCard(gameStore.hand[0].image)" @click="playCard(gameStore.hand[0])"
+               class="hand-box__card" :src="gameStore.hand[0].image">
         </div>
         <div class="hand-box box">
           <h2>Card 2</h2>
-          <img :alt="hand[1].name" v-if="hand[1]" v-on:click.right="showCard(hand[1].image)" @click="playCard(hand[1])"
-               class="hand-box__card" :src="hand[1].image">
+          <img :alt="gameStore.hand[1].name" v-if="gameStore.hand[1]"
+               v-on:click.right="showCard(gameStore.hand[1].image)" @click="playCard(gameStore.hand[1])"
+               class="hand-box__card" :src="gameStore.hand[1].image">
         </div>
         <div class="hand-box box">
           <h2>Card 3</h2>
-          <img :alt="hand[2].name" v-if="hand[2]" v-on:click.right="showCard(hand[2].image)" @click="playCard(hand[2])"
-               class="hand-box__card --third" :src="hand[2].image">
+          <img :alt="gameStore.hand[2].name" v-if="gameStore.hand[2]"
+               v-on:click.right="showCard(gameStore.hand[2].image)" @click="playCard(gameStore.hand[2])"
+               class="hand-box__card --third" :src="gameStore.hand[2].image">
         </div>
       </section>
       <section class="draw">
         <div class="draw-box box">
           <h2>Draw</h2>
-          <img v-on:click="drawCard(1)" v-if="deck && deck.length > 0"
-               :class="canDraw ? 'draw-box__card canDraw' : 'draw-box__card'" src="@/assets/img/card-back.png">
+          <img @click="gameStore.drawCard(1)" v-if="gameStore.deck && gameStore.deck.length > 0"
+               :class="gameStore.canDraw ? 'draw-box__card canDraw' : 'draw-box__card'"
+               src="@/assets/img/card-back.png">
         </div>
       </section>
       <div class="cross" v-show="isOpen" @click="isOpen = false"></div>
@@ -49,109 +53,42 @@ import {Card} from "@/store/cards";
 import {BoardCard, RoomDto} from "../../@types/dto/Room";
 import {useThreeHelpers, ViewPort} from "@/composables/useThreeHelpers";
 import {socket} from "@/services/socket";
+import {useGameStore} from "@/store/game";
 
 const authStore = useAuthStore();
 
 let container = ref(null);
 let viewport = ref<ViewPort | null>(null);
-let deck = ref<Card[]>([]);
-let hand = ref<Card[]>([]);
-let canvas = ref<HTMLCanvasElement | null>(null);
-let draft = ref<Card[]>([]);
-let havePlayed = ref(false);
 let isOpen = ref(false);
+let canvas = ref<HTMLCanvasElement | null>(null);
 
-const canDraw = ref(false);
-const has2Players = computed(() => authStore.room?.players.length === 2);
-const handDisabled = computed(() => !has2Players.value || havePlayed.value);
+const gameStore = useGameStore()
+
+const handDisabled = computed(() => !gameStore.has2Players || !gameStore.canPlay);
 console.log(socket)
-socket.on('updateRoom', (payload : RoomDto) => {
-  console.log(payload);
-  if(!authStore.room) {
-    throw new Error('Room not found');
-  }
-  authStore.room.players = payload.players;
-});
+
 
 const emit = defineEmits(['play-card', 'show-other-card']);
 
-socket.on('pushActions', (payload) => {
-  console.log('pushActions', payload)
-  canDraw.value = true;
-});
-socket.on('showBoard', (boardArray : BoardCard[]) => {
-  console.log('showboard', boardArray)
-  const otherPlayerCard = boardArray.find(card => card.playerId !== authStore.user?.id);
-  console.log({otherPlayerCard})
-  if (!otherPlayerCard) throw new Error('No other player card found');
-  const apiCard = cards.find(card => card.key === otherPlayerCard.card.key);
-  console.log({apiCard})
-  emit('show-other-card', apiCard);
-  let handCards = document.querySelectorAll('.hand-box__card') as NodeListOf<HTMLElement>;
-  handCards.forEach(card => card.style.pointerEvents = 'none');
-  setTimeout(() => {
-    emit('show-other-card', null);
-    emit('play-card', null);
-    canDraw.value = true;
-    havePlayed.value = false
-    handCards.forEach(card => card.style.pointerEvents = 'auto');
-  }, 3000)
-});
 
-function randomize<T extends unknown[]>(arr : T) : T {
-  let i, j, tmp;
-  for (i = arr.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
-    tmp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = tmp;
-  }
-  return arr;
-}
-
-function playCard(playedCard : Card) {
+function playCard(playedCard: Card) {
   if (handDisabled.value) return
-  havePlayed.value = true
-  hand.value = hand.value.filter(card => card !== playedCard);
-  emit('play-card', playedCard);
-  emit('show-other-card', null);
-  draft.value.push(playedCard);
+  gameStore.canPlay = false
+  gameStore.hand = gameStore.hand.filter(card => card !== playedCard);
+  gameStore.board.userCard = playedCard;
+  gameStore.board.opponentCard = null;
+  gameStore.draft.push(playedCard);
 
   socket.emit('playCard',
-      authStore.room!.roomId,
+      gameStore.room?.roomId,
       authStore.user!.id,
       playedCard.key,
   );
 }
 
-function constructDeck() {
-  if (!authStore.user) return;
-  deck.value = authStore.user.cards.map((cardName) => {
-    const card = cards.find(element => element.key === cardName);
-    if (!card) console.log('card not found', cardName);
-    return card;
-  }).filter(card => card !== undefined) as Card[];
-}
 
- function launchDuel() {
-  constructDeck();
-  drawCard(3);
-}
-
-function drawCard(count : number) {
-  if (canDraw.value && deck.value.length >= count) {
-    for (let i = 0; i < count; i++) {
-      hand.value.push(deck.value.pop() as Card);
-    }
-  }
-  if (deck.value.length === 0) {
-    deck.value.push(...randomize(draft.value));
-    draft.value = [];
-  }
-  //emit event to update hand and deck with socket.io
-}
-function showCard(image : string) {
-  if(!canvas.value) {
+function showCard(image: string) {
+  if (!canvas.value) {
     throw new Error('Canvas not found');
   }
   const frontCard = new Image();
@@ -252,7 +189,6 @@ onMounted(() => {
   }
   // initialize container, target and viewport
   viewport.value = setViewportSize(canvas.value);
-  launchDuel();
 })
 </script>
 <style scoped lang="scss">
@@ -291,6 +227,7 @@ section.container {
 
     &--disabled {
       opacity: 0.6;
+      pointer-events: none;
     }
   }
 
