@@ -2,7 +2,7 @@
   <div class="center-container">
     <div class="container">
       <h1>Game Over</h1>
-      <span>The winner is {{ winner.name }}</span>
+      <span>The winner is {{ winnerName }}</span>
       <router-link :to="{name: LOGIN_ROUTE_NAME}">Go back to the login</router-link>
     </div>
   </div>
@@ -16,8 +16,8 @@ import {useGameStore} from "@/store/game";
 
 const gameStore = useGameStore();
 
-const winner = computed(() => {
-  return gameStore.winner ?? "No winner";
+const winnerName = computed(() => {
+  return gameStore.winner?.name ?? "No winner";
 });
 
 </script>

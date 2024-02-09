@@ -3,7 +3,6 @@ import {DECK_ROUTE_NAME} from "@/router/routes";
 import {useGameStore} from "@/store/game";
 import {ref} from "vue";
 
-const deckRoute = DECK_ROUTE_NAME;
 const container = ref(null);
 const gameStore = useGameStore();
 </script>
@@ -11,7 +10,7 @@ const gameStore = useGameStore();
 <template>
   <div class="historic-container" ref="container">
     <img class="historic__logo" src="@/assets/img/Arcanea-logo-white.png" alt="Logo Arcanea">
-    <router-link :to="{name:deckRoute}" class="connexionButton">Deck</router-link>
+    <router-link :to="{name : DECK_ROUTE_NAME}" class="connexionButton">Deck</router-link>
     <transition-group name="list" tag="ul" class="historic-list">
       <li class="historic-item" v-for="(item,i ) in gameStore.history" :key="i">
         <hr size="1">

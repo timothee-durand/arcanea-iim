@@ -1,143 +1,121 @@
-<script>
+<script lang="ts" setup>
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {GAME_ROUTE_NAME} from "@/router/routes";
 import {cards} from "@/store/cards/cards-content";
+import {ref} from "vue";
 import Back from "@/assets/back.jpg";
+import {Card} from "@/store/cards";
 
-export default {
-  name: 'DeckComponent',
-  data() {
-    return {
-      name: '',
-      result: [],
-      canvas: false,
-      gameRoute: GAME_ROUTE_NAME
-    };
-  },
-  computed: {
-    filteredResult() {
-      return  this.result.filter((item) => {
-        return item.key !== 'BACK';
-      })
-    },
-  },
+const canvas = ref(false)
 
-  mounted() {
-    this.fetchCards();
+const threeCanvas = ref<HTMLCanvasElement | null>(null)
 
-  },
+function showCard(image: Card) {
+  if(!threeCanvas.value) {
+    throw new Error("Canvas is not defined")
+  }
+  console.log(image)
+  const imageFront = new Image();
+  imageFront.src = image.image;
+  const textureFront = new THREE.Texture();
+  textureFront.image = imageFront;
+  imageFront.onload = function () {
+    textureFront.needsUpdate = true;
+  };
 
-  methods: {
-    fetchCards() {
-      this.result = cards;
-    },
+  textureFront.wrapS = textureFront.wrapT = THREE.MirroredRepeatWrapping;
 
-    Image(image) {
+  const imageBack = new Image();
+  imageBack.src = Back;
+  const textureBack = new THREE.Texture();
+  textureBack.image = imageBack;
+  imageBack.onload = function () {
+    textureBack.needsUpdate = true;
+  };
 
-      this.canvas = true;
+  textureBack.wrapS = textureBack.wrapT = THREE.MirroredRepeatWrapping;
 
-      const imageFront = new Image();
-      imageFront.src = image;
-      const textureFront = new THREE.Texture();
-      textureFront.image = imageFront;
-      imageFront.onload = function () {
-        textureFront.needsUpdate = true;
-      };
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({
+    canvas: threeCanvas.value,
+    alpha: true,
+  });
+  renderer.setSize(window.innerWidth, window.innerHeight);
 
-      textureFront.wrapS = textureFront.wrapT = THREE.MirroredRepeatWrapping;
+  const geometry1 = new THREE.PlaneGeometry(0.65, 1);
 
-      const imageBack = new Image();
-      imageBack.src = Back;
-      const textureBack = new THREE.Texture();
-      textureBack.image = imageBack;
-      imageBack.onload = function () {
-        textureBack.needsUpdate = true;
-      };
+  const geometry2 = new THREE.PlaneGeometry(0.65, 1);
 
-      textureBack.wrapS = textureBack.wrapT = THREE.MirroredRepeatWrapping;
+  const material1 = new THREE.MeshLambertMaterial({map: textureFront});
+  const material2 = new THREE.MeshLambertMaterial({map: textureBack});
 
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({
-        canvas: this.$refs.canvas,
-        alpha: true,
-      });
-      renderer.setSize(window.innerWidth, window.innerHeight);
+  const plane1 = new THREE.Mesh(geometry1, material1);
+  const plane2 = new THREE.Mesh(geometry2, material2);
+  plane2.rotation.y = Math.PI;
+  const group = new THREE.Group();
+  group.add(plane1);
+  group.add(plane2);
 
-      const geometry1 = new THREE.PlaneGeometry(0.65, 1);
+  scene.add(group);
 
-      const geometry2 = new THREE.PlaneGeometry(0.65, 1);
+  scene.add(new THREE.HemisphereLight(0xaaaaaa, 0x333333));
 
-      const material1 = new THREE.MeshLambertMaterial({map: textureFront});
-      const material2 = new THREE.MeshLambertMaterial({map: textureBack});
+  const keyLight = new THREE.PointLight(0xaaaaaa);
+  keyLight.position.x = 15;
+  keyLight.position.y = -10;
+  keyLight.position.z = 35;
+  scene.add(keyLight);
 
-      const plane1 = new THREE.Mesh(geometry1, material1);
-      const plane2 = new THREE.Mesh(geometry2, material2);
-      plane2.rotation.y = Math.PI;
-      const group = new THREE.Group();
-      group.add(plane1);
-      group.add(plane2);
+  const rimLight = new THREE.PointLight(0x888888);
+  rimLight.position.x = 100;
+  rimLight.position.y = 100;
+  rimLight.position.z = -50;
+  scene.add(rimLight);
 
-      scene.add(group);
+  camera.position.z = 2;
 
-      scene.add(new THREE.HemisphereLight(0xaaaaaa, 0x333333));
+  const render = function () {
 
-      const keyLight = new THREE.PointLight(0xaaaaaa);
-      keyLight.position.x = 15;
-      keyLight.position.y = -10;
-      keyLight.position.z = 35;
-      scene.add(keyLight);
+    requestAnimationFrame(render);
 
-      const rimLight = new THREE.PointLight(0x888888);
-      rimLight.position.x = 100;
-      rimLight.position.y = 100;
-      rimLight.position.z = -50;
-      scene.add(rimLight);
+    renderer.render(scene, camera);
 
-      camera.position.z = 2;
+  };
 
-      const render = function () {
+  render();
 
-        requestAnimationFrame(render);
+  const controls = new OrbitControls(camera, renderer.domElement);
 
-        renderer.render(scene, camera);
+  //controls.update() must be called after any manual changes to the camera's transform
+  camera.position.set(0, 0, 1);
+  controls.autoRotate = true;
+  controls.update();
 
-      };
+  function animate() {
 
-      render();
+    requestAnimationFrame(animate);
 
-      const controls = new OrbitControls(camera, renderer.domElement);
+    // required if controls.enableDamping or controls.autoRotate are set to true
 
-      //controls.update() must be called after any manual changes to the camera's transform
-      camera.position.set(0, 0, 1);
-      controls.autoRotate = true;
-      controls.update();
+    controls.update();
+    renderer.render(scene, camera);
+  }
 
-      function animate() {
+  animate();
+}
 
-        requestAnimationFrame(animate);
-
-        // required if controls.enableDamping or controls.autoRotate are set to true
-
-        controls.update();
-        renderer.render(scene, camera);
-      }
-
-      animate();
-    },
-  },
-};
 </script>
 <template>
   <div class="deckPage">
     <div class="allCards">
-      <div class="cross" v-show="canvas" @click="this.canvas = false"></div>
+      <div class="cross" v-show="canvas" @click="canvas = false"></div>
       <div class="blur" v-show="canvas"></div>
-      <canvas ref="canvas" v-show="canvas"></canvas>
+      <canvas ref="threeCanvas" v-show="canvas"></canvas>
       <div class="deck">
-        <div class="cards" v-for="item in filteredResult" :key="item.result" :class="item.key">
-          <img :src="item.image" :alt="item.name" @click="Image(item.image)">
+        <div class="cards" v-for="item in cards" :key="item.key" :class="item.key">
+          <img :src="item.image" :alt="item.name" @click="showCard(item)">
         </div>
       </div>
     </div>
@@ -150,7 +128,7 @@ export default {
         Lors de la partie, votre main sera toujours composée de 3 cartes attribuées aléatoirement. Le jeu se terminera
         lorsqu'un des deux joueurs atteindra 0 HP.
       </p>
-      <router-link :to="{name: gameRoute}" class="connexionButton">Retour au jeu</router-link>
+      <router-link :to="{name: GAME_ROUTE_NAME}" class="connexionButton">Retour au jeu</router-link>
     </div>
   </div>
 </template>
@@ -247,6 +225,7 @@ canvas {
   .cards {
     cursor: pointer;
     transition: transform ease-out 100ms;
+
     img {
       width: 250px;
     }

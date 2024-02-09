@@ -1,7 +1,7 @@
 <template>
   <div class="app-duel">
       <div class="app-top">
-        <DuelComponent :card="myCard" :other-card="otherCard"/>
+        <DuelComponent />
         <HistoricDuelComponent/>
       </div>
     <keep-alive>
