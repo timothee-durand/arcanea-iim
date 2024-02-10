@@ -10,275 +10,186 @@
       <section class="hand" :class="{'hand--disabled': handDisabled}">
         <div class="hand-box box">
           <h2>Card 1</h2>
-          <img :alt="hand[0].name" v-if="hand[0]" v-on:click.right="showCard(hand[0].image)" @click="playCard(hand[0])"
-               class="hand-box__card" :src="hand[0].image">
+          <img :alt="gameStore.hand[0].name" v-if="gameStore.hand[0]"
+               v-on:click.right="showCard(gameStore.hand[0].image)" @click="playCard(gameStore.hand[0])"
+               class="hand-box__card" :src="gameStore.hand[0].image">
         </div>
         <div class="hand-box box">
           <h2>Card 2</h2>
-          <img :alt="hand[1].name" v-if="hand[1]" v-on:click.right="showCard(hand[1].image)" @click="playCard(hand[1])"
-               class="hand-box__card" :src="hand[1].image">
+          <img :alt="gameStore.hand[1].name" v-if="gameStore.hand[1]"
+               v-on:click.right="showCard(gameStore.hand[1].image)" @click="playCard(gameStore.hand[1])"
+               class="hand-box__card" :src="gameStore.hand[1].image">
         </div>
         <div class="hand-box box">
           <h2>Card 3</h2>
-          <img :alt="hand[2].name" v-if="hand[2]" v-on:click.right="showCard(hand[2].image)" @click="playCard(hand[2])"
-               class="hand-box__card --third" :src="hand[2].image">
+          <img :alt="gameStore.hand[2].name" v-if="gameStore.hand[2]"
+               v-on:click.right="showCard(gameStore.hand[2].image)" @click="playCard(gameStore.hand[2])"
+               class="hand-box__card --third" :src="gameStore.hand[2].image">
         </div>
       </section>
       <section class="draw">
         <div class="draw-box box">
           <h2>Draw</h2>
-          <img v-on:click="drawCard(1)" v-if="deck && deck.length > 0"
-               :class="canDraw ? 'draw-box__card canDraw' : 'draw-box__card'" src="@/assets/img/card-back.png">
+          <img @click="gameStore.drawCard(1)" v-if="gameStore.deck && gameStore.deck.length > 0"
+               :class="gameStore.canDraw ? 'draw-box__card canDraw' : 'draw-box__card'"
+               src="@/assets/img/card-back.png">
         </div>
       </section>
-      <div class="cross" v-show="canvas" @click="this.canvas = false"></div>
-      <div class="blur" v-show="canvas"></div>
-      <canvas class="canvas" ref="canvas" v-show="canvas"></canvas>
+      <div class="cross" v-show="isOpen" @click="isOpen = false"></div>
+      <div class="blur" v-show="isOpen"></div>
+      <canvas class="canvas" ref="canvas" v-show="isOpen"></canvas>
     </section>
   </section>
 </template>
-<script>
+<script setup lang="ts">
 import * as THREE from 'three';
-import threeMixin from '../mixins/threeMixin';
+// @ts-ignore
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {cards} from "@/store/cards/cards-content";
 import Back from "@/assets/back.jpg";
 import {useAuthStore} from "@/store/auth";
-import {mapStores} from "pinia";
-import {useSocket} from "@/services/socket";
+import {computed, onMounted, ref} from "vue";
+import {Card} from "@/store/cards";
+import {BoardCard, RoomDto} from "../../@types/dto/Room";
+import {useThreeHelpers, ViewPort} from "@/composables/useThreeHelpers";
+import {socket} from "@/services/socket";
+import {useGameStore} from "@/store/game";
 
-export default {
-  name: 'HandComponent',
-  data() {
-    return {
-      camera: null,
-      container: null,
-      controls: null,
-      pointLight: null,
-      renderer: null,
-      scene: null,
-      sphere: null,
-      viewport: null,
-      cardsApi: null,
-      deck: null,
-      hand: [],
-      canvas: false,
-      draft: [],
-      havePlayed: false,
-    };
-  },
-  computed: {
-    // note we are not passing an array, just one store after the other
-    // each store will be accessible as its id + 'Store'
-    ...mapStores(useAuthStore),
-    canDraw() {
-      return this.hand.length < 3 && this.deck && this.deck.length > 0;
-    },
-    has2Players() {
-      return this.authStore.room.players.length === 2;
-    },
-    handDisabled() {
-      return !this.has2Players || this.havePlayed;
-    }
-  },
-  mixins: [threeMixin],
-  setup() {
-    const {socket} = useSocket()
-    socket.on('updateRoom', (payload) => {
-      this.updateDuel(payload);
-    });
+const authStore = useAuthStore();
 
-    socket.on('pushActions', (payload) => {
-      this.updateHistoric(payload);
-    });
-    socket.on('showBoard', (boardArray) => {
-      console.log('showboard', boardArray)
-      const {card: otherPlayerCard} = boardArray.find(card => card.playerId !== this.authStore.user.id);
-      console.log({otherPlayerCard})
-      const apiCard = this.cardsApi.find(card => card.key === otherPlayerCard.key);
-      console.log({apiCard})
-      this.$emit('show-other-card', apiCard);
-      this.canDraw = false;
-      let handCards = document.querySelectorAll('.hand-box__card');
-      handCards.forEach(card => card.style.pointerEvents = 'none');
-      setTimeout(() => {
-        this.$emit('show-other-card', null);
-        this.$emit('play-card', null);
-        this.canDraw = true;
-        this.havePlayed = false
-        handCards.forEach(card => card.style.pointerEvents = 'auto');
-      }, 3000)
-    });
-    return {socket}
-  },
-  mounted() {
-    // initialize container, target and viewport
-    this.container = this.$refs.canvas;
-    this.viewport = this.setViewportSize(this.container);
-    this.launchDuel();
-  },
-  methods: {
-    updateHistoric(payload) {
-      this.canDraw = true;
-    },
+let container = ref(null);
+let viewport = ref<ViewPort | null>(null);
+let isOpen = ref(false);
+let canvas = ref<HTMLCanvasElement | null>(null);
 
-    randomize(arr) {
-      let i, j, tmp;
-      for (i = arr.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
-        tmp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = tmp;
-      }
-      return arr;
-    },
+const gameStore = useGameStore()
 
-    playCard(playedCard) {
-      if (this.handDisabled) return
-      this.havePlayed = true
-      this.hand = this.hand.filter(card => card !== playedCard);
-      this.$emit('play-card', playedCard);
-      this.$emit('show-other-card', null);
-      this.draft.push(playedCard);
+const handDisabled = computed(() => !gameStore.has2Players || !gameStore.canPlay);
+console.log(socket)
 
-      this.socket.emit('playCard',
-          this.authStore.room.roomId,
-          this.authStore.user.id,
-          playedCard.key,
-      );
-    },
 
-    updateDuel(payload) {
-      console.log(payload);
-      this.authStore.room.players = payload.players;
-    },
-    async constructDeck() {
-      if (!this.cardsApi) {
-        await this.fetchCards();
-      }
+const emit = defineEmits(['play-card', 'show-other-card']);
 
-      this.deck = this.authStore.user.cards.map((cardName) => {
-        const card = this.cardsApi.find(element => element.key === cardName);
-        if (!card) console.log('card not found', cardName);
-        return card;
-      }).filter(card => card !== undefined);
-      ;
-    },
-    fetchCards() {
-      this.cardsApi = cards
-    },
 
-    async launchDuel() {
-      await this.constructDeck();
-      this.drawCard(3);
-    },
+function playCard(playedCard: Card) {
+  if (handDisabled.value) return
+  gameStore.canPlay = false
+  gameStore.hand = gameStore.hand.filter(card => card !== playedCard);
+  gameStore.board.userCard = playedCard;
+  gameStore.board.opponentCard = null;
+  gameStore.draft.push(playedCard);
 
-    drawCard(count) {
-      if (this.canDraw && this.deck.length >= count) {
-        for (let i = 0; i < count; i++) {
-          this.hand.push(this.deck.pop());
-        }
-      }
-      if (this.deck.length === 0) {
-        this.deck.push(...this.randomize(this.draft));
-        this.draft = [];
-      }
-      //emit event to update hand and deck with socket.io
-    },
-    showCard(image) {
-      this.canvas = true;
+  socket.emit('playCard',
+      gameStore.room?.roomId,
+      authStore.user!.id,
+      playedCard.key,
+  );
+}
 
-      const frontCard = new Image();
-      frontCard.src = image;
-      const textureFront = new THREE.Texture();
-      textureFront.image = frontCard;
-      frontCard.onload = () => {
-        textureFront.needsUpdate = true;
-      };
 
-      textureFront.wrapS = textureFront.wrapT = THREE.MirroredRepeatWrapping;
+function showCard(image: string) {
+  if (!canvas.value) {
+    throw new Error('Canvas not found');
+  }
+  const frontCard = new Image();
+  frontCard.src = image;
+  const textureFront = new THREE.Texture();
+  textureFront.image = frontCard;
+  frontCard.onload = () => {
+    textureFront.needsUpdate = true;
+  };
 
-      const backCard = new Image();
-      backCard.src = Back;
-      const textureBack = new THREE.Texture();
-      textureBack.image = backCard;
-      backCard.onload = () => {
-        textureBack.needsUpdate = true;
-      };
+  textureFront.wrapS = textureFront.wrapT = THREE.MirroredRepeatWrapping;
 
-      textureBack.wrapS = textureBack.wrapT = THREE.MirroredRepeatWrapping;
+  const backCard = new Image();
+  backCard.src = Back;
+  const textureBack = new THREE.Texture();
+  textureBack.image = backCard;
+  backCard.onload = () => {
+    textureBack.needsUpdate = true;
+  };
 
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({
-        canvas: this.$refs.canvas,
-        alpha: true,
-      });
-      renderer.setSize(window.innerWidth, window.innerHeight);
+  textureBack.wrapS = textureBack.wrapT = THREE.MirroredRepeatWrapping;
 
-      const geometry1 = new THREE.PlaneGeometry(0.65, 1);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({
+    canvas: canvas.value,
+    alpha: true,
+  });
+  renderer.setSize(window.innerWidth, window.innerHeight);
 
-      const geometry2 = new THREE.PlaneGeometry(0.65, 1);
-      const material1 = new THREE.MeshLambertMaterial({map: textureFront});
-      const material2 = new THREE.MeshLambertMaterial({map: textureBack});
+  const geometry1 = new THREE.PlaneGeometry(0.65, 1);
 
-      const plane1 = new THREE.Mesh(geometry1, material1);
-      const plane2 = new THREE.Mesh(geometry2, material2);
-      plane2.rotation.y = Math.PI;
+  const geometry2 = new THREE.PlaneGeometry(0.65, 1);
+  const material1 = new THREE.MeshLambertMaterial({map: textureFront});
+  const material2 = new THREE.MeshLambertMaterial({map: textureBack});
 
-      const group = new THREE.Group();
-      group.add(plane1);
-      group.add(plane2);
+  const plane1 = new THREE.Mesh(geometry1, material1);
+  const plane2 = new THREE.Mesh(geometry2, material2);
+  plane2.rotation.y = Math.PI;
 
-      scene.add(group);
+  const group = new THREE.Group();
+  group.add(plane1);
+  group.add(plane2);
 
-      scene.add(new THREE.HemisphereLight(0xaaaaaa, 0x333333));
+  scene.add(group);
 
-      const keyLight = new THREE.PointLight(0xaaaaaa);
-      keyLight.position.x = 15;
-      keyLight.position.y = -10;
-      keyLight.position.z = 35;
-      scene.add(keyLight);
+  scene.add(new THREE.HemisphereLight(0xaaaaaa, 0x333333));
 
-      const rimLight = new THREE.PointLight(0x888888);
-      rimLight.position.x = 100;
-      rimLight.position.y = 100;
-      rimLight.position.z = -50;
-      scene.add(rimLight);
+  const keyLight = new THREE.PointLight(0xaaaaaa);
+  keyLight.position.x = 15;
+  keyLight.position.y = -10;
+  keyLight.position.z = 35;
+  scene.add(keyLight);
 
-      camera.position.z = 2;
+  const rimLight = new THREE.PointLight(0x888888);
+  rimLight.position.x = 100;
+  rimLight.position.y = 100;
+  rimLight.position.z = -50;
+  scene.add(rimLight);
 
-      const render = function () {
+  camera.position.z = 2;
 
-        requestAnimationFrame(render);
+  const render = function () {
 
-        renderer.render(scene, camera);
+    requestAnimationFrame(render);
 
-      };
+    renderer.render(scene, camera);
 
-      render();
+  };
 
-      const controls = new OrbitControls(camera, renderer.domElement);
+  render();
 
-      //controls.update() must be called after any manual changes to the camera's transform
-      camera.position.set(0, 0, 1);
-      // controls.autoRotate = true;
-      controls.update();
+  const controls = new OrbitControls(camera, renderer.domElement);
 
-      function animate() {
+  //controls.update() must be called after any manual changes to the camera's transform
+  camera.position.set(0, 0, 1);
+  // controls.autoRotate = true;
+  controls.update();
 
-        requestAnimationFrame(animate);
+  function animate() {
 
-        // required if controls.enableDamping or controls.autoRotate are set to true
+    requestAnimationFrame(animate);
 
-        controls.update();
-        renderer.render(scene, camera);
-      }
+    // required if controls.enableDamping or controls.autoRotate are set to true
 
-      animate();
-    },
-  },
-};
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  animate();
+}
+
+const {setViewportSize} = useThreeHelpers()
+
+onMounted(() => {
+  if (!canvas.value) {
+    throw new Error('Canvas not found');
+  }
+  // initialize container, target and viewport
+  viewport.value = setViewportSize(canvas.value);
+})
 </script>
 <style scoped lang="scss">
 section.container {
@@ -316,6 +227,7 @@ section.container {
 
     &--disabled {
       opacity: 0.6;
+      pointer-events: none;
     }
   }
 

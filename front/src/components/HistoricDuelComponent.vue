@@ -1,61 +1,18 @@
-<script>
-import {inject, ref} from 'vue'
+<script lang="ts" setup>
 import {DECK_ROUTE_NAME} from "@/router/routes";
-import {useSocket} from "@/services/socket";
+import {useGameStore} from "@/store/game";
+import {ref} from "vue";
 
-export default {
-  name: "HistoricDuelComponent",
-  data() {
-    return {
-      historic: [],
-      deckRoute: DECK_ROUTE_NAME
-
-    };
-  },
-  mounted() {
-  },
-  setup() {
-    const {socket} = useSocket()
-    socket.on("pushActions", (payload) => {
-      this.updateHistoric(payload);
-    })
-    return {socket};
-  },
-
-  methods: {
-    async updateHistoric(payload) {
-      const container = this.$refs.container;
-
-      for (const payloadElement of payload) {
-        this.historic.push(payloadElement);
-        await wait(100);
-        if(container) {
-          container.scrollTop = container.scrollHeight;
-        }
-        await wait(500);
-      }
-      if(container) {
-        container.scrollTop = container.scrollHeight;
-      }
-    }
-  },
-}
-
-
-async function wait(ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}
-
+const container = ref(null);
+const gameStore = useGameStore();
 </script>
 
 <template>
   <div class="historic-container" ref="container">
     <img class="historic__logo" src="@/assets/img/Arcanea-logo-white.png" alt="Logo Arcanea">
-    <router-link :to="{name:deckRoute}" class="connexionButton">Deck</router-link>
+    <router-link :to="{name : DECK_ROUTE_NAME}" class="connexionButton">Deck</router-link>
     <transition-group name="list" tag="ul" class="historic-list">
-      <li class="historic-item" v-for="(item,i ) in historic" :key="i">
+      <li class="historic-item" v-for="(item,i ) in gameStore.history" :key="i">
         <hr size="1">
         <p class="historic-item-player">{{ item.player.name }} à lancé
           <span class="historic-item-type" :style="[item.card.type==='Attack' ? 'color:red' :

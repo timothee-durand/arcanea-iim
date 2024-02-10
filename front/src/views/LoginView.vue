@@ -1,21 +1,19 @@
 <script setup lang="ts">
-import type {Socket} from "socket.io-client";
-import {inject, ref} from "vue";
+import { ref} from "vue";
 
 import {useToast} from "vue-toastification";
 import {useAuthStore} from "@/store/auth";
 import {useRouter, useRoute} from "vue-router";
 import {GAME_ROUTE_NAME} from "@/router";
-import cardsCascades from "../assets/cardsCascades.png";
 import arcaneaLogo from "../assets/arcaneaLogo.png";
 import FloatCards from "../components/FloatCards.vue";
-import {useSocket} from "@/services/socket";
+import {socket} from "@/services/socket";
 
 
 const idRoom = ref<String>("");
 const userName = ref<String>("");
 const store = useAuthStore();
-const toast = useToast();
+
 const router = useRouter();
 const route = useRoute()
 
@@ -23,35 +21,7 @@ if(route.query.room) {
   idRoom.value = route.query.room as string
 }
 
-const {socket} = useSocket()
 
-socket.on("roomJoined", (payload) => {
-  store.roomId = payload.duel.roomId
-  store.user = payload.user
-  store.room = payload.duel
-  toast.success("You joined the room")
-  router.push({name: GAME_ROUTE_NAME})
-})
-
-socket.on("rooms", (payload: any) => {
-  console.log("rooms", payload)
-})
-
-
-socket.on("errorLogin", (error: string) => {
-  console.log("errorLogin", error)
-  toast.error(error)
-})
-
-
-socket.on("joinRoom", (rooms: String, user: String) => {
-  console.log("join", rooms, user)
-})
-
-socket.on("roomFull", () => {
-  console.log("roomFull")
-  toast.error("Room is full")
-})
 
 const joinRoom = () => {
   if (0 !== userName.value.length) {

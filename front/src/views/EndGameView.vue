@@ -2,7 +2,7 @@
   <div class="center-container">
     <div class="container">
       <h1>Game Over</h1>
-      <span>The winner is {{ winner }}</span>
+      <span>The winner is {{ winnerName }}</span>
       <router-link :to="{name: LOGIN_ROUTE_NAME}">Go back to the login</router-link>
     </div>
   </div>
@@ -10,14 +10,14 @@
 </template>
 
 <script setup lang="ts">
-import {LOGIN_ROUTE_NAME} from "@/router";
-import {useAuthStore} from "@/store/auth";
+import {LOGIN_ROUTE_NAME} from "@/router/routes";
 import {computed} from "vue";
+import {useGameStore} from "@/store/game";
 
-const store = useAuthStore();
+const gameStore = useGameStore();
 
-const winner = computed(() => {
-  return store.winner ?? "No winner";
+const winnerName = computed(() => {
+  return gameStore.winner?.name ?? "No winner";
 });
 
 </script>

@@ -1,20 +1,18 @@
 import { defineStore } from "pinia";
 import {RoomDto, UserDto} from "../../@types/dto";
+import {socket} from "@/services/socket";
 
 interface Store {
     user: UserDto | null,
-    roomId: string | null,
-    room: RoomDto | null;
-    winner: UserDto | null;
-    cards: string[];
-    deck: string[];
 }
 
 export const useAuthStore = defineStore('auth', {
-    state: () : Store => ({ user: null, roomId:null, room: null, winner:null,cards:[], deck : []}),
+    state: () : Store => ({ user: null}),
     getters: {
         isUserLogged(state): boolean {
             return !!state.user;
         }
     }
 })
+
+
